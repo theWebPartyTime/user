@@ -14,9 +14,9 @@
             </div>
             <section class="hero-section">
                 <div class="section-header">
-                    <h1>Твои посиделки онлайн</h1>
+                    <h1>Твои онлайн посиделки</h1>
                 </div>
-                <PrimaryButton>
+                <PrimaryButton class="continue-button">
                     <router-link to="/auth/login">
                         <img src="@/assets/arrow.png" alt="arrow">
                     </router-link>
@@ -57,7 +57,7 @@ export default defineComponent({
 
 <style>
 .onboarding{
-    margin: 150px 132px;
+    margin: 120px 132px 0px 132px;
     display: flex;
     justify-content: center;
     flex-direction: row;    
@@ -91,9 +91,31 @@ export default defineComponent({
     text-align: end;
 }
 
-.phone-section{
-    width: 412px;
-    height: 842px;
+.hero-section{
+    padding: 37px;
+    display: flex;
+    flex-direction: column;
+    gap: 71px;
+    align-items: center;
+}
+
+.section-header{
+    text-align: center;
+    font-size: 19px;
+    color: var(--primary);
+    font-weight: 800;
+}
+
+.section-header h1{
+    margin: 0;
+}
+
+.continue-button{
+    padding: 16px;
+}
+
+.continue-button img{
+    width: 64px;
 }
 
 .progress-bar{
@@ -103,30 +125,46 @@ export default defineComponent({
 }
 
 .main-bar{
-    width: 290px;
+    width: 36px;
 }
 
 .secondary-bar{
-    width: 68px;
+    position: relative;
+    width: 322px;
     height: 8px;
     border-radius: 24px;
     background: var(--secondary-container);
 }
 
 .secondary-bar::after{
-    content: ".";
-    position: relative;
-    top: -16.5px;
-    color: var(--primary);
-    font-size: 23px;
-    right: -60px;
-    font-weight: 900;
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 3px;
+    background: var(--primary);
+    transform: translateY(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
 }
 
 .active-bar{
     height: 0px;
     border-radius: 24px;
     border: 4px solid var(--primary);
+}
+
+.section-footer{
+    display: flex;
+    flex-direction: column;
+    gap: 20px
+}
+
+.section-footer a{
+    text-decoration: none;
+    font-size: 16px;
+    color: var(--light-primary);
+    font-weight: 800;
 }
 
 </style>

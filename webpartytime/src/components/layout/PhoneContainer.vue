@@ -1,6 +1,6 @@
 <template>
     <section class="phone-container">
-        <div class="camera-imitation"><img src="@/assets/camera.png" alt=""></div>
+        <div class="camera-imitation"><img src="@/assets/camera.svg" alt=""></div>
         <slot></slot>
     </section>
 </template>
@@ -24,12 +24,20 @@ export default defineComponent({
 }
 
 .phone-container{
+    height: 86vh;
+    width: 412px;
     display: flex;
     flex-direction: column;
-    border: 8px solid var(--primary);
+    border-top: 8px solid var(--primary);
+    border-left: 8px solid var(--primary);
+    border-right: 8px solid var(--primary);
     background: var(--background);
-    border-radius: 18px;
+    border-top-right-radius: 18px;
+    border-top-left-radius: 18px;
+    overflow: hidden;
+    position: relative;
 }
+
 .camera-imitation img{
     width: 24px;
     height: 24px;
