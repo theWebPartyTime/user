@@ -5,7 +5,7 @@ import { motion } from 'motion-v'
 
 defineProps<{ msg: string }>()
 
-const dragConstraints = ref(null)
+const dragConstraints = ref(undefined)
 const count = ref(0)
 </script>
 
