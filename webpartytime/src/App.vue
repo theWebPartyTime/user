@@ -1,23 +1,20 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-
-</script>
-
 <template>
-  <HelloWorld msg="WebPartyTime" />
+  <router-view />
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+<script lang="ts">
+import './style.css';
+import { defineComponent } from 'vue'
+
+export default defineComponent({
+  name: 'App',
+})
+</script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:wght@100..900&display=swap');
+
+*{
+  font-family: 'Inter';
 }
 </style>
