@@ -8,7 +8,7 @@
         </div>
     
         <PhoneContainer class="phone-section">
-            <div class="progress-bar">
+            <div class="onboarding-progress-bar">
                 <div class="main-bar active-bar"></div>
                 <div class="secondary-bar"></div>
             </div>
@@ -17,7 +17,7 @@
                     <h1>Твои онлайн посиделки</h1>
                 </div>
                 <PrimaryButton class="continue-button">
-                    <router-link to="/auth/login">
+                    <router-link to="/auth/register">
                         <img src="@/assets/arrow.png" alt="arrow">
                     </router-link>
                 </PrimaryButton>
@@ -37,8 +37,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import PrimaryButton from '../components/ui/PrimaryButton.vue';
-import PhoneContainer from '../components/layout/PhoneContainer.vue';
+import PrimaryButton from '@/components/ui/PrimaryButton.vue';
+import PhoneContainer from '@/components/layout/PhoneContainer.vue';
 
 export default defineComponent({
     name: 'Onboarding',
@@ -78,7 +78,6 @@ export default defineComponent({
     text-align: center;
     color: var(--on-primary);
     -webkit-text-stroke: 5px var(--primary); /* Для WebKit браузеров */
-    text-stroke: 5px var(--primary);
     paint-order: stroke fill;          
 }
 
@@ -91,52 +90,53 @@ export default defineComponent({
     text-align: end;
 }
 
-.hero-section{
-    padding: 37px;
+.onboarding .hero-section{
+    padding: 50px 33px 35px 33px;
     display: flex;
     flex-direction: column;
     gap: 71px;
     align-items: center;
 }
 
-.section-header{
+.onboarding .section-header{
     text-align: center;
-    font-size: 19px;
     color: var(--primary);
     font-weight: 800;
 }
 
-.section-header h1{
+.onboarding .section-header h1{
     margin: 0;
+    font-weight: 800;
+    font-size: 35px;
 }
 
-.continue-button{
+.onboarding .continue-button{
     padding: 16px;
 }
 
-.continue-button img{
+.onboarding .continue-button img{
     width: 64px;
 }
 
-.progress-bar{
+.onboarding .onboarding-progress-bar{
     margin: 0px 21px;
     display: flex;
     gap: 4px;
 }
 
-.main-bar{
-    width: 36px;
+.onboarding .onboarding-progress-bar .main-bar{
+    width: 15%;
 }
 
-.secondary-bar{
+.onboarding-progress-bar .secondary-bar{
     position: relative;
-    width: 322px;
+    width: 85%;
     height: 8px;
     border-radius: 24px;
     background: var(--secondary-container);
 }
 
-.secondary-bar::after{
+.onboarding-progress-bar .secondary-bar::after{
     content: "";
     position: absolute;
     top: 50%;
@@ -148,21 +148,21 @@ export default defineComponent({
     border-radius: 50%;
 }
 
-.active-bar{
+.onboarding-progress-bar .active-bar{
     height: 0px;
     border-radius: 24px;
     border: 4px solid var(--primary);
 }
 
-.section-footer{
+.onboarding .section-footer{
     display: flex;
     flex-direction: column;
     gap: 20px
 }
 
-.section-footer a{
+.onboarding .section-footer a{
     text-decoration: none;
-    font-size: 16px;
+    font-size: 19px;
     color: var(--light-primary);
     font-weight: 800;
 }
