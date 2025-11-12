@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory} from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 
-import Onboarding from '../pages/Onboarding.vue'
-import AuthLayout from '../pages/AuthLayout..vue'
-import Login from '../pages/Login.vue'
-import Register from '../pages/Register.vue'
-import Counter from '../components/counter/Counter.vue'
+import Onboarding from '@/pages/Onboarding.vue'
+import AuthLayout from '@/pages/AuthLayout.vue'
+import Login from '@/pages/Login.vue'
+import Register from '@/pages/Register.vue'
+import Counter from '@/components/counter/Counter.vue'
 
 const routes: Array<RouteRecordRaw> = [
     {
