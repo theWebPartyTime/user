@@ -20,7 +20,7 @@ export default defineComponent({
 <style>
 .primary-button{
     color: var(--on-primary);
-    padding: 16px 24px;
+    padding: 16px 54px;
     background: var(--primary);
     border: none;
     border-radius: var(--button-border-radius);
