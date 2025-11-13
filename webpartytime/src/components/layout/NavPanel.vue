@@ -1,7 +1,9 @@
 <template>
     <nav class="nav-panel">
-        <img src="@/assets/logo_nav.svg" alt="logo" class="logo-nav">
-        <span class="game-name">Угадай Число</span>
+        <div class="logo-online">
+            <img src="@/assets/logo_nav.svg" alt="logo" class="logo-nav">
+            <slot></slot>
+        </div>
         <img src="@/assets/avatar_nav.svg" alt="avatar" class="avatar-nav">
     </nav>
 </template>
@@ -23,21 +25,21 @@ export default defineComponent({
     height: 113px;
     width: 100%;
     padding: 33px 36px 33px 45px;
-    display: grid;
-    grid-template-columns: auto 1fr auto;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
     background: var(--background);
 }
+
+.logo-online{
+    display: flex;
+    gap: 34px;
+    align-items: center;
+}
+
 .nav-panel .logo-nav{
     width: 46px;
     aspect-ratio: 1;
-}
-
-.nav-panel .game-name{
-    color: var(--primary);
-    margin-left: 50px;
-    font-weight: 700;
-    font-size: 45px;
 }
 
 .nav-panel .avatar-nav{

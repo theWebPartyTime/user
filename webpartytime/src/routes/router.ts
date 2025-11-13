@@ -6,12 +6,18 @@ import AuthLayout from '@/pages/AuthLayout.vue'
 import Login from '@/pages/Login.vue'
 import Register from '@/pages/Register.vue'
 import Counter from '@/components/counter/Counter.vue'
+import GuessNumber from '@/pages/GuessNumber.vue'
 
 const routes: Array<RouteRecordRaw> = [
+    // {
+    //   path: '/',
+    //   name: 'Onboarding',
+    //   component: Onboarding
+    // },
     {
       path: '/',
-      name: 'Onboarding',
-      component: Onboarding
+      name: 'GuessNumber',
+      component: GuessNumber
     },
     {
       path: '/auth',
