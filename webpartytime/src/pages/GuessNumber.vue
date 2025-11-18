@@ -1,5 +1,7 @@
 <template>
-    <NavPanel/>
+    <NavPanel>
+        <span class="page-header">Угадай число</span>
+    </NavPanel>
     <div class="guess-number">
         <div class="main-section">
             <h1>Заголовок запроса</h1>
@@ -33,6 +35,11 @@ export default defineComponent({
 </script>
 
 <style>
+.page-header{
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 45px;
+}
 .guess-number{
     display: flex;
     gap: 130px;
