@@ -28,7 +28,7 @@
                     </div>
                 </form>
                 <PrimaryButton class="start-button">
-                    <router-link to="/">
+                    <router-link to="/home">
                         Начать
                     </router-link>
                 </PrimaryButton>

@@ -1,7 +1,6 @@
 <template>
     <NavPanel>
-        <span class="page-header">WebPartyTime</span>
-        <div class="current-online">Сейчас онлайн: 20</div>
+        <span class="page-header">Угадай число</span>
     </NavPanel>
     <div class="guess-number">
         <div class="main-section">
@@ -41,34 +40,6 @@ export default defineComponent({
     font-weight: 700;
     font-size: 45px;
 }
-
-.current-online{
-    position: relative;
-    color: var(--on-primary);
-    padding: 10px 16px 10px 44px;
-    background: var(--primary);
-    border: none;
-    font-size: 16px;
-    border-radius: var(--button-border-radius);
-    font-weight: 500;
-    text-decoration: none;
-    display: inline-block;
-}
-
-.current-online::before{
-    content: '';
-    background-image: url('@/assets/online_icon.svg');
-    background-size: contain;
-    background-repeat: no-repeat;
-    position: absolute;
-    top: 50%;
-    left: 14px;
-    transform: translateY(-50%);
-    height: 20px;
-    width: 20px;
-    display: inline-block;
-}
-
 .guess-number{
     display: flex;
     gap: 130px;

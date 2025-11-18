@@ -22,7 +22,7 @@
                     </router-link>
                 </PrimaryButton>
                 <div class="section-footer">
-                    <router-link to="/auth/login">
+                    <router-link to="/guess-number">
                         <span>У меня уже есть аккаунт</span>
                     </router-link>
                     <router-link to="/counter">

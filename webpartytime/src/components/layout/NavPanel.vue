@@ -24,7 +24,7 @@ export default defineComponent({
 .nav-panel{
     height: 113px;
     width: 100%;
-    padding: 33px 36px 33px 45px;
+    padding: 23px 36px 15px 45px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -41,6 +41,7 @@ export default defineComponent({
     width: 46px;
     aspect-ratio: 1;
 }
+
 
 .nav-panel .avatar-nav{
     width: 40px;
