@@ -10,15 +10,10 @@ import GuessNumber from '@/pages/GuessNumber.vue'
 import Home from "@/pages/Home.vue"
 
 const routes: Array<RouteRecordRaw> = [
-    // {
-    //   path: '/',
-    //   name: 'Onboarding',
-    //   component: Onboarding
-    // },
     {
       path: '/',
-      name: 'GuessNumber',
-      component: GuessNumber
+      name: 'Onboarding',
+      component: Onboarding
     },
     {
       path: '/auth',
