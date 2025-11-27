@@ -1,79 +1,209 @@
 <template>
-    <NavPanel>
-        <span class="page-header">WebPartyTime</span>
-        <div class="current-online">Сейчас онлайн: 20</div>
-    </NavPanel>
-    <ChoosePanel/>
-    <main class="creating-party-main">
-        <aside class="aside-navigation">
-            <button class="aside-button-public" :class="{'active-aside-button': activePublic}">Публичные сценарии</button>
-            <button class="aside-button-private">Мои сценарии</button>
-        </aside>    
-        <section class="creating-party-main-section">
-            <div class="search-bar">
-                <button class="burger-button">
-                    <img src="@/assets/burger_button.svg" alt="">
-                </button>
-                
-                <input
-                    v-model="searchQuery"
-                    class="search-input"
-                    type="text"
-                    placeholder="Поиск по сценариям"
-                />
-                
-                <button class="search-button">
-                    <img src="@/assets/search_icon.svg" alt="">
-                </button>
+    <div class="authorized" v-if="isAuth">
+        <NavPanel>
+            <span class="page-header">WebPartyTime</span>
+            <div class="current-online">Сейчас онлайн: 20</div>
+        </NavPanel>
+        <ChoosePanel @action-selected="handleActionSelected"/>
+        <main class="creating-party-main" v-if="selectedTab === 'create'">
+            <aside class="aside-navigation">
+                <button class="aside-button-public" :class="{'active-aside-button': activePublic}" @click="toggleActivePublic()">Публичные сценарии</button>
+                <button class="aside-button-private" :class="{'active-aside-button': activePrivate}" @click="toggleActivePrivate()">Мои сценарии</button>
+            </aside>    
+            <section class="creating-party-main-section">
+                <div class="search-bar">
+                    <button class="burger-button">
+                        <img src="@/assets/burger_button.svg" alt="">
+                    </button>
+                    
+                    <input
+                        v-model="searchQuery"
+                        class="search-input"
+                        type="text"
+                        placeholder="Поиск по сценариям"
+                    />
+                    
+                    <button class="search-button">
+                        <img src="@/assets/search_icon.svg" alt="">
+                    </button>
+                </div>
+                <div class="game-list">
+                    <div class="game-field"
+                         :class="{ 'selected-field': selectedFieldIndex === 0 }"
+                         @click="selectField(0)">
+                        <img src="@/assets/avatar.svg" alt="">
+                        <div class="game-field-info">
+                            <span class="field-title">Викторина “Устройство Linux”</span>
+                            <span class="field-subtitle">Тестовые вопросы по устройству операционной системы...</span>
+                        </div>
+                    </div>
+                    <div class="game-field"
+                         :class="{ 'selected-field': selectedFieldIndex === 1 }"
+                         @click="selectField(1)">
+                        <img src="@/assets/avatar.svg" alt="">
+                        <div class="game-field-info">
+                            <span class="field-title">Угадай число</span>
+                            <span class="field-subtitle">Простейшая игра на угадывание случайного числа</span>
+                        </div>
+                    </div>
+                    <div class="game-field"
+                         :class="{ 'selected-field': selectedFieldIndex === 2 }"
+                         @click="selectField(2)">
+                        <img src="@/assets/avatar.svg" alt="">
+                        <div class="game-field-info">
+                            <span class="field-title">Игра 1</span>
+                            <span class="field-subtitle"></span>
+                        </div>
+                    </div>
+                    <div class="game-field"
+                         :class="{ 'selected-field': selectedFieldIndex === 3 }"
+                         @click="selectField(3)">
+                        <img src="@/assets/avatar.svg" alt="">
+                        <div class="game-field-info">
+                            <span class="field-title">Игра 2</span>
+                            <span class="field-subtitle"></span>
+                        </div>
+                    </div>
+                    <div class="game-field"
+                         :class="{ 'selected-field': selectedFieldIndex === 4 }"
+                         @click="selectField(4)">
+                        <img src="@/assets/avatar.svg" alt="">
+                        <div class="game-field-info">
+                            <span class="field-title">Игра 3</span>
+                            <span class="field-subtitle"></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div class="game-card">
+                <h3>Угадай число</h3>
+                <img src="@/assets/game_img.svg" alt="">
+                <span>Простейшая игра на угадывание случайного числа</span>
+                <div class="game-buttons">
+                    <VariantButton>Изменить</VariantButton>
+                    <PrimaryButton>Запустить</PrimaryButton>
+                </div>
             </div>
-            <div class="game-list">
-                <div class="game-field">
-                    <img src="@/assets/avatar.svg" alt="">
-                    <div class="game-field-info">
-                        <span class="field-title">Викторина “Устройство Linux”</span>
-                        <span class="field-subtitle">Тестовые вопросы по устройству операционной системы...</span>
+        </main>
+        <main class="connect-to-party-main" v-else>
+            <aside class="room-settings">
+                <div class="number-of-players-bar">
+                    <img src="@/assets/private_scenario_icon.svg" alt="">
+                    <div class="access-main">
+                        <span class="access-main-setting-name">Число игроков</span>
+                        <span class="access-main-setting-value">1+</span>
                     </div>
                 </div>
-                <div class="game-field selected-field">
-                    <img src="@/assets/avatar.svg" alt="">
-                    <div class="game-field-info">
-                        <span class="field-title">Угадай число</span>
-                        <span class="field-subtitle">Простейшая игра на угадывание случайного числа</span>
+                <div class="duration-of-game-bar">
+                    <img src="@/assets/alarm.svg" alt="">
+                    <div class="access-main">
+                        <span class="access-main-setting-name">Время работы комнаты</span>
+                        <span class="access-main-setting-value">0:10:00</span>
                     </div>
                 </div>
-                <div class="game-field">
-                    <img src="@/assets/avatar.svg" alt="">
-                    <div class="game-field-info">
-                        <span class="field-title">Игра 1</span>
-                        <span class="field-subtitle"></span>
+                <div class="autostart-bar">
+                    <input type="checkbox" id="autostart">
+                    <label for="autostart">Начинать автоматичеcки</label>  
+                </div>
+                <div class="viewer-access-bar">
+                    <input type="checkbox" id="viewer-access-checkbox">
+                    <label for="viewer-access-checkbox">Разрешить зрителей</label>
+                </div>
+                <div class="unauthorized-access-bar">
+                    <input type="checkbox" id="unauthorized-access-checkbox">
+                    <label for="unauthorized-access-checkbox">Разрешить неавторизованных пользователей</label>
+                </div>
+                <div class="new-users-access">
+                    <div class="cancel-bar">
+                        <input type="radio" 
+                               id="cancel-new-connections"
+                               name="new-user-access" 
+                               value="cancel"
+                               checked>
+                        <label for="cancel-new-connections">Отклонять новые подключения</label>
+                    </div>
+                    <div class="as-viewer-bar">
+                        <input type="radio" 
+                               id="new-connections-as-viewer" 
+                               name="new-user-access"
+                               value="as-viewer">
+                        <label for="new-connections-as-viewer">Подключать новых пользователей как зрителей</label>
+                    </div>
+                </div>       
+            </aside>
+            <div class="selected-game-info">
+                <div class="room-code">
+                    <button><img src="@/assets/update_icon.svg" alt=""></button>
+                    <span>{{ roomCode }}</span>
+                    <button><img src="@/assets/hide_code_icon.svg" alt=""></button>
+                </div>
+                <div class="selected-game-card">
+                    <h3>Угадай число</h3>
+                    <img src="@/assets/game_preview_image.png" alt="">
+                    <span>Простейшая игра на угадывание случайного числа</span>
+                </div>
+            </div>    
+            <div class="participants">
+                <div class="organizer">
+                    <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
+                    <div class="participant-info">
+                        <span class="participant-role">Организатор</span>
+                        <input type="text" value="JoyousCapybara" class="organizer-name" id="organizer_name" name="organizer_name"/>
+                    </div>
+                    <img src="@/assets/update_icon.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
+                </div>
+                <div class="participants-list">
+                    <div class="participant">
+                        <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
+                        <div class="participant-info">
+                            <span class="participant-role">Игрок</span>
+                            <span class="participant-username">Пользователь 2</span>
+                        </div>
+                        <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
+                    </div>
+                    <div class="participant">
+                        <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
+                        <div class="participant-info">
+                            <span class="participant-role">Игрок</span>
+                            <span class="participant-username">Пользователь 3</span>
+                        </div>
+                        <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
+                    </div>
+                    <div class="participant">
+                        <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
+                        <div class="participant-info">
+                            <span class="participant-role">Игрок</span>
+                            <span class="participant-username">Пользователь 3</span>
+                        </div>
+                        <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
+                    </div>
+                    <div class="participant">
+                        <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
+                        <div class="participant-info">
+                            <span class="participant-role">Игрок</span>
+                            <span class="participant-username">Пользователь 3</span>
+                        </div>
+                        <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
                     </div>
                 </div>
-                <div class="game-field">
-                    <img src="@/assets/avatar.svg" alt="">
-                    <div class="game-field-info">
-                        <span class="field-title">Игра 2</span>
-                        <span class="field-subtitle"></span>
-                    </div>
-                </div>
-                <div class="game-field">
-                    <img src="@/assets/avatar.svg" alt="">
-                    <div class="game-field-info">
-                        <span class="field-title">Игра 3</span>
-                        <span class="field-subtitle"></span>
+                <div class="settings-container">
+                    <PrimaryButton class="burger-game-button" @click="openGameButtons">
+                        <img src="@/assets/burger_icon.svg" alt="Настройки">
+                    </PrimaryButton>
+                    
+                    <div class="game-settings-buttons" :class="{ 'visible': gameButtonsVisible }">
+                        <SecondaryButton class="close-room">Закрыть комнату</SecondaryButton>
+                        <SecondaryButton class="leave-from-room">Покинуть комнату</SecondaryButton>
+                        <SecondaryButton class="start-game">Запустить</SecondaryButton>
                     </div>
                 </div>
             </div>
-        </section>
-        <div class="game-card">
-            <h3>Угадай число</h3>
-            <img src="@/assets/game_img.svg" alt="">
-            <span>Простейшая игра на угадывание случайного числа</span>
-            <div class="game-buttons">
-                <VariantButton>Изменить</VariantButton>
-                <PrimaryButton>Запустить</PrimaryButton>
-            </div>
-        </div>
-    </main>
+        </main>
+    </div>
+    <div class="unauthorized" v-else>
+        <Onboarding/>
+    </div>
+    
 </template>
 
 <script lang="ts">
@@ -82,27 +212,67 @@ import NavPanel from '@/components/layout/NavPanel.vue';
 import ChoosePanel from '@/components/layout/ChoosePanel.vue';
 import PrimaryButton from '@/components/ui/PrimaryButton.vue';
 import VariantButton from '@/components/ui/VariantButton.vue';
+import SecondaryButton from '@/components/ui/SecondaryButton.vue';
+
+import Onboarding from '@/pages/Onboarding.vue';
+
+
+type ActionType = 'create' | 'connect' | null;
 
 export default defineComponent({
     name: 'Home',
     data(){
         return{
-            searchQuery: '',
-            activePublic: true,
-            activePrivate: false
+            isAuth: true as Boolean,
+            selectedTab: 'create' as ActionType,
+            searchQuery: '' as String,
+            activePublic: true as Boolean,
+            activePrivate: false as Boolean,
+            accessType: 'По ссылке' as String,
+            roomCode: 'QWERTYUIO' as String,
+            gameButtonsVisible: false as Boolean,
+            selectedFieldIndex: 1 as number
         }
     },
     components: {
         NavPanel,
         ChoosePanel,
         PrimaryButton,
-        VariantButton
+        VariantButton,
+        SecondaryButton,
+        Onboarding
+    },
+    methods: {
+        handleActionSelected(action: ActionType): void {
+            this.selectedTab = action;
+
+            console.log('Выбрана вкладка:', action);
+        },
+        toggleActivePublic(){
+            this.activePublic = true,
+            this.activePrivate = false
+        },
+        toggleActivePrivate(){
+            this.activePublic = false,
+            this.activePrivate = true
+        },
+        deleteParticipant(){
+            console.log('Deleted')
+        },
+        openGameButtons(){
+            this.gameButtonsVisible = !this.gameButtonsVisible
+        },
+        selectField(index: number) {
+            this.selectedFieldIndex = index
+        }
     }
 
 })
 </script>
 
 <style>
+
+/* Создание комнаты */
 .current-online{
     position: relative;
     color: var(--on-primary);
@@ -150,6 +320,7 @@ export default defineComponent({
     background: none;
     border: none;
     position: relative;
+    cursor: pointer;
     color: var(--on-secondary-container);
     font-size: 15px;
     font-weight: 500;
@@ -174,6 +345,7 @@ export default defineComponent({
     position: absolute;
     left: 43px;
 }
+
 
 .active-aside-button{
     background: var(--secondary-container) !important;
@@ -268,6 +440,7 @@ export default defineComponent({
 }
 
 .game-field{
+    cursor: pointer;
     width: 584px;
     display: flex;
     align-items: center;
@@ -275,6 +448,7 @@ export default defineComponent({
     border-radius: 12px;
     padding: 14px;
     background: var(--background);
+    transition: all 0.3s ease;
 }
 
 .game-field img{
@@ -353,4 +527,470 @@ export default defineComponent({
     padding: 10px 16px;
 }
 
+/* Подключение к комнате */
+.connect-to-party-main{
+    display: flex;
+    justify-content: space-between;
+    gap: 28px;
+    align-items: start;
+    padding: 30px 62px 40px 42px;
+    height: 75vh;
+}
+
+.room-settings{
+    padding: 10px 36px;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    align-items: start;
+    gap: 5px;
+}
+
+.room-settings div{
+    width: 277px;
+}
+
+.number-of-players-bar{
+    display: flex;
+    gap: 6px;
+}
+
+.number-of-players-bar img{
+    width: 15px;
+    aspect-ratio: 1;
+}
+
+.duration-of-game-bar{
+    display: flex;
+    gap: 6px;
+}
+
+.duration-of-game-bar img{
+    width: 18px;
+    aspect-ratio: 1;
+}
+
+.number-of-players-bar{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    padding: 8px 16px;
+}
+
+.access-main{
+    display: flex;
+    flex-direction: column;
+}
+
+.access-main-setting-name{
+    color: var(--on-surface-variant);
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    line-height: 1.33;
+    font-weight: 500;
+}
+
+.access-main-value-name{
+    font-size: 16px;
+    color: var(--on-surface);
+}
+
+.duration-of-game-bar{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    padding: 8px 16px;
+    border-bottom: var(--border-variant);
+}
+
+.autostart-bar input[type="checkbox"],
+.viewer-access-bar input[type="checkbox"],
+.unauthorized-access-bar input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.autostart-bar,
+.viewer-access-bar,
+.unauthorized-access-bar {
+    padding-top: 8px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding-bottom: 8px;
+    position: relative;
+    padding-right: 30px;
+    min-height: 24px;
+    justify-content: space-between;
+}
+
+.unauthorized-access-bar{
+    border-bottom: var(--border-variant);
+}
+
+.autostart-bar label::before,
+.viewer-access-bar label::before,
+.unauthorized-access-bar label::before {
+    content: '';
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--outline);
+    border-radius: 2px;
+    background: #fff;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.autostart-bar:hover label::before,
+.viewer-access-bar:hover label::before,
+.unauthorized-access-bar:hover label::before {
+    border-color: var(--primary);
+}
+
+.autostart-bar input[type="checkbox"]:checked + label::before,
+.viewer-access-bar input[type="checkbox"]:checked + label::before,
+.unauthorized-access-bar input[type="checkbox"]:checked + label::before {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.autostart-bar input[type="checkbox"]:checked + label::after,
+.viewer-access-bar input[type="checkbox"]:checked + label::after,
+.unauthorized-access-bar input[type="checkbox"]:checked + label::after {
+    content: '';
+    position: absolute;
+    right: 26px;
+    top: 50%;
+    transform: translateY(-65%) rotate(45deg);
+    width: 5px;
+    height: 9px;
+    border: solid white;
+    border-width: 0 2.5px 2.5px 0;
+}
+
+.autostart-bar label,
+.viewer-access-bar label,
+.unauthorized-access-bar label {
+    width: 185px;
+    cursor: pointer;
+    margin: 0;
+    margin-left: 16px;
+    font-size: 16px;
+    line-height: 1.5;
+    user-select: none;
+    order: -1;
+}
+
+.new-users-access {
+   padding: 0px 16px;
+}
+
+.cancel-bar,
+.as-viewer-bar {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    padding-bottom: 16px;
+    min-height: 24px;
+    justify-content: space-between;
+}
+
+.cancel-bar input[type="radio"],
+.as-viewer-bar input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.cancel-bar label::before,
+.as-viewer-bar label::before {
+    content: '';
+    position: absolute;
+    right: 30px;
+    top: 40%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--outline);
+    border-radius: 50%;
+    background: #fff;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.cancel-bar:hover label::before,
+.as-viewer-bar:hover label::before {
+    border-color: var(--primary);
+}
+
+.cancel-bar input[type="radio"]:checked + label::before,
+.as-viewer-bar input[type="radio"]:checked + label::before {
+    border-color: var(--primary);
+}
+
+.cancel-bar input[type="radio"]:checked + label::after,
+.as-viewer-bar input[type="radio"]:checked + label::after {
+    content: '';
+    position: absolute;
+    right: 34.3px;
+    top: 40%;
+    transform: translateY(-50%);
+    width: 9.5px;
+    height: 9.5px;
+    border-radius: 50%;
+    background-color: var(--primary);
+}
+
+.cancel-bar label,
+.as-viewer-bar label {
+    cursor: pointer;
+    width: 185px;
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+    user-select: none;
+    order: -1;
+}
+
+.selected-game-info{
+    padding: 0px 36px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.room-code{
+    width: 100%;
+    padding: 11px 40px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.room-code button{
+    height: 28px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.room-code span{
+    border: var(--border-variant);
+    border-radius: 8px;
+    padding: 6px 120px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--on-surface-variant);
+}
+
+.selected-game-card{
+    width: 100%;
+    max-height: 500px;
+    display: flex;
+    flex-direction: column;
+    background: var(--background);
+    border: 2px solid var(--outline-variant);
+    border-radius: 12px;
+}
+
+.selected-game-card h3{
+    margin: 22px auto;
+    font-size: 22px;
+    color: var(--on-surface)
+}
+
+.selected-game-card span{
+    margin: 16px 16px 32px;
+    color: var(--on-surface-variant);
+    font-size: 14px;
+}
+
+.selected-game-card img{
+    width: 100%;
+}
+
+.participants{
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 22%;
+    margin-top: 30px;
+}
+
+.participants .organizer{
+    display: flex;
+    flex-direction: row;
+    justify-content: start; 
+    align-items: center;
+    padding: 8px 0px 8px 16px;
+    gap: 12px;
+}
+
+.participants .organizer .participant-info .organizer-name{
+    padding: 8px 0px;
+    border: var(--border-variant);
+    border-radius: 8px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--on-surface-variant);
+}
+
+.participants-list .participant:first-child{
+    border-top: var(--border-variant);
+}
+
+.participants .organizer .participant-info{
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.participants-list{
+    display: flex;
+    flex-direction: column;
+}
+
+.participants .participants-list .participant{
+    display: flex;
+    flex-direction: row;
+    justify-content: start; 
+    align-items: center;
+    padding: 8px 0px 8px 16px;
+    gap: 12px;
+}
+
+.participants .participants-list .participant:hover{
+    background: var(--background);
+}
+
+.participants .participants-list .participant .participant-info{
+    margin-left: 12px;
+    display: flex;
+    flex-direction: column;
+    margin-right: 20%;
+}
+
+.participants .participant-role{
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--on-surface-variant);
+    line-height: 1.3;
+    letter-spacing: 0.5px;
+}
+
+.participant-username{
+    font-size: 16px;
+    color: var(--on-surface);
+}
+
+.participant .participant-avatar{
+    width: 40px;
+    aspect-ratio: 1;
+}
+.participant .delete-participant-img{
+    width: 18px;
+    aspect-ratio: 1;
+    cursor: pointer;
+}
+
+.burger-game-button{
+    position: relative;
+    transition: transform 0.3s ease;
+    padding: 20px 23px;
+    border-radius: 50%;
+    z-index: 10;
+}
+
+.burger-game-button:hover {
+  transform: scale(1.05);
+}
+.burger-game-button img{
+    width: 15px;
+    height: 10px;
+}
+
+.settings-container {
+    margin-top: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.game-settings-buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    align-items: flex-end;
+    gap: 4px;
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 10px;
+    z-index: 5;
+}
+
+.game-settings-buttons.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    visibility: visible;
+}
+
+.game-settings-buttons a{
+    position: relative;
+    padding: 10px 24px 10px 54px;
+}
+
+.game-settings-buttons .close-room::before{
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: absolute;
+    content: '';
+    width: 20px;
+    height: 20px;
+    background-image: url('@/assets/close_room.svg');
+    top: 30%;
+    left: 26px;
+}
+
+.game-settings-buttons .leave-from-room::before{
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: absolute;
+    content: '';
+    width: 21px;
+    height: 18px;
+    background-image: url('@/assets/leave_from_room.svg');
+    top: 30%;
+    left: 27px;
+}
+
+.game-settings-buttons .start-game::before{
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: absolute;
+    content: '';
+    width: 11px;
+    height: 14px;
+    background-image: url('@/assets/start_game.svg');
+    top: 36%;
+    left: 32px;
+}
 </style>

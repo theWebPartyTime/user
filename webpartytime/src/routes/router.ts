@@ -12,8 +12,8 @@ import Home from "@/pages/Home.vue"
 const routes: Array<RouteRecordRaw> = [
     {
       path: '/',
-      name: 'Onboarding',
-      component: Onboarding
+      name: 'Home',
+      component: Home
     },
     {
       path: '/auth',
@@ -42,11 +42,6 @@ const routes: Array<RouteRecordRaw> = [
       name: 'GuessNumber',
       component: GuessNumber
     },
-    {
-      path: '/home',
-      name: 'Home',
-      component: Home
-    }
 ]
 
 const router = createRouter({
