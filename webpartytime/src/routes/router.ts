@@ -1,13 +1,17 @@
 import { createRouter, createWebHistory} from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 
-import Onboarding from '@/pages/Onboarding.vue'
 import AuthLayout from '@/pages/AuthLayout.vue'
 import Login from '@/pages/Login.vue'
 import Register from '@/pages/Register.vue'
 import Counter from '@/components/counter/Counter.vue'
 import GuessNumber from '@/pages/GuessNumber.vue'
 import Home from "@/pages/Home.vue"
+import PartyQueryNumber from '@/pages/PartyQueryNumber.vue'
+import PartyQueryAll from '@/pages/PartyQueryAll.vue'
+import PartyQueryDisplay from '@/pages/PartyQueryDisplay.vue'
+import PartyQueryVariant from '@/pages/PartyQueryVariant.vue'
+import PartyQueryWinner from '@/pages/PartyQueryWinner.vue'
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -42,6 +46,36 @@ const routes: Array<RouteRecordRaw> = [
       name: 'GuessNumber',
       component: GuessNumber
     },
+    {
+      path: '/party-query-number',
+      name: 'PartyQueryNumber',
+      component: PartyQueryNumber
+    },
+    {
+      path: '/party-query-all',
+      name: 'PartyQueryAll',
+      component: PartyQueryAll
+    },
+    {
+      path: '/party-query-display',
+      name: 'PartyQueryDisplay',
+      component: PartyQueryDisplay
+    },
+    {
+      path: '/party-query-variant',
+      name: 'PartyQueryVariant',
+      component: PartyQueryVariant
+    },
+    {
+      path: '/party-query-winner',
+      name: 'PartyQueryWinner',
+      component: PartyQueryWinner
+    },
+    // {
+    //   path: '/game',
+    //   name: 'Games',
+    //   component: Games
+    // }
 ]
 
 const router = createRouter({

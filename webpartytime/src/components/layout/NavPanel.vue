@@ -22,7 +22,7 @@ export default defineComponent({
 
 <style>
 .nav-panel{
-    height: 113px;
+    height: 14vh;
     width: 100%;
     padding: 23px 36px 15px 45px;
     display: flex;
@@ -33,7 +33,7 @@ export default defineComponent({
 
 .logo-online{
     display: flex;
-    gap: 34px;
+    gap: 45px;
     align-items: center;
 }
 
@@ -47,5 +47,11 @@ export default defineComponent({
     width: 40px;
     aspect-ratio: 1;
     justify-self: end;
+}
+
+.nav-panel .page-header{
+    font-size: 45px;
+    color: var(--primary);
+    font-weight: 700;
 }
 </style>

@@ -44,7 +44,7 @@ export default defineComponent({
 .choose-panel{
     display: flex;
     align-items: end;
-    height: 38px;
+    height: 6vh;
     background: var(--background);
     border-bottom: 2px solid var(--outline-variant);
 }

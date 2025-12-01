@@ -21,7 +21,7 @@ import { defineComponent } from 'vue';
 import NavPanel from '@/components/layout/NavPanel.vue';
 import PrimaryButton from '@/components/ui/PrimaryButton.vue';
 export default defineComponent({
-    name: 'GuessNumber',
+    name: 'PartyQueryNumber',
     data(){
         return{
 
