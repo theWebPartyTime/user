@@ -147,8 +147,11 @@
                 <div class="organizer">
                     <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
                     <div class="participant-info">
-                        <span class="participant-role">Организатор</span>
-                        <input type="text" value="JoyousCapybara" class="organizer-name" id="organizer_name" name="organizer_name"/>
+                        <div class="participant-role">Организатор</div>
+                        <div class="organizer-name">
+                            <input type="text" value="JoyousCapybara"  id="organizer_name" name="organizer_name"/>
+                        </div>
+                        
                     </div>
                     <img src="@/assets/update_icon.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
                 </div>
@@ -301,22 +304,28 @@ export default defineComponent({
 }
 
 .creating-party-main{
+    height: 80vh;
+    width: 100%;
     display: flex;
     justify-content: space-between;
-    align-items: start;
+    align-items: center;
     padding: 36px 44px;
 }
 
 .aside-navigation{
-    min-width: 220px;
-    max-width: 360px;
+    width: auto;
+    max-width: 20%;
     display: flex;
     flex-direction: column;
-    padding: 8px 28px
+    align-items: center;
+    padding: 8px 28px;
+    margin-bottom: 25%;
 }
 
 .aside-navigation button{
     padding: 18px 16px 18px 48px;
+    max-width: 100%;
+    width: fit-content;
     background: none;
     border: none;
     position: relative;
@@ -333,8 +342,8 @@ export default defineComponent({
     width: 24px;
     height: 12px;
     position: absolute;
-    left: 16px;
-    top: 19px;
+    left: 8%;
+    top: 40%;
 }
 
 .aside-button-private::before{
@@ -343,7 +352,8 @@ export default defineComponent({
     width: 16px;
     height: 16px;
     position: absolute;
-    left: 43px;
+    left: 10%;
+    top: 34%;
 }
 
 
@@ -355,15 +365,15 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
-    max-width: 645px;
+    width: auto;
+    max-width: 48%;
     max-height: 577px;
 }
 
 .search-bar {
   display: flex;
   align-items: center;
-  width: 575px;
+  width: 100%;
   height: 56px;
   gap: 4px;
   border-radius: 28px;
@@ -432,7 +442,7 @@ export default defineComponent({
 }
 
 .game-list{
-    padding: 30px;
+    padding-top: 4%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -441,12 +451,12 @@ export default defineComponent({
 
 .game-field{
     cursor: pointer;
-    width: 584px;
+    width: 100%;
     display: flex;
     align-items: center;
     border: 2px solid var(--outline-variant);
     border-radius: 12px;
-    padding: 14px;
+    padding: 2.5% 3%;
     background: var(--background);
     transition: all 0.3s ease;
 }
@@ -473,7 +483,7 @@ export default defineComponent({
 }
 
 .game-list .selected-field{
-    width: 628px;
+    width: 105%;
     position: relative;
 
 }
@@ -492,10 +502,9 @@ export default defineComponent({
     z-index: 1;
 }
 
-.game-card{
-    margin-top: 30px;
-    width: 348px;
-    height: 430px;
+.game-card{ 
+    width: 100%;
+    max-width: 30%;
     background: var(--background);
     border: 2px solid var(--outline-variant);
     border-radius: 12px;
@@ -521,6 +530,7 @@ export default defineComponent({
     justify-content: end;
     margin-right: 16px;
     gap: 8px;
+    margin-bottom: 13%;
 }
 
 .game-buttons a{
@@ -532,22 +542,24 @@ export default defineComponent({
     display: flex;
     justify-content: space-between;
     gap: 28px;
-    align-items: start;
+    align-items: center;
     padding: 30px 62px 40px 42px;
-    height: 75vh;
+    height: 80vh;
+    width: 100%;
 }
 
 .room-settings{
-    padding: 10px 36px;
     display: flex;
     flex-direction: column;
     text-align: left;
     align-items: start;
     gap: 5px;
+    max-width: 25%;
+    width: auto;
 }
 
 .room-settings div{
-    width: 277px;
+    width: 100%;
 }
 
 .number-of-players-bar{
@@ -761,17 +773,17 @@ export default defineComponent({
 }
 
 .selected-game-info{
-    padding: 0px 36px;
-    width: 100%;
+    width: auto;
+    max-width: 50%;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
+    margin-bottom: 5%;
 }
 
 .room-code{
     width: 100%;
-    padding: 11px 40px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -823,11 +835,11 @@ export default defineComponent({
 }
 
 .participants{
-    min-height: 100%;
     display: flex;
     flex-direction: column;
     position: relative;
-    width: 22%;
+    width: auto;
+    max-width: 25%;
     margin-top: 30px;
 }
 
@@ -841,13 +853,21 @@ export default defineComponent({
 }
 
 .participants .organizer .participant-info .organizer-name{
+    width: 80%;
     padding: 8px 0px;
     border: var(--border-variant);
     border-radius: 8px;
-    text-align: center;
+    
+}
+
+.participants .organizer .participant-info .organizer-name input{
+    border: none;
+    width: 100%;
+    padding: 0;
     font-size: 16px;
     font-weight: 500;
     color: var(--on-surface-variant);
+    text-align: center;
 }
 
 .participants-list .participant:first-child{
@@ -883,7 +903,7 @@ export default defineComponent({
     margin-left: 12px;
     display: flex;
     flex-direction: column;
-    margin-right: 20%;
+    margin-right: 10%;
 }
 
 .participants .participant-role{
@@ -926,7 +946,7 @@ export default defineComponent({
 }
 
 .settings-container {
-    margin-top: auto;
+    margin-top: 25%;
     position: relative;
     display: flex;
     flex-direction: column;
