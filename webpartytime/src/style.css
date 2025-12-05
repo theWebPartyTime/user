@@ -5,6 +5,7 @@
   --background: #FEF7FF;
   --primary-container: #EADDFF;
   --secondary-container: #E8DEF8;
+  --on-secondary-container: #4A4459;
   --outline-variant: #CAC4D0;
   --outline: #79747E;
   --border: 1px solid #79747E;;
@@ -16,6 +17,7 @@
   --on-surface: #1D1B20;
   --on-surface-inactive: #1D1B201A;
   --on-surface-variant: #49454F;
-  --surface-container: #ECE6F0
+  --surface-container: #ECE6F0;
+  --on-primary-container: #4F378A;
 }
 

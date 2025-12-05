@@ -1,5 +1,5 @@
 <template>
-    <a class="primary-button">
+    <a class="variant-button">
         <slot></slot>
     </a>
 </template>
@@ -8,7 +8,7 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-    name: 'PrimaryButton',
+    name: 'VariantButton',
     data(){
         return{
         }
@@ -18,11 +18,11 @@ export default defineComponent({
 </script>
 
 <style>
-.primary-button{
-    color: var(--on-primary);
+.variant-button{
+    color: var(--on-surface-variant);
     padding: 16px 54px;
-    background: var(--primary);
-    border: none;
+    background: var(--background);
+    border: 1px solid var(--outline-variant);
     border-radius: var(--button-border-radius);
     cursor: pointer;
     font-weight: 500;
@@ -30,7 +30,7 @@ export default defineComponent({
     display: inline-block;
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.primary-button:hover {
+.variant-button:hover {
     transform: scale(101%, 101%);
 }
 </style>
