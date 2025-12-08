@@ -85,122 +85,128 @@
                 </div>
             </div>
         </main>
-        <main class="connect-to-party-main" v-else>
-            <aside class="room-settings">
-                <div class="number-of-players-bar">
-                    <img src="@/assets/private_scenario_icon.svg" alt="">
-                    <div class="access-main">
-                        <span class="access-main-setting-name">Число игроков</span>
-                        <span class="access-main-setting-value">1+</span>
-                    </div>
-                </div>
-                <div class="duration-of-game-bar">
-                    <img src="@/assets/alarm.svg" alt="">
-                    <div class="access-main">
-                        <span class="access-main-setting-name">Время работы комнаты</span>
-                        <span class="access-main-setting-value">0:10:00</span>
-                    </div>
-                </div>
-                <div class="autostart-bar">
-                    <input type="checkbox" id="autostart">
-                    <label for="autostart">Начинать автоматичеcки</label>  
-                </div>
-                <div class="viewer-access-bar">
-                    <input type="checkbox" id="viewer-access-checkbox">
-                    <label for="viewer-access-checkbox">Разрешить зрителей</label>
-                </div>
-                <div class="unauthorized-access-bar">
-                    <input type="checkbox" id="unauthorized-access-checkbox">
-                    <label for="unauthorized-access-checkbox">Разрешить неавторизованных пользователей</label>
-                </div>
-                <div class="new-users-access">
-                    <div class="cancel-bar">
-                        <input type="radio" 
-                               id="cancel-new-connections"
-                               name="new-user-access" 
-                               value="cancel"
-                               checked>
-                        <label for="cancel-new-connections">Отклонять новые подключения</label>
-                    </div>
-                    <div class="as-viewer-bar">
-                        <input type="radio" 
-                               id="new-connections-as-viewer" 
-                               name="new-user-access"
-                               value="as-viewer">
-                        <label for="new-connections-as-viewer">Подключать новых пользователей как зрителей</label>
-                    </div>
-                </div>       
-            </aside>
-            <div class="selected-game-info">
-                <div class="room-code">
-                    <button><img src="@/assets/update_icon.svg" alt=""></button>
-                    <span>{{ roomCode }}</span>
-                    <button><img src="@/assets/hide_code_icon.svg" alt=""></button>
-                </div>
-                <div class="selected-game-card">
-                    <h3>Угадай число</h3>
-                    <img src="@/assets/game_preview_image.png" alt="">
-                    <span>Простейшая игра на угадывание случайного числа</span>
-                </div>
-            </div>    
-            <div class="participants">
-                <div class="organizer">
-                    <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
-                    <div class="participant-info">
-                        <div class="participant-role">Организатор</div>
-                        <div class="organizer-name">
-                            <input type="text" value="JoyousCapybara"  id="organizer_name" name="organizer_name"/>
+        <main v-else>
+            <JoiningParty v-if="!connectedToRoom">
+
+            </JoiningParty>
+            <div v-else class="connect-to-party-main">
+                <aside class="room-settings">
+                    <div class="number-of-players-bar">
+                        <img src="@/assets/private_scenario_icon.svg" alt="">
+                        <div class="access-main">
+                            <span class="access-main-setting-name">Число игроков</span>
+                            <span class="access-main-setting-value">1+</span>
                         </div>
+                    </div>
+                    <div class="duration-of-game-bar">
+                        <img src="@/assets/alarm.svg" alt="">
+                        <div class="access-main">
+                            <span class="access-main-setting-name">Время работы комнаты</span>
+                            <span class="access-main-setting-value">0:10:00</span>
+                        </div>
+                    </div>
+                    <div class="autostart-bar">
+                        <input type="checkbox" id="autostart">
+                        <label for="autostart">Начинать автоматичеcки</label>  
+                    </div>
+                    <div class="viewer-access-bar">
+                        <input type="checkbox" id="viewer-access-checkbox">
+                        <label for="viewer-access-checkbox">Разрешить зрителей</label>
+                    </div>
+                    <div class="unauthorized-access-bar">
+                        <input type="checkbox" id="unauthorized-access-checkbox">
+                        <label for="unauthorized-access-checkbox">Разрешить неавторизованных пользователей</label>
+                    </div>
+                    <div class="new-users-access">
+                        <div class="cancel-bar">
+                            <input type="radio" 
+                                id="cancel-new-connections"
+                                name="new-user-access" 
+                                value="cancel"
+                                checked>
+                            <label for="cancel-new-connections">Отклонять новые подключения</label>
+                        </div>
+                        <div class="as-viewer-bar">
+                            <input type="radio" 
+                                id="new-connections-as-viewer" 
+                                name="new-user-access"
+                                value="as-viewer">
+                            <label for="new-connections-as-viewer">Подключать новых пользователей как зрителей</label>
+                        </div>
+                    </div>       
+                </aside>
+                <div class="selected-game-info">
+                    <div class="room-code">
+                        <button><img src="@/assets/update_icon.svg" alt=""></button>
+                        <span>{{ roomCode }}</span>
+                        <button><img src="@/assets/hide_code_icon.svg" alt=""></button>
+                    </div>
+                    <div class="selected-game-card">
+                        <h3>Угадай число</h3>
+                        <img src="@/assets/game_preview_image.png" alt="">
+                        <span>Простейшая игра на угадывание случайного числа</span>
+                    </div>
+                </div>    
+                <div class="participants">
+                    <div class="organizer">
+                        <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
+                        <div class="participant-info">
+                            <div class="participant-role">Организатор</div>
+                            <div class="organizer-name">
+                                <input type="text" value="JoyousCapybara"  id="organizer_name" name="organizer_name"/>
+                            </div>
+                            
+                        </div>
+                        <img src="@/assets/update_icon.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
+                    </div>
+                    <div class="participants-list">
+                        <div class="participant">
+                            <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
+                            <div class="participant-info">
+                                <span class="participant-role">Игрок</span>
+                                <span class="participant-username">Пользователь 2</span>
+                            </div>
+                            <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
+                        </div>
+                        <div class="participant">
+                            <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
+                            <div class="participant-info">
+                                <span class="participant-role">Игрок</span>
+                                <span class="participant-username">Пользователь 3</span>
+                            </div>
+                            <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
+                        </div>
+                        <div class="participant">
+                            <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
+                            <div class="participant-info">
+                                <span class="participant-role">Игрок</span>
+                                <span class="participant-username">Пользователь 3</span>
+                            </div>
+                            <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
+                        </div>
+                        <div class="participant">
+                            <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
+                            <div class="participant-info">
+                                <span class="participant-role">Игрок</span>
+                                <span class="participant-username">Пользователь 3</span>
+                            </div>
+                            <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
+                        </div>
+                    </div>
+                    <div class="settings-container">
+                        <PrimaryButton class="burger-game-button" @click="openGameButtons">
+                            <img src="@/assets/burger_icon.svg" alt="Настройки">
+                        </PrimaryButton>
                         
-                    </div>
-                    <img src="@/assets/update_icon.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
-                </div>
-                <div class="participants-list">
-                    <div class="participant">
-                        <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
-                        <div class="participant-info">
-                            <span class="participant-role">Игрок</span>
-                            <span class="participant-username">Пользователь 2</span>
+                        <div class="game-settings-buttons" :class="{ 'visible': gameButtonsVisible }">
+                            <SecondaryButton class="close-room">Закрыть комнату</SecondaryButton>
+                            <SecondaryButton class="leave-from-room">Покинуть комнату</SecondaryButton>
+                            <SecondaryButton class="start-game">Запустить</SecondaryButton>
                         </div>
-                        <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
-                    </div>
-                    <div class="participant">
-                        <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
-                        <div class="participant-info">
-                            <span class="participant-role">Игрок</span>
-                            <span class="participant-username">Пользователь 3</span>
-                        </div>
-                        <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
-                    </div>
-                    <div class="participant">
-                        <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
-                        <div class="participant-info">
-                            <span class="participant-role">Игрок</span>
-                            <span class="participant-username">Пользователь 3</span>
-                        </div>
-                        <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
-                    </div>
-                    <div class="participant">
-                        <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
-                        <div class="participant-info">
-                            <span class="participant-role">Игрок</span>
-                            <span class="participant-username">Пользователь 3</span>
-                        </div>
-                        <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
-                    </div>
-                </div>
-                <div class="settings-container">
-                    <PrimaryButton class="burger-game-button" @click="openGameButtons">
-                        <img src="@/assets/burger_icon.svg" alt="Настройки">
-                    </PrimaryButton>
-                    
-                    <div class="game-settings-buttons" :class="{ 'visible': gameButtonsVisible }">
-                        <SecondaryButton class="close-room">Закрыть комнату</SecondaryButton>
-                        <SecondaryButton class="leave-from-room">Покинуть комнату</SecondaryButton>
-                        <SecondaryButton class="start-game">Запустить</SecondaryButton>
                     </div>
                 </div>
             </div>
+            
         </main>
     </div>
     <div class="unauthorized" v-else>
@@ -218,6 +224,7 @@ import VariantButton from '@/components/ui/VariantButton.vue';
 import SecondaryButton from '@/components/ui/SecondaryButton.vue';
 
 import Onboarding from '@/pages/Onboarding.vue';
+import JoiningParty from '@/pages/JoiningParty.vue';
 
 
 type ActionType = 'create' | 'connect' | null;
@@ -234,7 +241,8 @@ export default defineComponent({
             accessType: 'По ссылке' as String,
             roomCode: 'QWERTYUIO' as String,
             gameButtonsVisible: false as Boolean,
-            selectedFieldIndex: 1 as number
+            selectedFieldIndex: 1 as number,
+            connectedToRoom: true as Boolean
         }
     },
     components: {
@@ -243,7 +251,8 @@ export default defineComponent({
         PrimaryButton,
         VariantButton,
         SecondaryButton,
-        Onboarding
+        Onboarding,
+        JoiningParty
     },
     methods: {
         handleActionSelected(action: ActionType): void {
