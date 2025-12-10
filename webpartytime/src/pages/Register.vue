@@ -43,7 +43,7 @@ import PhoneContainer from '@/components/layout/PhoneContainer.vue';
 import PrimaryButton from '@/components/ui/PrimaryButton.vue';
 import { defineComponent } from 'vue';
 export default defineComponent({
-    name: 'Login',
+    name: 'Register',
     data(){
         return{
 
@@ -66,10 +66,11 @@ export default defineComponent({
 }
 
 .register .hero-section{
+    height: 70vh;
     padding: 50px 33px 35px 33px;
     display: flex;
+    justify-content: space-between;
     flex-direction: column;
-    gap: 71px;
     align-items: center;
 }
 
@@ -126,9 +127,6 @@ export default defineComponent({
     border: 4px solid var(--primary);
 }
 
-.register .hero-section{
-    gap: 60px;
-}
 .register-form{
     display: flex;
     flex-direction: column;
