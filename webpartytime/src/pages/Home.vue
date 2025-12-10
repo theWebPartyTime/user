@@ -11,68 +11,35 @@
                 <button class="aside-button-private" :class="{'active-aside-button': activePrivate}" @click="toggleActivePrivate()">Мои сценарии</button>
             </aside>    
             <section class="creating-party-main-section">
-                <div class="search-bar">
-                    <button class="burger-button">
-                        <img src="@/assets/burger_button.svg" alt="">
-                    </button>
-                    
-                    <input
-                        v-model="searchQuery"
-                        class="search-input"
-                        type="text"
-                        placeholder="Поиск по сценариям"
-                    />
-                    
-                    <button class="search-button">
-                        <img src="@/assets/search_icon.svg" alt="">
-                    </button>
+                <div class="search-field">
+                    <div class="search-bar">
+                        <button class="burger-button">
+                            <img src="@/assets/burger_button.svg" alt="">
+                        </button>
+                        <input
+                            v-model="searchQuery"
+                            class="search-input"
+                            type="text"
+                            placeholder="Поиск по сценариям"
+                        />
+                        <button class="search-button">
+                            <img src="@/assets/search_icon.svg" alt="">
+                        </button>
+                    </div>
+                    <PrimaryButton><img src="@/assets/plus_icon.svg" alt=""></PrimaryButton>
                 </div>
                 <div class="game-list">
-                    <div class="game-field"
-                         :class="{ 'selected-field': selectedFieldIndex === 0 }"
-                         @click="selectField(0)">
-                        <img src="@/assets/avatar.svg" alt="">
+                    <div 
+                        v-for="fields in 5"
+                        class="game-field"
+                        :class="{ 'selected-field': selectedFieldIndex === fields }"
+                        @click="selectField(fields)"
+                    >
                         <div class="game-field-info">
                             <span class="field-title">Викторина “Устройство Linux”</span>
                             <span class="field-subtitle">Тестовые вопросы по устройству операционной системы...</span>
                         </div>
-                    </div>
-                    <div class="game-field"
-                         :class="{ 'selected-field': selectedFieldIndex === 1 }"
-                         @click="selectField(1)">
-                        <img src="@/assets/avatar.svg" alt="">
-                        <div class="game-field-info">
-                            <span class="field-title">Угадай число</span>
-                            <span class="field-subtitle">Простейшая игра на угадывание случайного числа</span>
-                        </div>
-                    </div>
-                    <div class="game-field"
-                         :class="{ 'selected-field': selectedFieldIndex === 2 }"
-                         @click="selectField(2)">
-                        <img src="@/assets/avatar.svg" alt="">
-                        <div class="game-field-info">
-                            <span class="field-title">Игра 1</span>
-                            <span class="field-subtitle"></span>
-                        </div>
-                    </div>
-                    <div class="game-field"
-                         :class="{ 'selected-field': selectedFieldIndex === 3 }"
-                         @click="selectField(3)">
-                        <img src="@/assets/avatar.svg" alt="">
-                        <div class="game-field-info">
-                            <span class="field-title">Игра 2</span>
-                            <span class="field-subtitle"></span>
-                        </div>
-                    </div>
-                    <div class="game-field"
-                         :class="{ 'selected-field': selectedFieldIndex === 4 }"
-                         @click="selectField(4)">
-                        <img src="@/assets/avatar.svg" alt="">
-                        <div class="game-field-info">
-                            <span class="field-title">Игра 3</span>
-                            <span class="field-subtitle"></span>
-                        </div>
-                    </div>
+                    </div>     
                 </div>
             </section>
             <div class="game-card">
@@ -149,49 +116,72 @@
                 </div>    
                 <div class="participants">
                     <div class="organizer">
-                        <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
+                        <minidenticon-svg :username="userInfo.username" class="participant-avatar"></minidenticon-svg>
                         <div class="participant-info">
                             <div class="participant-role">Организатор</div>
                             <div class="organizer-name">
-                                <input type="text" value="JoyousCapybara"  id="organizer_name" name="organizer_name"/>
+                                {{ userInfo.username }}
                             </div>
                             
                         </div>
-                        <img src="@/assets/update_icon.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
                     </div>
                     <div class="participants-list">
                         <div class="participant">
-                            <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
                             <div class="participant-info">
-                                <span class="participant-role">Игрок</span>
-                                <span class="participant-username">Пользователь 2</span>
+                                <minidenticon-svg :username="userInfo.username" class="participant-avatar"></minidenticon-svg>
+                                <div class="participant-info-main">
+                                    <span class="participant-role">Игрок</span>
+                                    <span class="participant-username">Пользователь 1</span>
+                                </div>
                             </div>
+                            
                             <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
                         </div>
                         <div class="participant">
-                            <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
                             <div class="participant-info">
-                                <span class="participant-role">Игрок</span>
-                                <span class="participant-username">Пользователь 3</span>
+                                <minidenticon-svg :username="userInfo.username" class="participant-avatar"></minidenticon-svg>
+                                <div class="participant-info-main">
+                                    <span class="participant-role">Игрок</span>
+                                    <span class="participant-username">Пользователь 3</span>
+                                </div>
                             </div>
+                            
                             <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
                         </div>
                         <div class="participant">
-                            <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
                             <div class="participant-info">
-                                <span class="participant-role">Игрок</span>
-                                <span class="participant-username">Пользователь 3</span>
+                                <minidenticon-svg :username="userInfo.username" class="participant-avatar"></minidenticon-svg>
+                                <div class="participant-info-main">
+                                    <span class="participant-role">Игрок</span>
+                                    <span class="participant-username">Пользователь 3</span>
+                                </div>
                             </div>
+                            
                             <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
                         </div>
                         <div class="participant">
-                            <img src="@/assets/avatar.svg" alt="" class="participant-avatar">
                             <div class="participant-info">
-                                <span class="participant-role">Игрок</span>
-                                <span class="participant-username">Пользователь 3</span>
+                                <minidenticon-svg :username="userInfo.username" class="participant-avatar"></minidenticon-svg>
+                                <div class="participant-info-main">
+                                    <span class="participant-role">Игрок</span>
+                                    <span class="participant-username">Пользователь 4</span>
+                                </div>
                             </div>
+                            
                             <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
                         </div>
+                        <div class="participant">
+                            <div class="participant-info">
+                                <minidenticon-svg :username="userInfo.username" class="participant-avatar"></minidenticon-svg>
+                                <div class="participant-info-main">
+                                    <span class="participant-role">Игрок</span>
+                                    <span class="participant-username">Пользователь 5</span>
+                                </div>
+                            </div>
+                            
+                            <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
+                        </div>
+                        
                     </div>
                     <div class="settings-container">
                         <PrimaryButton class="burger-game-button" @click="openGameButtons">
@@ -222,10 +212,10 @@ import ChoosePanel from '@/components/layout/ChoosePanel.vue';
 import PrimaryButton from '@/components/ui/PrimaryButton.vue';
 import VariantButton from '@/components/ui/VariantButton.vue';
 import SecondaryButton from '@/components/ui/SecondaryButton.vue';
-
 import Onboarding from '@/pages/Onboarding.vue';
 import JoiningParty from '@/pages/JoiningParty.vue';
-
+import useUserStore from '../stores/userStore'
+import { mapState, mapActions } from 'pinia'
 
 type ActionType = 'create' | 'connect' | null;
 
@@ -242,7 +232,8 @@ export default defineComponent({
             roomCode: 'QWERTYUIO' as String,
             gameButtonsVisible: false as Boolean,
             selectedFieldIndex: 1 as number,
-            connectedToRoom: true as Boolean
+            connectedToRoom: false as Boolean,
+            userInfo: null as any
         }
     },
     components: {
@@ -276,7 +267,17 @@ export default defineComponent({
         },
         selectField(index: number) {
             this.selectedFieldIndex = index
-        }
+        },
+        ...mapActions(useUserStore, ['generateUsername', 'setUsername'])
+    },
+    computed: {
+        ...mapState(useUserStore, ['username'])
+    },
+    mounted() {
+        const store = useUserStore()
+        this.userInfo = store
+        console.log(store.username)
+        // Дополнительные действия, если нужно
     }
 
 })
@@ -375,8 +376,22 @@ export default defineComponent({
     flex-direction: column;
     align-items: center;
     width: auto;
-    max-width: 48%;
+    min-width: 40%;
+    max-width: 55%;
     max-height: 577px;
+}
+
+.search-field{
+    width: 100%;
+    display: flex;
+    gap: 15px
+}
+
+.search-field a{
+    width: 56px;
+    height: 56px;
+    padding: 21px;
+    border-radius: 50%;
 }
 
 .search-bar {
@@ -451,6 +466,7 @@ export default defineComponent({
 }
 
 .game-list{
+    width: 100%;
     padding-top: 4%;
     display: flex;
     flex-direction: column;
@@ -552,7 +568,7 @@ export default defineComponent({
     justify-content: space-between;
     gap: 28px;
     align-items: center;
-    padding: 30px 62px 40px 42px;
+    padding: 30px 40px 40px 40px;
     height: 80vh;
     width: 100%;
 }
@@ -563,6 +579,7 @@ export default defineComponent({
     text-align: left;
     align-items: start;
     gap: 5px;
+    min-width: 16%;
     max-width: 25%;
     width: auto;
 }
@@ -783,7 +800,8 @@ export default defineComponent({
 
 .selected-game-info{
     width: auto;
-    max-width: 50%;
+    min-width: 45%;
+    max-width: 55%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -848,7 +866,8 @@ export default defineComponent({
     flex-direction: column;
     position: relative;
     width: auto;
-    max-width: 25%;
+    min-width: 16%;
+    max-width: 20%;
     margin-top: 30px;
 }
 
@@ -861,22 +880,23 @@ export default defineComponent({
     gap: 12px;
 }
 
-.participants .organizer .participant-info .organizer-name{
-    width: 80%;
-    padding: 8px 0px;
-    border: var(--border-variant);
-    border-radius: 8px;
-    
+.participants .organizer .participant-avatar{
+    aspect-ratio: 1;
+    height: 45px;
+    display: block;
+    background: var(--primary-container);
+    border-radius: 50%;
 }
 
-.participants .organizer .participant-info .organizer-name input{
-    border: none;
-    width: 100%;
-    padding: 0;
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--on-surface-variant);
-    text-align: center;
+
+.participants .organizer .participant-avatar svg{
+    height: 40px;
+    aspect-ratio: 1;
+    margin: 2.5px;
+}
+
+.participants .organizer .participant-info .organizer-name{
+    width: 80%;
 }
 
 .participants-list .participant:first-child{
@@ -898,10 +918,9 @@ export default defineComponent({
 .participants .participants-list .participant{
     display: flex;
     flex-direction: row;
-    justify-content: start; 
+    justify-content: space-between; 
     align-items: center;
-    padding: 8px 0px 8px 16px;
-    gap: 12px;
+    padding: 8px;
 }
 
 .participants .participants-list .participant:hover{
@@ -909,10 +928,17 @@ export default defineComponent({
 }
 
 .participants .participants-list .participant .participant-info{
-    margin-left: 12px;
+    min-width: 80%;
+    width: auto;
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;    
+}
+
+.participants .participants-list .participant .participant-info-main{
     display: flex;
     flex-direction: column;
-    margin-right: 10%;
 }
 
 .participants .participant-role{
@@ -929,12 +955,26 @@ export default defineComponent({
 }
 
 .participant .participant-avatar{
-    width: 40px;
     aspect-ratio: 1;
+    height: 35px;
+    display: block;
+    background: var(--primary-container);
+    border-radius: 50%;
 }
+
+.participant .participant-avatar svg{
+    aspect-ratio: 1;
+    height: 30px;
+    margin: 2.5px;
+}
+
 .participant .delete-participant-img{
     width: 18px;
     aspect-ratio: 1;
+    cursor: pointer;
+}
+
+.update-username-img{
     cursor: pointer;
 }
 

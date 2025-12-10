@@ -110,7 +110,7 @@ export default defineComponent({
   
   methods: {
     updateCodeFromValue(value: string) {
-      const filtered = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase()
+      const filtered = value.replace(/[^A-Za-z]/g, '').toUpperCase()
       const slicedValue = filtered.slice(0, this.length)
       this.code = slicedValue.split('')
     },
@@ -125,7 +125,7 @@ export default defineComponent({
     
     handleInput(event: Event) {
       const input = event.target as HTMLInputElement
-      this.internalValue = input.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase()
+      this.internalValue = input.value.replace(/[^A-Za-z]/g, '').toUpperCase()
       
       this.activeIndex = Math.min(this.code.length, this.length - 1)
     },
@@ -169,7 +169,7 @@ export default defineComponent({
     handlePaste(event: ClipboardEvent) {
       event.preventDefault()
       const pastedText = event.clipboardData?.getData('text') || ''
-      const filtered = pastedText.replace(/[^A-Za-z0-9]/g, '').toUpperCase()
+      const filtered = pastedText.replace(/[^A-Za-z]/g, '').toUpperCase()
       const slicedValue = filtered.slice(0, this.length)
       
       if (slicedValue) {
@@ -190,7 +190,7 @@ export default defineComponent({
     },
     
     setCode(code: string) {
-      const filtered = code.replace(/[^A-Za-z0-9]/g, '').toUpperCase()
+      const filtered = code.replace(/[^A-Za-z]/g, '').toUpperCase()
       this.internalValue = filtered.slice(0, this.length)
     }
   }
