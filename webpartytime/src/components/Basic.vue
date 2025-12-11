@@ -1,19 +1,20 @@
 <template>
-  <h1>Hello World</h1>
+    <h1>{{ title }}</h1>
+    <p>{{ description }}</p>
 </template>
+
 <script lang="ts">
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-    name: 'HelloWorld',
+    name: 'Basic',
     data(){
         return{
-
         }
+    },
+    props: {
+        title: String,
+        description: String
     }
-
 })
 </script>
-
-<style scoped>
-</style>

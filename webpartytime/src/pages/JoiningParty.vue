@@ -32,7 +32,7 @@
                 class="hidden-input"
             />
         </div>
-        <PrimaryButton :class="{ 'disabled-link': code.length !== 9} ">Подключиться</PrimaryButton>
+        <PrimaryButton  @click="connectToRoom" :class="{ 'disabled-link': code.length !== 9} ">Подключиться</PrimaryButton>
     </div>
 </template>
 <script lang="ts">
@@ -115,6 +115,10 @@ export default defineComponent({
       this.code = slicedValue.split('')
     },
     
+    connectToRoom() {
+      this.$router.push("/play")
+    },
+
     focusHiddenInput() {
       const input = this.$refs.hiddenInput as HTMLInputElement
       if (input) {

@@ -2,61 +2,58 @@
     <div class="authorized" v-if="isAuth">
         <NavPanel>
             <span class="page-header">WebPartyTime</span>
-            <div class="current-online">Сейчас онлайн: 20</div>
+            <div class="current-online">Сейчас онлайн: {{ usersOnline }}</div>
         </NavPanel>
         <ChoosePanel @action-selected="handleActionSelected"/>
-        <main class="creating-party-main" v-if="selectedTab === 'create'">
-            <aside class="aside-navigation">
-                <button class="aside-button-public" :class="{'active-aside-button': activePublic}" @click="toggleActivePublic()">Публичные сценарии</button>
-                <button class="aside-button-private" :class="{'active-aside-button': activePrivate}" @click="toggleActivePrivate()">Мои сценарии</button>
-            </aside>    
-            <section class="creating-party-main-section">
-                <div class="search-field">
-                    <div class="search-bar">
-                        <button class="burger-button">
-                            <img src="@/assets/burger_button.svg" alt="">
-                        </button>
-                        <input
-                            v-model="searchQuery"
-                            class="search-input"
-                            type="text"
-                            placeholder="Поиск по сценариям"
-                        />
-                        <button class="search-button">
-                            <img src="@/assets/search_icon.svg" alt="">
-                        </button>
-                    </div>
-                    <PrimaryButton><img src="@/assets/plus_icon.svg" alt=""></PrimaryButton>
-                </div>
-                <div class="game-list">
-                    <div 
-                        v-for="fields in 5"
-                        class="game-field"
-                        :class="{ 'selected-field': selectedFieldIndex === fields }"
-                        @click="selectField(fields)"
-                    >
-                        <div class="game-field-info">
-                            <span class="field-title">Викторина “Устройство Linux”</span>
-                            <span class="field-subtitle">Тестовые вопросы по устройству операционной системы...</span>
+        <main v-if="selectedTab === 'create'">
+            <div v-if="!connectedToRoom" class="creating-party-main">
+                <aside class="aside-navigation">
+                    <button class="aside-button-public" :class="{'active-aside-button': activePublic}" @click="toggleActivePublic()">Публичные сценарии</button>
+                    <button class="aside-button-private" :class="{'active-aside-button': activePrivate}" @click="toggleActivePrivate()">Мои сценарии</button>
+                </aside>    
+                <section class="creating-party-main-section">
+                    <div class="search-field">
+                        <div class="search-bar">
+                            <button class="burger-button">
+                                <img src="@/assets/burger_button.svg" alt="">
+                            </button>
+                            <input
+                                v-model="searchQuery"
+                                class="search-input"
+                                type="text"
+                                placeholder="Поиск по сценариям"
+                            />
+                            <button class="search-button">
+                                <img src="@/assets/search_icon.svg" alt="">
+                            </button>
                         </div>
-                    </div>     
-                </div>
-            </section>
-            <div class="game-card">
-                <h3>Угадай число</h3>
-                <img src="@/assets/game_img.svg" alt="">
-                <span>Простейшая игра на угадывание случайного числа</span>
-                <div class="game-buttons">
-                    <VariantButton>Изменить</VariantButton>
-                    <PrimaryButton>Запустить</PrimaryButton>
+                        <PrimaryButton><img src="@/assets/plus_icon.svg" alt=""></PrimaryButton>
+                    </div>
+                    <div class="game-list">
+                        <div 
+                            v-for="fields in 5"
+                            class="game-field"
+                            :class="{ 'selected-field': selectedFieldIndex === fields }"
+                            @click="selectField(fields)"
+                        >
+                            <div class="game-field-info">
+                                <span class="field-title">Викторина “Устройство Linux”</span>
+                                <span class="field-subtitle">Тестовые вопросы по устройству операционной системы...</span>
+                            </div>
+                        </div>     
+                    </div>
+                </section>
+                <div class="game-card">
+                    <h3>Угадай число</h3>
+                    <img src="@/assets/game_img.svg" alt="">
+                    <span>Простейшая игра на угадывание случайного числа</span>
+                    <div class="game-buttons">
+                        <VariantButton>Изменить</VariantButton>
+                        <PrimaryButton @click="connectToRoom">Создать</PrimaryButton>
+                    </div>
                 </div>
             </div>
-        </main>
-        <main v-else>
-            <JoiningParty v-if="!connectedToRoom">
-
-            </JoiningParty>
-            <div v-else class="connect-to-party-main">
+                        <div v-else class="connect-to-party-main">
                 <aside class="room-settings">
                     <div class="number-of-players-bar">
                         <img src="@/assets/private_scenario_icon.svg" alt="">
@@ -116,7 +113,7 @@
                 </div>    
                 <div class="participants">
                     <div class="organizer">
-                        <minidenticon-svg :username="userInfo.username" class="participant-avatar"></minidenticon-svg>
+                        <Identicon :username="userInfo.username" class="participant-avatar" />
                         <div class="participant-info">
                             <div class="participant-role">Организатор</div>
                             <div class="organizer-name">
@@ -128,7 +125,7 @@
                     <div class="participants-list">
                         <div class="participant">
                             <div class="participant-info">
-                                <minidenticon-svg :username="userInfo.username" class="participant-avatar"></minidenticon-svg>
+                                <Identicon :username="userInfo.username" class="participant-avatar" />
                                 <div class="participant-info-main">
                                     <span class="participant-role">Игрок</span>
                                     <span class="participant-username">Пользователь 1</span>
@@ -139,7 +136,7 @@
                         </div>
                         <div class="participant">
                             <div class="participant-info">
-                                <minidenticon-svg :username="userInfo.username" class="participant-avatar"></minidenticon-svg>
+                                <Identicon :username="userInfo.username" class="participant-avatar" />
                                 <div class="participant-info-main">
                                     <span class="participant-role">Игрок</span>
                                     <span class="participant-username">Пользователь 3</span>
@@ -150,7 +147,7 @@
                         </div>
                         <div class="participant">
                             <div class="participant-info">
-                                <minidenticon-svg :username="userInfo.username" class="participant-avatar"></minidenticon-svg>
+                                <Identicon :username="userInfo.username" class="participant-avatar" />
                                 <div class="participant-info-main">
                                     <span class="participant-role">Игрок</span>
                                     <span class="participant-username">Пользователь 3</span>
@@ -161,7 +158,7 @@
                         </div>
                         <div class="participant">
                             <div class="participant-info">
-                                <minidenticon-svg :username="userInfo.username" class="participant-avatar"></minidenticon-svg>
+                                <Identicon :username="userInfo.username" class="participant-avatar" />
                                 <div class="participant-info-main">
                                     <span class="participant-role">Игрок</span>
                                     <span class="participant-username">Пользователь 4</span>
@@ -172,7 +169,7 @@
                         </div>
                         <div class="participant">
                             <div class="participant-info">
-                                <minidenticon-svg :username="userInfo.username" class="participant-avatar"></minidenticon-svg>
+                                <Identicon :username="userInfo.username" class="participant-avatar" />
                                 <div class="participant-info-main">
                                     <span class="participant-role">Игрок</span>
                                     <span class="participant-username">Пользователь 5</span>
@@ -196,7 +193,10 @@
                     </div>
                 </div>
             </div>
-            
+        </main>
+        <main v-else>
+            <JoiningParty>
+            </JoiningParty>
         </main>
     </div>
     <div class="unauthorized" v-else>
@@ -215,7 +215,9 @@ import SecondaryButton from '@/components/ui/SecondaryButton.vue';
 import Onboarding from '@/pages/Onboarding.vue';
 import JoiningParty from '@/pages/JoiningParty.vue';
 import useUserStore from '../stores/userStore'
+import useCentrifugeStore from '../stores/centrifugeStore';
 import { mapState, mapActions } from 'pinia'
+import Identicon from '../components/ui/Identicon.vue';
 
 type ActionType = 'create' | 'connect' | null;
 
@@ -243,7 +245,8 @@ export default defineComponent({
         VariantButton,
         SecondaryButton,
         Onboarding,
-        JoiningParty
+        JoiningParty,
+        Identicon
     },
     methods: {
         handleActionSelected(action: ActionType): void {
@@ -254,6 +257,9 @@ export default defineComponent({
         toggleActivePublic(){
             this.activePublic = true,
             this.activePrivate = false
+        },
+        connectToRoom() {
+            this.connectedToRoom = true
         },
         toggleActivePrivate(){
             this.activePublic = false,
@@ -271,12 +277,12 @@ export default defineComponent({
         ...mapActions(useUserStore, ['generateUsername', 'setUsername'])
     },
     computed: {
-        ...mapState(useUserStore, ['username'])
+        ...mapState(useUserStore, ['username']),
+        ...mapState(useCentrifugeStore, ['usersOnline'])
     },
     mounted() {
         const store = useUserStore()
         this.userInfo = store
-        console.log(store.username)
         // Дополнительные действия, если нужно
     }
 

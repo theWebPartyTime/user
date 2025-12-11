@@ -4,7 +4,6 @@ import type { RouteRecordRaw } from 'vue-router'
 import AuthLayout from '@/pages/AuthLayout.vue'
 import Login from '@/pages/Login.vue'
 import Register from '@/pages/Register.vue'
-import Counter from '@/components/counter/Counter.vue'
 import GuessNumber from '@/pages/GuessNumber.vue'
 import Home from "@/pages/Home.vue"
 import PartyQueryNumber from '@/pages/PartyQueryNumber.vue'
@@ -12,6 +11,7 @@ import PartyQueryAll from '@/pages/PartyQueryAll.vue'
 import PartyQueryDisplay from '@/pages/PartyQueryDisplay.vue'
 import PartyQueryVariant from '@/pages/PartyQueryVariant.vue'
 import PartyQueryWinner from '@/pages/PartyQueryWinner.vue'
+import Play from '@/pages/Play.vue'
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -37,9 +37,9 @@ const routes: Array<RouteRecordRaw> = [
       ]
     },
     {
-      path: '/counter',
-      name: 'Counter',
-      component: Counter
+      path: '/play',
+      name: 'Play',
+      component: Play
     },
     {
       path: '/guess-number',
@@ -71,11 +71,6 @@ const routes: Array<RouteRecordRaw> = [
       name: 'PartyQueryWinner',
       component: PartyQueryWinner
     },
-    // {
-    //   path: '/game',
-    //   name: 'Games',
-    //   component: Games
-    // }
 ]
 
 const router = createRouter({

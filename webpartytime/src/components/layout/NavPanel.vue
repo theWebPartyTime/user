@@ -7,12 +7,10 @@
         <div class="profile">
             <img src="@/assets/update_icon.svg" alt="" @click="userInfo.generateUsername()">
             <input type="text" v-model="usernameInput" maxlength="10" id="organizer_name" name="organizer_name"/>
-            <minidenticon-svg :username="usernameInput" class="avatar-nav" @click="openProfileModule"></minidenticon-svg>
-
+            <Identicon :username="usernameInput" />
+            
             <SecondaryButton class="profile-module" :class="{visible: openedModule}">Выйти</SecondaryButton>
         </div>
-        
-
     </nav>
 </template>
 
@@ -22,6 +20,7 @@ import VariantButton from '@/components/ui/VariantButton.vue';
 import SecondaryButton from '@/components/ui/SecondaryButton.vue';
 import useUserStore from '../../stores/userStore'
 import { mapState, mapActions } from 'pinia'
+import Identicon from '../ui/Identicon.vue';
 
 export default defineComponent({
     name: 'NavPanel',
@@ -39,7 +38,8 @@ export default defineComponent({
     },
     components: {
         VariantButton,
-        SecondaryButton
+        SecondaryButton,
+        Identicon
     },
     computed: {
         // 1. Получаем username из store как обычное computed свойство
@@ -61,7 +61,6 @@ export default defineComponent({
     mounted() {
         const store = useUserStore()
         this.userInfo = store
-        console.log(store.username)
         // Дополнительные действия, если нужно
     }
 })
