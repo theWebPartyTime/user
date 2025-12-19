@@ -12,6 +12,7 @@
                     <button class="aside-button-private" :class="{'active-aside-button': activePrivate}" @click="toggleActivePrivate()">Мои сценарии</button>
                 </aside>    
                 <section class="creating-party-main-section">
+
                     <div class="search-field">
                         <div class="search-bar">
                             <button class="burger-button">
@@ -27,33 +28,129 @@
                                 <img src="@/assets/search_icon.svg" alt="">
                             </button>
                         </div>
-                        <PrimaryButton><img src="@/assets/plus_icon.svg" alt=""></PrimaryButton>
+                        <PrimaryButton @click="createScript"><img src="@/assets/plus_icon.svg" alt=""></PrimaryButton>
                     </div>
-                    <div class="game-list">
-                        <div 
-                            v-for="fields in 5"
-                            class="game-field"
-                            :class="{ 'selected-field': selectedFieldIndex === fields }"
-                            @click="selectField(fields)"
-                        >
-                            <div class="game-field-info">
-                                <span class="field-title">Викторина “Устройство Linux”</span>
-                                <span class="field-subtitle">Тестовые вопросы по устройству операционной системы...</span>
+
+                    <div v-if="selectedInner == 'addScript'" class="section-script changes-in-script">
+                        <header class="section-header">
+                            <p>Новый сценарий</p>
+                            <div class="header-buttons">
+                                <button @click="confirmCreatingScript"><img src="@/assets/confirm_icon.svg" alt=""></button>
+                                <button @click="selectedInner = 'gameList'"><img src="@/assets/decline_icon.svg" alt=""></button>
                             </div>
-                        </div>     
+                        </header>
+                        <section class="section-main">
+                            <fieldset class="input-fieldset">
+                                <legend class="fieldset-legend">Название</legend>
+                                <input type="text" class="fieldset-input">
+                            </fieldset>
+                            <fieldset class="input-fieldset">
+                                <legend class="fieldset-legend">Описание</legend>
+                                <input type="text" class="fieldset-input">
+                            </fieldset>
+                            <div class="autostart-bar">
+                                <input type="checkbox" id="autostart">
+                                <label for="autostart">Публичный</label>  
+                            </div>
+                        </section>
+                        <footer class="section-footer">
+                            <button class="download-file-button">
+                                <PrimaryButton>
+                                    <div class="button-inner">
+                                        <img src="@/assets/download_script_icon.svg" alt="">
+                                        <p>Загрузить файл сценария</p>
+                                        <img src="@/assets/confirm_icon.svg" alt="" v-if="downloadedScript">
+                                    </div>
+                                </PrimaryButton>
+                            </button>
+                            <button class="script-cover-action">
+                                <VariantButton>
+                                    <div class="button-inner">
+                                        <img src="@/assets/download_cover_icon.svg" alt="">
+                                        <p>Загрузить обложку</p>
+                                    </div>
+                                    
+                                </VariantButton>
+                            </button>
+                        </footer>                        
                     </div>
+                    <div v-if="selectedInner == 'editScript'" class="section-script changes-in-script">
+                        <header class="section-header">
+                            <p>Изменить сценарий</p>
+                            <div class="header-buttons">
+                                <button @click="confirmCreatingScript"><img src="@/assets/confirm_icon.svg" alt=""></button>
+                                <button @click="selectedInner = 'gameList'"><img src="@/assets/decline_icon.svg" alt=""></button>
+                                <button @click="selectedInner = 'gameList'"><img src="@/assets/delete_script_icon.svg" alt=""></button>
+                            </div>
+                        </header>
+                        <section class="section-main">
+                            <fieldset class="input-fieldset">
+                                <legend class="fieldset-legend">Название</legend>
+                                <input type="text" class="fieldset-input">
+                            </fieldset>
+                            <fieldset class="input-fieldset">
+                                <legend class="fieldset-legend">Описание</legend>
+                                <input type="text" class="fieldset-input">
+                            </fieldset>
+                            <div class="autostart-bar">
+                                <input type="checkbox" id="autostart">
+                                <label for="autostart">Публичный</label>  
+                            </div>
+                        </section>
+                        <footer class="section-footer">
+                            <button class="download-file-button">
+                                <VariantButton>
+                                    <div class="button-inner">
+                                        <img src="@/assets/change_script_icon.svg" alt="">
+                                        <p>Изменить файл сценария</p>
+                                    </div>
+                                </VariantButton>
+                            </button>
+                            <button class="script-cover-action">
+                                <VariantButton>
+                                    <div class="button-inner">
+                                        <img src="@/assets/download_cover_icon.svg" alt="">
+                                        <p>Загрузить обложку</p>
+                                    </div>
+                                    
+                                </VariantButton>
+                            </button>
+                        </footer> 
+                    </div>
+                    <div v-else-if="selectedInner == 'gameList'" class="section-script">
+                        <div class="game-list">
+                            <div 
+                                v-for="fields in 5"
+                                class="game-field"
+                                :class="{ 'selected-field': selectedFieldIndex === fields }"
+                                @click="selectField(fields)"
+                            >
+                                <div class="game-field-info">
+                                    <span class="field-title">Викторина “Устройство Linux”</span>
+                                    <span class="field-subtitle">Тестовые вопросы по устройству операционной системы...</span>
+                                </div>
+                            </div>     
+                        </div>
+                    </div>
+                        
+
                 </section>
-                <div class="game-card">
+                <div class="game-card" v-if="selectedInner == 'editScript' || selectedInner == 'addScript'">
                     <h3>Угадай число</h3>
                     <img src="@/assets/game_img.svg" alt="">
-                    <span>Простейшая игра на угадывание случайного числа</span>
+                    <p>Простейшая игра на угадывание случайного числа</p>
+                </div>
+                <div class="game-card" v-else>
+                    <h3>Угадай число</h3>
+                    <img src="@/assets/game_img.svg" alt="">
+                    <p>Простейшая игра на угадывание случайного числа</p>
                     <div class="game-buttons">
-                        <VariantButton>Изменить</VariantButton>
+                        <VariantButton @click="changeScript">Изменить</VariantButton>
                         <PrimaryButton @click="connectToRoom">Создать</PrimaryButton>
                     </div>
                 </div>
             </div>
-                        <div v-else class="connect-to-party-main">
+            <div v-else class="connect-to-party-main">
                 <aside class="room-settings">
                     <div class="number-of-players-bar">
                         <img src="@/assets/private_scenario_icon.svg" alt="">
@@ -101,9 +198,12 @@
                 </aside>
                 <div class="selected-game-info">
                     <div class="room-code">
-                        <button><img src="@/assets/update_icon.svg" alt=""></button>
-                        <span>{{ roomCode }}</span>
-                        <button><img src="@/assets/hide_code_icon.svg" alt=""></button>
+                        <button @click="createCode"><img src="@/assets/update_icon.svg" alt=""></button>
+                        <div v-if="codeVisibility">{{ roomCode.toUpperCase() }}</div>
+                        <div v-else>{{ '**********' }}</div>
+                        <button @click="changeCodeVisibility">
+                            <img :src="codeVisibility ? visibleCode : hiddenCode" alt="" style="width: 24px; height: 24px;">
+                        </button>
                     </div>
                     <div class="selected-game-card">
                         <h3>Угадай число</h3>
@@ -218,24 +318,33 @@ import useUserStore from '../stores/userStore'
 import useCentrifugeStore from '../stores/centrifugeStore';
 import { mapState, mapActions } from 'pinia'
 import Identicon from '../components/ui/Identicon.vue';
+import { generateUsername } from 'unique-username-generator'
+import visibleCode from '@/assets/show_code_icon.svg';
+import hiddenCode from '@/assets/hide_code_icon.svg';
 
 type ActionType = 'create' | 'connect' | null;
+type HomeMainSectionInnerType = 'gameList' | 'addScript' | 'editScript' | null;
 
 export default defineComponent({
     name: 'Home',
     data(){
         return{
-            isAuth: true as Boolean,
+            isAuth: true as boolean,
             selectedTab: 'create' as ActionType,
-            searchQuery: '' as String,
-            activePublic: true as Boolean,
-            activePrivate: false as Boolean,
-            accessType: 'По ссылке' as String,
-            roomCode: 'QWERTYUIO' as String,
-            gameButtonsVisible: false as Boolean,
+            searchQuery: '' as string,
+            activePublic: true as boolean,
+            activePrivate: false as boolean,
+            accessType: 'По ссылке' as string,
+            roomCode: 'QWERTYUIO' as string,
+            gameButtonsVisible: false as boolean,
             selectedFieldIndex: 1 as number,
-            connectedToRoom: false as Boolean,
-            userInfo: null as any
+            connectedToRoom: false as boolean,
+            userInfo: null as any,
+            selectedInner: 'gameList' as HomeMainSectionInnerType,
+            downloadedScript: true as boolean,
+            codeVisibility: true as boolean,
+            visibleCode: visibleCode as string,
+            hiddenCode: hiddenCode as string
         }
     },
     components: {
@@ -249,30 +358,51 @@ export default defineComponent({
         Identicon
     },
     methods: {
+        changeCodeVisibility(){
+            this.codeVisibility = !this.codeVisibility
+            if (this.codeVisibility == false){
+                
+            }
+        },
+        createCode(): string {
+            const code = generateUsername("", 1, 10)
+            
+            this.roomCode = code
+            return code
+        },
+        confirmCreatingScript(){
+            this.selectedInner = 'gameList';
+        },
+        createScript(){
+            this.selectedInner = 'addScript';
+        },
+        changeScript(){
+            this.selectedInner = 'editScript';
+        },
         handleActionSelected(action: ActionType): void {
             this.selectedTab = action;
 
             console.log('Выбрана вкладка:', action);
         },
         toggleActivePublic(){
-            this.activePublic = true,
-            this.activePrivate = false
+            this.activePublic = true;
+            this.activePrivate = false;
         },
         connectToRoom() {
-            this.connectedToRoom = true
+            this.connectedToRoom = true;
         },
         toggleActivePrivate(){
-            this.activePublic = false,
-            this.activePrivate = true
+            this.activePublic = false;
+            this.activePrivate = true;
         },
         deleteParticipant(){
             console.log('Deleted')
         },
         openGameButtons(){
-            this.gameButtonsVisible = !this.gameButtonsVisible
+            this.gameButtonsVisible = !this.gameButtonsVisible;
         },
         selectField(index: number) {
-            this.selectedFieldIndex = index
+            this.selectedFieldIndex = index;
         },
         ...mapActions(useUserStore, ['generateUsername', 'setUsername'])
     },
@@ -283,6 +413,7 @@ export default defineComponent({
     mounted() {
         const store = useUserStore()
         this.userInfo = store
+        this.roomCode = this.createCode()
         // Дополнительные действия, если нужно
     }
 
@@ -339,6 +470,7 @@ export default defineComponent({
 }
 
 .aside-navigation button{
+    text-align: left;
     padding: 18px 16px 18px 48px;
     max-width: 100%;
     width: fit-content;
@@ -385,6 +517,10 @@ export default defineComponent({
     min-width: 40%;
     max-width: 55%;
     max-height: 577px;
+}
+
+.creating-party-main-section .section-script{
+    width: 100%;
 }
 
 .search-field{
@@ -536,8 +672,9 @@ export default defineComponent({
 .game-card{ 
     width: 100%;
     max-width: 30%;
+    height: 480px;
     background: var(--background);
-    border: 2px solid var(--outline-variant);
+    border: var(--border-variant);
     border-radius: 12px;
     display: flex;
     flex-direction: column;
@@ -550,7 +687,7 @@ export default defineComponent({
     font-size: 22px;
 }
 
-.game-card span{
+.game-card p{
     margin: 16px 16px 32px;
     color: var(--on-surface-variant);
     font-size: 14px;
@@ -709,7 +846,7 @@ export default defineComponent({
 .unauthorized-access-bar input[type="checkbox"]:checked + label::after {
     content: '';
     position: absolute;
-    right: 26px;
+    right: 25.7px;
     top: 50%;
     transform: translateY(-65%) rotate(45deg);
     width: 5px;
@@ -758,7 +895,7 @@ export default defineComponent({
 .as-viewer-bar label::before {
     content: '';
     position: absolute;
-    right: 30px;
+    right: 5px;
     top: 40%;
     transform: translateY(-50%);
     width: 18px;
@@ -784,7 +921,7 @@ export default defineComponent({
 .as-viewer-bar input[type="radio"]:checked + label::after {
     content: '';
     position: absolute;
-    right: 34.3px;
+    right: 9.3px;
     top: 40%;
     transform: translateY(-50%);
     width: 9.5px;
@@ -819,7 +956,7 @@ export default defineComponent({
     width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
 }
 
@@ -831,10 +968,14 @@ export default defineComponent({
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.room-code span{
+.room-code div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: var(--border-variant);
     border-radius: 8px;
-    padding: 6px 120px;
+    width: 300px;
+    padding: 12px 20px;
     text-align: center;
     font-size: 28px;
     font-weight: 500;
@@ -872,7 +1013,7 @@ export default defineComponent({
     flex-direction: column;
     position: relative;
     width: auto;
-    min-width: 16%;
+    min-width: 20%;
     max-width: 20%;
     margin-top: 30px;
 }
@@ -938,7 +1079,7 @@ export default defineComponent({
     width: auto;
     display: flex;
     flex-direction: row;
-    gap: 12px;
+    gap: 5%;
     align-items: center;    
 }
 
@@ -1067,5 +1208,132 @@ export default defineComponent({
     background-image: url('@/assets/start_game.svg');
     top: 36%;
     left: 32px;
+}
+
+.section-header{
+    height: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-header p{
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.header-buttons{
+    display: flex;
+    gap: 16px;
+}
+
+.header-buttons button{
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 0;
+}
+
+.header-buttons button:nth-child(1){
+    background-color: var(--primary)
+}
+
+.header-buttons button:nth-child(2){
+    border: var(--border-variant);
+    background: transparent;
+}
+
+.header-buttons button:nth-child(3){
+    border: var(--border-variant);
+    background: transparent;
+}
+
+.creating-party-main .changes-in-script{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    background: var(--background);
+    margin-top: 30px;
+    border: var(--border-variant);
+    border-radius: 12px;
+    height: 53vh;
+}
+
+.input-fieldset{
+    border-radius: 4px;
+    border: var(--border);
+}
+
+.fieldset-legend{
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--on-surface-variant)
+}
+
+.fieldset-input{
+    width: 100%;
+    border: 0;
+    background: transparent;
+}
+
+.fieldset-input:focus{
+    border: none;
+    outline: none;
+}
+
+.section-main{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.section-footer{
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    height: 48px;
+}
+
+.section-footer button{
+    position: relative;
+    background: 0;
+    border: 0;
+    padding: 0;
+}
+
+.section-footer button a{
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 10px 16px
+}
+
+.section-footer .button-inner{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 8px;
+    align-items: center;
+}
+
+.section-footer .button-inner p{
+    margin: 0;
+}
+
+.section-main .autostart-bar input[type="checkbox"]:checked + label::after{
+    right: 25.6px;
+}
+
+.section-main .autostart-bar label{
+    margin-left: 8px;
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--on-surface)
 }
 </style>

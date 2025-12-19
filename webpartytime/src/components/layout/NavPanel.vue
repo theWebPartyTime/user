@@ -7,7 +7,7 @@
         <div class="profile">
             <img src="@/assets/update_icon.svg" alt="" @click="userInfo.generateUsername()">
             <input type="text" v-model="usernameInput" maxlength="10" id="organizer_name" name="organizer_name"/>
-            <Identicon :username="usernameInput" />
+            <Identicon :username="usernameInput" @click="openProfileModule"/>
             
             <SecondaryButton class="profile-module" :class="{visible: openedModule}">Выйти</SecondaryButton>
         </div>
@@ -20,7 +20,7 @@ import VariantButton from '@/components/ui/VariantButton.vue';
 import SecondaryButton from '@/components/ui/SecondaryButton.vue';
 import useUserStore from '../../stores/userStore'
 import { mapState, mapActions } from 'pinia'
-import Identicon from '../ui/Identicon.vue';
+import Identicon from '@/components/ui/Identicon.vue';
 
 export default defineComponent({
     name: 'NavPanel',
@@ -42,18 +42,13 @@ export default defineComponent({
         Identicon
     },
     computed: {
-        // 1. Получаем username из store как обычное computed свойство
         ...mapState(useUserStore, ['username']),
         
-        // 2. Создаем вычисляемое свойство с геттером и сеттером
         usernameInput: {
-        // Геттер: возвращает значение из store
         get(): string {
-            return this.username || '' // Если null, возвращаем пустую строку
+            return this.username || ''
         },
-        // Сеттер: вызывается при изменении значения в input
         set(value: string) {
-            // Здесь мы вызываем action из store
             this.setUsername(value)
         }
         }
@@ -61,7 +56,6 @@ export default defineComponent({
     mounted() {
         const store = useUserStore()
         this.userInfo = store
-        // Дополнительные действия, если нужно
     }
 })
 </script>
