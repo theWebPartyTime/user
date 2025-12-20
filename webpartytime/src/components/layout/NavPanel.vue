@@ -1,12 +1,12 @@
 <template>
     <nav class="nav-panel">
         <div class="logo-online">
-            <img src="@/assets/logo_nav.svg" alt="logo" class="logo-nav">
+            <img src="@/assets/logo.svg" alt="logo" class="logo-nav">
             <slot></slot>
         </div>
         <div class="profile">
-            <img src="@/assets/update_icon.svg" alt="" @click="userInfo.generateUsername()">
-            <input type="text" v-model="usernameInput" maxlength="10" id="organizer_name" name="organizer_name"/>
+            <img src="@/assets/update_icon.svg" alt="" @click="userInfo.generateUsername()" v-if="!connectedToRoom">
+            <input type="text" v-model="usernameInput" maxlength="10" id="organizer_name" name="organizer_name" :disabled="connectedToRoom"/>
             <Identicon :username="usernameInput" @click="openProfileModule"/>
             
             <SecondaryButton class="profile-module" :class="{visible: openedModule}">Выйти</SecondaryButton>
@@ -28,6 +28,12 @@ export default defineComponent({
         return{
             openedModule: false as Boolean,
             userInfo: '' as any
+        }
+    },
+    props: {
+        connectedToRoom: {
+            type: Boolean,
+            default: true
         }
     },
     methods:{
