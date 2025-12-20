@@ -32,16 +32,23 @@
                 class="hidden-input"
             />
         </div>
-        <PrimaryButton  @click="connectToRoom" :class="{ 'disabled-link': code.length !== 9} ">Подключиться</PrimaryButton>
+        <div class="connect-buttons">
+          <PrimaryButton  @click="connectToRoom('create')" :class="{ 'disabled-link': code.length != 9} ">Подключиться</PrimaryButton>
+          <VariantButton @click="connectToRoom('create')" :class="{ 'disabled-link': code.length != 9} ">Подключиться как зритель</VariantButton>
+        </div>
+        
     </div>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
 import PrimaryButton from '@/components/ui/PrimaryButton.vue';
+import VariantButton from '@/components/ui/VariantButton.vue';
+
 export default defineComponent({
   name: 'CodeInput',
   components:{
-    PrimaryButton
+    PrimaryButton,
+    VariantButton
   },
   props: {
     modelValue: {
@@ -52,12 +59,18 @@ export default defineComponent({
       type: Number,
       default: 9,
       validator: (value: number) => value > 0 && value <= 12
-    }
+    },
+    isOrganizer: Boolean,
+    selectedTab: String,
+    connectedToRoom: Boolean
   },
   
   emits: {
     'update:modelValue': (value: string) => typeof value === 'string',
-    'complete': (code: string) => typeof code === 'string'
+    'complete': (code: string) => typeof code === 'string',
+    'update-organizer': (value: boolean) => typeof value === 'boolean', 
+    'update-tab': (tab: string) => typeof tab === 'string',
+    'update-connection': (value: boolean) => typeof value === 'boolean'
   },
   
   data() {
@@ -65,7 +78,8 @@ export default defineComponent({
       code: [] as string[],
       internalValue: '',
       activeIndex: -1,
-      isFocused: false
+      isFocused: false,
+      isInvalidCode: false
     }
   },
   
@@ -107,7 +121,6 @@ export default defineComponent({
     this.updateCodeFromValue(this.modelValue)
     this.focusHiddenInput()
   },
-  
   methods: {
     updateCodeFromValue(value: string) {
       const filtered = value.replace(/[^A-Za-z]/g, '').toUpperCase()
@@ -115,8 +128,10 @@ export default defineComponent({
       this.code = slicedValue.split('')
     },
     
-    connectToRoom() {
-      this.$router.push("/play")
+    connectToRoom(tab: string) {
+      this.$emit('update-organizer', false);
+      this.$emit('update-tab', tab);
+      this.$emit('update-connection', true)
     },
 
     focusHiddenInput() {
@@ -203,30 +218,42 @@ export default defineComponent({
 
 <style scoped>
 .joining-party{
-    height: 80vh;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 87px;
-    align-items: center;
-    padding: 0px 40px;
+  height: 80vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 87px;
+  align-items: center;
+  padding: 0px 40px;
 }
 
 .joining-party h1{
-    margin: 0;
-    font-weight: 700;
-    font-size: 42px;
-    color: var(--primary);
-    line-height: 100%;
+  margin: 0;
+  font-weight: 700;
+  font-size: 42px;
+  color: var(--primary);
+  line-height: 100%;
+}
+
+.connect-buttons{
+  display: flex;
+  gap: 80px;
+}
+
+.connect-buttons a{
+  width: 256px;
+  text-align: center;
+  padding: 16px 0px;
 }
 
 .disabled-link {
-    pointer-events: none;
-    cursor: default;
-    color: #1D1B2066;
-    background: #1D1B201A;
-    text-decoration: none;
+  pointer-events: none;
+  cursor: default;
+  color: #1D1B2066;
+  background: #1D1B201A;
+  text-decoration: none;
+  border: 0;
 }
 
 .code-container {
