@@ -18,6 +18,7 @@ export default defineComponent({
   font-family: 'Inter';
   box-sizing: border-box;
 }
+
 body {
   margin: 0;
   padding: 0;
@@ -25,4 +26,5 @@ body {
   overflow: hidden;
 
 }
+
 </style>

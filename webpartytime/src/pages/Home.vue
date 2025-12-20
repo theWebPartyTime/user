@@ -1,6 +1,6 @@
 <template>
     <div class="authorized" v-if="isAuth">
-        <NavPanel>
+        <NavPanel :connected-to-room>
             <span class="page-header">WebPartyTime</span>
             <div class="current-online">Сейчас онлайн: {{ usersOnline }}</div>
         </NavPanel>
@@ -12,6 +12,7 @@
                     <button class="aside-button-private" :class="{'active-aside-button': activePrivate}" @click="toggleActivePrivate()">Мои сценарии</button>
                 </aside>    
                 <section class="creating-party-main-section">
+
                     <div class="search-field">
                         <div class="search-bar">
                             <button class="burger-button">
@@ -27,176 +28,361 @@
                                 <img src="@/assets/search_icon.svg" alt="">
                             </button>
                         </div>
-                        <PrimaryButton><img src="@/assets/plus_icon.svg" alt=""></PrimaryButton>
+                        <PrimaryButton @click="createScript"><img src="@/assets/plus_icon.svg" alt=""></PrimaryButton>
                     </div>
-                    <div class="game-list">
-                        <div 
-                            v-for="fields in 5"
-                            class="game-field"
-                            :class="{ 'selected-field': selectedFieldIndex === fields }"
-                            @click="selectField(fields)"
-                        >
-                            <div class="game-field-info">
-                                <span class="field-title">Викторина “Устройство Linux”</span>
-                                <span class="field-subtitle">Тестовые вопросы по устройству операционной системы...</span>
+
+                    <div v-if="selectedInner == 'addScript'" class="section-script changes-in-script">
+                        <header class="section-header">
+                            <p>Новый сценарий</p>
+                            <div class="header-buttons">
+                                <button @click="confirmCreatingScript"><img src="@/assets/confirm_icon.svg" alt=""></button>
+                                <button @click="selectedInner = 'gameList'"><img src="@/assets/decline_icon.svg" alt=""></button>
                             </div>
-                        </div>     
+                        </header>
+                        <section class="section-main">
+                            <fieldset class="input-fieldset">
+                                <legend class="fieldset-legend">Название</legend>
+                                <input type="text" class="fieldset-input">
+                            </fieldset>
+                            <fieldset class="input-fieldset">
+                                <legend class="fieldset-legend">Описание</legend>
+                                <input type="text" class="fieldset-input">
+                            </fieldset>
+                            <div class="autostart-bar">
+                                <input type="checkbox" id="autostart">
+                                <label for="autostart">Публичный</label>  
+                            </div>
+                        </section>
+                        <footer class="section-footer">
+                            <button class="download-file-button">
+                                <PrimaryButton>
+                                    <div class="button-inner">
+                                        <img src="@/assets/download_script_icon.svg" alt="">
+                                        <p>Загрузить файл сценария</p>
+                                        <img src="@/assets/confirm_icon.svg" alt="" v-if="downloadedScript">
+                                    </div>
+                                </PrimaryButton>
+                            </button>
+                            <button class="script-cover-action">
+                                <VariantButton>
+                                    <div class="button-inner">
+                                        <img src="@/assets/download_cover_icon.svg" alt="">
+                                        <p>Загрузить обложку</p>
+                                    </div>
+                                    
+                                </VariantButton>
+                            </button>
+                        </footer>                        
                     </div>
+                    <div v-if="selectedInner == 'editScript'" class="section-script changes-in-script">
+                        <header class="section-header">
+                            <p>Изменить сценарий</p>
+                            <div class="header-buttons">
+                                <button @click="confirmCreatingScript"><img src="@/assets/confirm_icon.svg" alt=""></button>
+                                <button @click="selectedInner = 'gameList'"><img src="@/assets/decline_icon.svg" alt=""></button>
+                                <button @click="selectedInner = 'gameList'"><img src="@/assets/delete_script_icon.svg" alt=""></button>
+                            </div>
+                        </header>
+                        <section class="section-main">
+                            <fieldset class="input-fieldset">
+                                <legend class="fieldset-legend">Название</legend>
+                                <input type="text" class="fieldset-input">
+                            </fieldset>
+                            <fieldset class="input-fieldset">
+                                <legend class="fieldset-legend">Описание</legend>
+                                <input type="text" class="fieldset-input">
+                            </fieldset>
+                            <div class="autostart-bar">
+                                <input type="checkbox" id="autostart">
+                                <label for="autostart">Публичный</label>  
+                            </div>
+                        </section>
+                        <footer class="section-footer">
+                            <button class="download-file-button">
+                                <VariantButton>
+                                    <div class="button-inner">
+                                        <img src="@/assets/change_script_icon.svg" alt="">
+                                        <p>Изменить файл сценария</p>
+                                    </div>
+                                </VariantButton>
+                            </button>
+                            <button class="script-cover-action">
+                                <VariantButton>
+                                    <div class="button-inner">
+                                        <img src="@/assets/download_cover_icon.svg" alt="">
+                                        <p>Загрузить обложку</p>
+                                    </div>
+                                    
+                                </VariantButton>
+                            </button>
+                        </footer> 
+                    </div>
+                    <div v-else-if="selectedInner == 'gameList'" class="section-script">
+                        <div class="game-list">
+                            <div 
+                                v-for="fields in 5"
+                                class="game-field"
+                                :class="{ 'selected-field': selectedFieldIndex === fields }"
+                                @click="selectField(fields)"
+                            >
+                                <div class="game-field-info">
+                                    <span class="field-title">Викторина “Устройство Linux”</span>
+                                    <span class="field-subtitle">Тестовые вопросы по устройству операционной системы...</span>
+                                </div>
+                            </div>     
+                        </div>
+                    </div>
+                        
+
                 </section>
-                <div class="game-card">
+                <div class="game-card" v-if="selectedInner == 'editScript' || selectedInner == 'addScript'">
                     <h3>Угадай число</h3>
                     <img src="@/assets/game_img.svg" alt="">
-                    <span>Простейшая игра на угадывание случайного числа</span>
+                    <p>Простейшая игра на угадывание случайного числа</p>
+                </div>
+                <div class="game-card" v-else>
+                    <h3>Угадай число</h3>
+                    <img src="@/assets/game_img.svg" alt="">
+                    <p>Простейшая игра на угадывание случайного числа</p>
                     <div class="game-buttons">
-                        <VariantButton>Изменить</VariantButton>
+                        <VariantButton @click="changeScript">Изменить</VariantButton>
                         <PrimaryButton @click="connectToRoom">Создать</PrimaryButton>
                     </div>
                 </div>
             </div>
-                        <div v-else class="connect-to-party-main">
-                <aside class="room-settings">
-                    <div class="number-of-players-bar">
-                        <img src="@/assets/private_scenario_icon.svg" alt="">
-                        <div class="access-main">
-                            <span class="access-main-setting-name">Число игроков</span>
-                            <span class="access-main-setting-value">1+</span>
+            <div v-else class="connect-to-party-main">
+                <div class="organizer-view" v-if="isOrganizer">
+                    <aside class="room-settings">
+                        <div class="duration-of-game-bar">
+                            <img src="@/assets/alarm.svg" alt="">
+                            <div class="access-main">
+                                <span class="access-main-setting-name">Время работы комнаты</span>
+                                <span class="access-main-setting-value">0:10:00</span>
+                            </div>
+                        </div>
+                        <div class="autostart-bar">
+                            <input type="checkbox" id="autostart">
+                            <label for="autostart">Начинать автоматичеcки</label>  
+                        </div>
+                        <div class="new-users-access-bar">
+                            <input type="checkbox" id="new-users-access-checkbox">
+                            <label for="new-users-access-checkbox">Принимать новые подключения</label>
+                        </div>
+                        <div class="viewer-access-bar">
+                            <input type="checkbox" id="viewer-access-checkbox">
+                            <label for="viewer-access-checkbox">Разрешить зрителей</label>
+                        </div>
+                        <div class="unauthorized-access-bar">
+                            <input type="checkbox" id="unauthorized-access-checkbox">
+                            <label for="unauthorized-access-checkbox">Разрешить неавторизованных пользователей</label>
+                        </div>    
+                    </aside>
+                    <div class="selected-game-info">
+                        <div class="room-code">
+                            <button @click="createCode"><img src="@/assets/update_icon.svg" alt=""></button>
+                            <div v-if="codeVisibility">{{ roomCode.toUpperCase() }}</div>
+                            <div v-else>{{ '**********' }}</div>
+                            <button @click="changeCodeVisibility">
+                                <img :src="codeVisibility ? visibleCode : hiddenCode" alt="" style="width: 24px; height: 24px;">
+                            </button>
+                        </div>
+                        <div class="selected-game-card">
+                            <h3>Угадай число</h3>
+                            <img src="@/assets/game_preview_image.png" alt="">
+                            <div class="game-description">Простейшая игра на угадывание случайного числаПростейшая игра на угадывание случайного числаПростейшая игра на угадывание случайного числаПростейшая игра на угадывание случайного числаПростейшая игра на угадывание случайного числаПростейшая игра на угадывание случайного числа</div>
+                        </div>
+                    </div>    
+                    <div class="participants">
+                        <div class="organizer">
+                            <Identicon :username="userInfo.username" class="participant-avatar" />
+                            <div class="participant-info">
+                                <div class="participant-role">Организатор</div>
+                                <div class="organizer-name">
+                                    {{ userInfo.username }}
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="participants-list">
+                            <div class="participant">
+                                <div class="participant-info">
+                                    <Identicon :username="userInfo.username" class="participant-avatar" />
+                                    <div class="participant-info-main">
+                                        <span class="participant-role">Игрок</span>
+                                        <span class="participant-username">Пользователь 1</span>
+                                    </div>
+                                </div>
+                                
+                                <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
+                            </div>
+                            <div class="participant">
+                                <div class="participant-info">
+                                    <Identicon :username="userInfo.username" class="participant-avatar" />
+                                    <div class="participant-info-main">
+                                        <span class="participant-role">Игрок</span>
+                                        <span class="participant-username">Пользователь 3</span>
+                                    </div>
+                                </div>
+                                
+                                <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
+                            </div>
+                            <div class="participant">
+                                <div class="participant-info">
+                                    <Identicon :username="userInfo.username" class="participant-avatar" />
+                                    <div class="participant-info-main">
+                                        <span class="participant-role">Игрок</span>
+                                        <span class="participant-username">Пользователь 3</span>
+                                    </div>
+                                </div>
+                                
+                                <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
+                            </div>
+                            <div class="participant">
+                                <div class="participant-info">
+                                    <Identicon :username="userInfo.username" class="participant-avatar" />
+                                    <div class="participant-info-main">
+                                        <span class="participant-role">Игрок</span>
+                                        <span class="participant-username">Пользователь 4</span>
+                                    </div>
+                                </div>
+                                
+                                <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
+                            </div>
+                            <div class="participant">
+                                <div class="participant-info">
+                                    <Identicon :username="userInfo.username" class="participant-avatar" />
+                                    <div class="participant-info-main">
+                                        <span class="participant-role">Игрок</span>
+                                        <span class="participant-username">Пользователь 5</span>
+                                    </div>
+                                </div>
+                                
+                                <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
+                            </div>
+                            
+                        </div>
+                        <div class="settings-container">
+                            <PrimaryButton class="burger-game-button" @click="openGameButtons">
+                                <img src="@/assets/burger_icon.svg" alt="Настройки">
+                            </PrimaryButton>
+                            
+                            <div class="game-settings-buttons" :class="{ 'visible': gameButtonsVisible }">
+                                <SecondaryButton class="close-room">Закрыть комнату</SecondaryButton>
+                                <SecondaryButton class="start-game">Запустить</SecondaryButton>
+                            </div>
                         </div>
                     </div>
-                    <div class="duration-of-game-bar">
-                        <img src="@/assets/alarm.svg" alt="">
-                        <div class="access-main">
-                            <span class="access-main-setting-name">Время работы комнаты</span>
-                            <span class="access-main-setting-value">0:10:00</span>
-                        </div>
-                    </div>
-                    <div class="autostart-bar">
-                        <input type="checkbox" id="autostart">
-                        <label for="autostart">Начинать автоматичеcки</label>  
-                    </div>
-                    <div class="viewer-access-bar">
-                        <input type="checkbox" id="viewer-access-checkbox">
-                        <label for="viewer-access-checkbox">Разрешить зрителей</label>
-                    </div>
-                    <div class="unauthorized-access-bar">
-                        <input type="checkbox" id="unauthorized-access-checkbox">
-                        <label for="unauthorized-access-checkbox">Разрешить неавторизованных пользователей</label>
-                    </div>
-                    <div class="new-users-access">
-                        <div class="cancel-bar">
-                            <input type="radio" 
-                                id="cancel-new-connections"
-                                name="new-user-access" 
-                                value="cancel"
-                                checked>
-                            <label for="cancel-new-connections">Отклонять новые подключения</label>
-                        </div>
-                        <div class="as-viewer-bar">
-                            <input type="radio" 
-                                id="new-connections-as-viewer" 
-                                name="new-user-access"
-                                value="as-viewer">
-                            <label for="new-connections-as-viewer">Подключать новых пользователей как зрителей</label>
-                        </div>
-                    </div>       
-                </aside>
-                <div class="selected-game-info">
-                    <div class="room-code">
-                        <button><img src="@/assets/update_icon.svg" alt=""></button>
-                        <span>{{ roomCode }}</span>
-                        <button><img src="@/assets/hide_code_icon.svg" alt=""></button>
-                    </div>
+                </div>
+                <div class="participant-view" v-else>             
                     <div class="selected-game-card">
                         <h3>Угадай число</h3>
                         <img src="@/assets/game_preview_image.png" alt="">
-                        <span>Простейшая игра на угадывание случайного числа</span>
-                    </div>
-                </div>    
-                <div class="participants">
-                    <div class="organizer">
-                        <Identicon :username="userInfo.username" class="participant-avatar" />
-                        <div class="participant-info">
-                            <div class="participant-role">Организатор</div>
-                            <div class="organizer-name">
-                                {{ userInfo.username }}
-                            </div>
-                            
+                        <div class="game-description">Простейшая игра на угадывание случайного числа</div>
+                        <div class="room-buttons">
+                            <VariantButton @click="connectedToRoom = false">Выйти</VariantButton>
+                            <PrimaryButton @click="isReady = !isReady" v-if="isReady">
+                                <div class="room-button-inner">
+                                    <p>Не готов</p>
+                                    <img src="@/assets/confirm_icon.svg" alt="">
+                                </div>
+                            </PrimaryButton>
+                            <PrimaryButton @click="isReady = !isReady" v-else>
+                                <div class="room-button-inner">
+                                    <p>Готов</p>
+                                    <img src="@/assets/confirm_icon.svg" alt="">
+                                </div>
+                            </PrimaryButton>
                         </div>
+                        
                     </div>
-                    <div class="participants-list">
+   
+                    <div class="participants">
                         <div class="participant">
                             <div class="participant-info">
                                 <Identicon :username="userInfo.username" class="participant-avatar" />
                                 <div class="participant-info-main">
-                                    <span class="participant-role">Игрок</span>
+                                    <span class="participant-role">Организатор</span>
                                     <span class="participant-username">Пользователь 1</span>
                                 </div>
+                                
+                            </div>
+                        </div>
+                        <div class="participants-list">
+                            <div class="participant">
+                                <div class="participant-info">
+                                    <Identicon :username="userInfo.username" class="participant-avatar" />
+                                    <div class="participant-info-main">
+                                        <span class="participant-role">Вы</span>
+                                        <span class="participant-username">{{ userInfo.username }}</span>
+                                    </div>
+                                </div>
+                                
+                                <img src="@/assets/ready_icon.svg" alt="" v-if="isReady" class="ready-participant-img">
+                            </div>
+                            <div class="participant">
+                                <div class="participant-info">
+                                    <Identicon :username="userInfo.username" class="participant-avatar" />
+                                    <div class="participant-info-main">
+                                        <span class="participant-role">Игрок</span>
+                                        <span class="participant-username">Пользователь 3</span>
+                                    </div>
+                                </div>
+                                <img src="@/assets/ready_icon.svg" alt="" v-if="isReady" class="ready-participant-img">
+                            </div>
+                            <div class="participant">
+                                <div class="participant-info">
+                                    <Identicon :username="userInfo.username" class="participant-avatar" />
+                                    <div class="participant-info-main">
+                                        <span class="participant-role">Игрок</span>
+                                        <span class="participant-username">Пользователь 3</span>
+                                    </div>
+                                </div>
+                                
+                                <img src="@/assets/ready_icon.svg" alt="" v-if="isReady" class="ready-participant-img">
+                            </div>
+                            <div class="participant">
+                                <div class="participant-info">
+                                    <Identicon :username="userInfo.username" class="participant-avatar" />
+                                    <div class="participant-info-main">
+                                        <span class="participant-role">Игрок</span>
+                                        <span class="participant-username">Пользователь 4</span>
+                                    </div>
+                                </div>
+                                
+                                <img src="@/assets/ready_icon.svg" alt="" v-if="isReady" class="ready-participant-img">
+                            </div>
+                            <div class="participant">
+                                <div class="participant-info">
+                                    <Identicon :username="userInfo.username" class="participant-avatar" />
+                                    <div class="participant-info-main">
+                                        <span class="participant-role">Игрок</span>
+                                        <span class="participant-username">Пользователь 5</span>
+                                    </div>
+                                </div>
+
+                                <img src="@/assets/ready_icon.svg" alt="" v-if="isReady" class="ready-participant-img">
                             </div>
                             
-                            <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
                         </div>
-                        <div class="participant">
-                            <div class="participant-info">
-                                <Identicon :username="userInfo.username" class="participant-avatar" />
-                                <div class="participant-info-main">
-                                    <span class="participant-role">Игрок</span>
-                                    <span class="participant-username">Пользователь 3</span>
+                        <div class="room-settings-container">
+                            <div class="duration-of-game-bar">
+                                <img src="@/assets/alarm.svg" alt="">
+                                <div class="access-main">
+                                    <span class="access-main-setting-name">Время работы комнаты</span>
+                                    <span class="access-main-setting-value">0:10:00</span>
                                 </div>
                             </div>
-                            
-                            <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
-                        </div>
-                        <div class="participant">
-                            <div class="participant-info">
-                                <Identicon :username="userInfo.username" class="participant-avatar" />
-                                <div class="participant-info-main">
-                                    <span class="participant-role">Игрок</span>
-                                    <span class="participant-username">Пользователь 3</span>
-                                </div>
-                            </div>
-                            
-                            <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
-                        </div>
-                        <div class="participant">
-                            <div class="participant-info">
-                                <Identicon :username="userInfo.username" class="participant-avatar" />
-                                <div class="participant-info-main">
-                                    <span class="participant-role">Игрок</span>
-                                    <span class="participant-username">Пользователь 4</span>
-                                </div>
-                            </div>
-                            
-                            <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
-                        </div>
-                        <div class="participant">
-                            <div class="participant-info">
-                                <Identicon :username="userInfo.username" class="participant-avatar" />
-                                <div class="participant-info-main">
-                                    <span class="participant-role">Игрок</span>
-                                    <span class="participant-username">Пользователь 5</span>
-                                </div>
-                            </div>
-                            
-                            <img src="@/assets/delete_participant.svg" alt="" @click="deleteParticipant()" class="delete-participant-img">
-                        </div>
-                        
-                    </div>
-                    <div class="settings-container">
-                        <PrimaryButton class="burger-game-button" @click="openGameButtons">
-                            <img src="@/assets/burger_icon.svg" alt="Настройки">
-                        </PrimaryButton>
-                        
-                        <div class="game-settings-buttons" :class="{ 'visible': gameButtonsVisible }">
-                            <SecondaryButton class="close-room">Закрыть комнату</SecondaryButton>
-                            <SecondaryButton class="leave-from-room">Покинуть комнату</SecondaryButton>
-                            <SecondaryButton class="start-game">Запустить</SecondaryButton>
                         </div>
                     </div>
                 </div>
             </div>
         </main>
         <main v-else>
-            <JoiningParty>
-            </JoiningParty>
+            <JoiningParty
+                @update-organizer="updateOrganizer"
+                @update-tab="updateTab"
+                @update-connection="updateConnection"
+            />
         </main>
     </div>
     <div class="unauthorized" v-else>
@@ -218,24 +404,36 @@ import useUserStore from '../stores/userStore'
 import useCentrifugeStore from '../stores/centrifugeStore';
 import { mapState, mapActions } from 'pinia'
 import Identicon from '../components/ui/Identicon.vue';
+import { generateUsername } from 'unique-username-generator'
+import visibleCode from '@/assets/show_code_icon.svg';
+import hiddenCode from '@/assets/hide_code_icon.svg';
 
 type ActionType = 'create' | 'connect' | null;
+type HomeMainSectionInnerType = 'gameList' | 'addScript' | 'editScript' | null;
 
 export default defineComponent({
     name: 'Home',
     data(){
         return{
-            isAuth: true as Boolean,
+            isAuth: true as boolean,
             selectedTab: 'create' as ActionType,
-            searchQuery: '' as String,
-            activePublic: true as Boolean,
-            activePrivate: false as Boolean,
-            accessType: 'По ссылке' as String,
-            roomCode: 'QWERTYUIO' as String,
-            gameButtonsVisible: false as Boolean,
+            searchQuery: '' as string,
+            activePublic: true as boolean,
+            activePrivate: false as boolean,
+            accessType: 'По ссылке' as string,
+            roomCode: 'QWERTYUIO' as string,
+            gameButtonsVisible: false as boolean,
             selectedFieldIndex: 1 as number,
-            connectedToRoom: false as Boolean,
-            userInfo: null as any
+            connectedToRoom: true as boolean,
+            userInfo: null as any,
+            selectedInner: 'gameList' as HomeMainSectionInnerType,
+            downloadedScript: true as boolean,
+            codeVisibility: true as boolean,
+            visibleCode: visibleCode as string,
+            hiddenCode: hiddenCode as string,
+            isOrganizer: false as boolean,
+            title: 'Угадай число' as string,
+            isReady: true as boolean
         }
     },
     components: {
@@ -249,30 +447,61 @@ export default defineComponent({
         Identicon
     },
     methods: {
+        updateConnection(newValue: boolean){
+            this.connectedToRoom = newValue
+        }
+        ,
+        updateOrganizer(newValue: boolean) {
+            this.isOrganizer = newValue;
+        },
+        updateTab(newTab: ActionType) {
+            this.selectedTab = newTab;
+        },
+        changeCodeVisibility(){
+            this.codeVisibility = !this.codeVisibility
+            if (this.codeVisibility == false){
+                
+            }
+        },
+        createCode(): string {
+            const code = generateUsername("", 1, 10)
+            
+            this.roomCode = code
+            return code
+        },
+        confirmCreatingScript(){
+            this.selectedInner = 'gameList';
+        },
+        createScript(){
+            this.selectedInner = 'addScript';
+        },
+        changeScript(){
+            this.selectedInner = 'editScript';
+        },
         handleActionSelected(action: ActionType): void {
             this.selectedTab = action;
 
             console.log('Выбрана вкладка:', action);
         },
         toggleActivePublic(){
-            this.activePublic = true,
-            this.activePrivate = false
+            this.activePublic = true;
+            this.activePrivate = false;
         },
         connectToRoom() {
-            this.connectedToRoom = true
+            this.connectedToRoom = true;
         },
         toggleActivePrivate(){
-            this.activePublic = false,
-            this.activePrivate = true
+            this.activePublic = false;
+            this.activePrivate = true;
         },
         deleteParticipant(){
             console.log('Deleted')
         },
         openGameButtons(){
-            this.gameButtonsVisible = !this.gameButtonsVisible
+            this.gameButtonsVisible = !this.gameButtonsVisible;
         },
         selectField(index: number) {
-            this.selectedFieldIndex = index
+            this.selectedFieldIndex = index;
         },
         ...mapActions(useUserStore, ['generateUsername', 'setUsername'])
     },
@@ -280,10 +509,12 @@ export default defineComponent({
         ...mapState(useUserStore, ['username']),
         ...mapState(useCentrifugeStore, ['usersOnline'])
     },
-    mounted() {
+    created() {
         const store = useUserStore()
         this.userInfo = store
-        // Дополнительные действия, если нужно
+    },
+    mounted(){
+        this.roomCode = this.createCode()
     }
 
 })
@@ -339,6 +570,7 @@ export default defineComponent({
 }
 
 .aside-navigation button{
+    text-align: left;
     padding: 18px 16px 18px 48px;
     max-width: 100%;
     width: fit-content;
@@ -385,6 +617,10 @@ export default defineComponent({
     min-width: 40%;
     max-width: 55%;
     max-height: 577px;
+}
+
+.creating-party-main-section .section-script{
+    width: 100%;
 }
 
 .search-field{
@@ -536,8 +772,9 @@ export default defineComponent({
 .game-card{ 
     width: 100%;
     max-width: 30%;
+    height: 480px;
     background: var(--background);
-    border: 2px solid var(--outline-variant);
+    border: var(--border-variant);
     border-radius: 12px;
     display: flex;
     flex-direction: column;
@@ -550,7 +787,7 @@ export default defineComponent({
     font-size: 22px;
 }
 
-.game-card span{
+.game-card p{
     margin: 16px 16px 32px;
     color: var(--on-surface-variant);
     font-size: 14px;
@@ -569,12 +806,22 @@ export default defineComponent({
 }
 
 /* Подключение к комнате */
-.connect-to-party-main{
+.connect-to-party-main .organizer-view{
     display: flex;
     justify-content: space-between;
     gap: 28px;
     align-items: center;
     padding: 30px 40px 40px 40px;
+    height: 80vh;
+    width: 100%;
+}
+
+.connect-to-party-main .participant-view{
+    display: flex;
+    justify-content: center;
+    gap: 8%;
+    align-items: center;
+    padding: 40px 0px;
     height: 80vh;
     width: 100%;
 }
@@ -585,7 +832,7 @@ export default defineComponent({
     text-align: left;
     align-items: start;
     gap: 5px;
-    min-width: 16%;
+    min-width: 18%;
     max-width: 25%;
     width: auto;
 }
@@ -602,11 +849,6 @@ export default defineComponent({
 .number-of-players-bar img{
     width: 15px;
     aspect-ratio: 1;
-}
-
-.duration-of-game-bar{
-    display: flex;
-    gap: 6px;
 }
 
 .duration-of-game-bar img{
@@ -639,17 +881,18 @@ export default defineComponent({
     color: var(--on-surface);
 }
 
-.duration-of-game-bar{
+.organizer-view.duration-of-game-bar{
     display: flex;
     flex-direction: row;
-    gap: 20px;
+    gap: 6px;
     padding: 8px 16px;
     border-bottom: var(--border-variant);
 }
 
 .autostart-bar input[type="checkbox"],
 .viewer-access-bar input[type="checkbox"],
-.unauthorized-access-bar input[type="checkbox"] {
+.unauthorized-access-bar input[type="checkbox"],
+.new-users-access-bar input[type="checkbox"] {
     position: absolute;
     opacity: 0;
     width: 0;
@@ -658,7 +901,8 @@ export default defineComponent({
 
 .autostart-bar,
 .viewer-access-bar,
-.unauthorized-access-bar {
+.unauthorized-access-bar,
+.new-users-access-bar {
     padding-top: 8px;
     display: flex;
     align-items: center;
@@ -670,13 +914,14 @@ export default defineComponent({
     justify-content: space-between;
 }
 
-.unauthorized-access-bar{
+.new-users-access-bar{
     border-bottom: var(--border-variant);
 }
 
 .autostart-bar label::before,
 .viewer-access-bar label::before,
-.unauthorized-access-bar label::before {
+.unauthorized-access-bar label::before,
+.new-users-access-bar label::before{
     content: '';
     position: absolute;
     right: 20px;
@@ -693,23 +938,26 @@ export default defineComponent({
 
 .autostart-bar:hover label::before,
 .viewer-access-bar:hover label::before,
-.unauthorized-access-bar:hover label::before {
+.unauthorized-access-bar:hover label::before,
+.new-users-access-bar :hover label::before{
     border-color: var(--primary);
 }
 
 .autostart-bar input[type="checkbox"]:checked + label::before,
 .viewer-access-bar input[type="checkbox"]:checked + label::before,
-.unauthorized-access-bar input[type="checkbox"]:checked + label::before {
+.unauthorized-access-bar input[type="checkbox"]:checked + label::before,
+.new-users-access-bar input[type="checkbox"]:checked + label::before{
     background-color: var(--primary);
     border-color: var(--primary);
 }
 
 .autostart-bar input[type="checkbox"]:checked + label::after,
 .viewer-access-bar input[type="checkbox"]:checked + label::after,
-.unauthorized-access-bar input[type="checkbox"]:checked + label::after {
+.unauthorized-access-bar input[type="checkbox"]:checked + label::after,
+.new-users-access-bar input[type="checkbox"]:checked + label::after{
     content: '';
     position: absolute;
-    right: 26px;
+    right: 25.7px;
     top: 50%;
     transform: translateY(-65%) rotate(45deg);
     width: 5px;
@@ -720,7 +968,8 @@ export default defineComponent({
 
 .autostart-bar label,
 .viewer-access-bar label,
-.unauthorized-access-bar label {
+.unauthorized-access-bar label,
+.new-users-access-bar label {
     width: 185px;
     cursor: pointer;
     margin: 0;
@@ -758,7 +1007,7 @@ export default defineComponent({
 .as-viewer-bar label::before {
     content: '';
     position: absolute;
-    right: 30px;
+    right: 5px;
     top: 40%;
     transform: translateY(-50%);
     width: 18px;
@@ -784,7 +1033,7 @@ export default defineComponent({
 .as-viewer-bar input[type="radio"]:checked + label::after {
     content: '';
     position: absolute;
-    right: 34.3px;
+    right: 9.3px;
     top: 40%;
     transform: translateY(-50%);
     width: 9.5px;
@@ -804,22 +1053,31 @@ export default defineComponent({
     order: -1;
 }
 
-.selected-game-info{
+.organizer-view .selected-game-info{
     width: auto;
     min-width: 45%;
-    max-width: 55%;
+    max-width: 50%;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    margin-bottom: 5%;
+}
+
+.participant-view .selected-game-info{
+    width: auto;
+    min-width: 60%;
+    max-width: 65%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
 }
 
 .room-code{
     width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
 }
 
@@ -831,21 +1089,41 @@ export default defineComponent({
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.room-code span{
+.room-code div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: var(--border-variant);
     border-radius: 8px;
-    padding: 6px 120px;
+    width: 300px;
+    padding: 12px 20px;
     text-align: center;
     font-size: 28px;
     font-weight: 500;
     color: var(--on-surface-variant);
 }
 
-.selected-game-card{
-    width: 100%;
+.participant-view .selected-game-card{
+    width: auto;
+    min-width: 50%;
+    max-width: 52%; 
+    min-height: 400px;
     max-height: 500px;
+    padding-bottom: 20px;
     display: flex;
     flex-direction: column;
+    justify-content: start;
+    background: var(--background);
+    border: 2px solid var(--outline-variant);
+    border-radius: 12px;
+}
+
+.organizer-view .selected-game-card{
+    width: 100%; 
+    max-height: 420px;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
     background: var(--background);
     border: 2px solid var(--outline-variant);
     border-radius: 12px;
@@ -857,8 +1135,8 @@ export default defineComponent({
     color: var(--on-surface)
 }
 
-.selected-game-card span{
-    margin: 16px 16px 32px;
+.selected-game-card .game-description{
+    margin: 16px;
     color: var(--on-surface-variant);
     font-size: 14px;
 }
@@ -867,14 +1145,23 @@ export default defineComponent({
     width: 100%;
 }
 
-.participants{
+.organizer-view .participants{
     display: flex;
     flex-direction: column;
     position: relative;
     width: auto;
-    min-width: 16%;
+    min-width: 20%;
     max-width: 20%;
     margin-top: 30px;
+}
+
+.participant-view .participants{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: auto;
+    min-width: 15%;
+    max-width: 17%;
 }
 
 .participants .organizer{
@@ -921,6 +1208,32 @@ export default defineComponent({
     flex-direction: column;
 }
 
+.participant-view .participant {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; 
+    align-items: center;
+    padding: 8px;
+}
+
+.participant-view .participant .participant-info{
+    min-width: 90%;
+    width: auto;
+    display: flex;
+    flex-direction: row;
+    gap: 5%;
+    align-items: center;    
+}
+
+.participant-view .participants .participants-list .participant .participant-info{
+    min-width: 90%;
+}
+
+.participant-view .participant .participant-info .participant-info-main{
+    display: flex;
+    flex-direction: column;
+}
+
 .participants .participants-list .participant{
     display: flex;
     flex-direction: row;
@@ -938,7 +1251,7 @@ export default defineComponent({
     width: auto;
     display: flex;
     flex-direction: row;
-    gap: 12px;
+    gap: 5%;
     align-items: center;    
 }
 
@@ -956,7 +1269,7 @@ export default defineComponent({
 }
 
 .participant-username{
-    font-size: 16px;
+    font-size: 15px;
     color: var(--on-surface);
 }
 
@@ -1067,5 +1380,173 @@ export default defineComponent({
     background-image: url('@/assets/start_game.svg');
     top: 36%;
     left: 32px;
+}
+
+.section-header{
+    height: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-header p{
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.header-buttons{
+    display: flex;
+    gap: 16px;
+}
+
+.header-buttons button{
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 0;
+}
+
+.header-buttons button:nth-child(1){
+    background-color: var(--primary)
+}
+
+.header-buttons button:nth-child(2){
+    border: var(--border-variant);
+    background: transparent;
+}
+
+.header-buttons button:nth-child(3){
+    border: var(--border-variant);
+    background: transparent;
+}
+
+.creating-party-main .changes-in-script{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    background: var(--background);
+    margin-top: 30px;
+    border: var(--border-variant);
+    border-radius: 12px;
+    height: 53vh;
+}
+
+.input-fieldset{
+    border-radius: 4px;
+    border: var(--border);
+}
+
+.fieldset-legend{
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--on-surface-variant)
+}
+
+.fieldset-input{
+    width: 100%;
+    border: 0;
+    background: transparent;
+}
+
+.fieldset-input:focus{
+    border: none;
+    outline: none;
+}
+
+.section-main{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.section-footer{
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    height: 48px;
+}
+
+.section-footer button{
+    position: relative;
+    background: 0;
+    border: 0;
+    padding: 0;
+}
+
+.section-footer button a{
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 10px 16px
+}
+
+.section-footer .button-inner{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 8px;
+    align-items: center;
+}
+
+.section-footer .button-inner p{
+    margin: 0;
+}
+
+.section-main .autostart-bar input[type="checkbox"]:checked + label::after{
+    right: 25.6px;
+}
+
+.section-main .autostart-bar label{
+    margin-left: 8px;
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--on-surface)
+}
+
+.room-settings-container .duration-of-game-bar{
+    margin-top: 40px;
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+    padding: 8px 16px;
+}
+.room-settings-container .duration-of-game-bar img{
+    width: 18px;
+    aspect-ratio: 1;
+}
+
+.room-buttons{
+    display: flex;
+    justify-content: end;
+    gap: 8px;
+    padding-inline: 10px; 
+}
+
+.room-buttons a{
+    height: 40px;
+    padding: 10px 16px;
+}
+
+.room-button-inner{
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 13px;
+}
+
+.room-button-inner p{
+    margin: 0;
+}
+
+.room-button-inner img{
+    height: 19px;
+    width: 16px;
 }
 </style>
