@@ -1,128 +1,121 @@
 <template>
   <div style="display: flex; flex-direction: column; width: 100%; gap: 10px; align-items: center; ">
-    <p>Онлайн: {{ count }}</p>
-    <h1>{{ title }}</h1>
-    <p>{{ description }}</p>
+    <p>Онлайн: {{ usersOnline }}</p>
 
     <!-- <component :is="currentComponent" @input-sent="onSendMessageButtonClicked" v-bind="passProps"></component> -->
 
     <br/>
 
-    <label>Код комнаты: {{ roomID }}</label>
-    <input type="button" @click="onMakeRoomButtonClicked" value="Создать комнату" />
+    <label>Код комнаты: {{ roomCode }}</label>
+    <input type="button" @click="onCreateRoom" value="Создать комнату" />
     <input type="button" @click="onStartRoom" value="Начать игру" />
 
     <br/>
 
     <input type="text" v-model="roomIdInput"></input>
-    <input type="button" @click="onJoinRoomButtonClicked" value="Присоединиться к комнате" />
+    <input type="button" @click="onJoinRoom(false)" value="Присоединиться к комнате" />
+    <input type="button" @click="onJoinRoom(true) " value="Присоединиться к комнате (как зритель)" />
 
     <br/>
 
-    <input type="text" v-model="msgInput">
+    <input type="text" v-model="msgInput"></input>
     <input type="button" @click="onSendMessageButtonClicked" value="Отправить сообщение" />
-
-    <br/>
-
-    <p>{{ serverMsg }}</p>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, type Ref, ref } from 'vue'
-import { Centrifuge } from 'centrifuge';
+import { Subscription } from 'centrifuge';
+import useCentrifugeStore from '../stores/centrifugeStore';
+import useUserStore from '../stores/userStore';
+import { mapState } from 'pinia';
 
 export default defineComponent({
-  name: 'Counter',
+  name: 'Play',
 
   computed: {
+    ...mapState(useCentrifugeStore, ['usersOnline', 'centrifuge']),
+    ...mapState(useUserStore, ['username']),
     passProps() {
-      if (this.currentComponent === 'TextInput') {
-        return {title: "123", description: "12345"}
-      }
+      // if (this.currentComponent === 'TextInput') {
+      //   return {title: "123", description: "12345"}
+      // }
 
       return {}
-    }
+    },
   },
 
   data() {
     return {
     //   currentComponent: ref('TextInput') as Ref<string>,
       userInput: ref('') as Ref<string>,
-      count: 0 as number,
-      title: "Заголовок" as string,
-      description: "Описание" as string,
-      roomID: "" as string,
-      serverMsg: "" as string,
+      roomCode: "" as string,
       roomIdInput: ref('') as Ref<string>,
+      owner: false,
       msgInput: ref('') as Ref<string>,
-      items: [] as any,
-      centrifuge: null as Centrifuge | null,
-      main: null as any,
-      roomSubscription: null as any,
+      inputType: "" as string,
+      step: -1,
+      roomSubscription: undefined as Subscription | undefined,
     }
   },
 
   methods: {
-    initializeCentrifuge(): void {
-      this.centrifuge = new Centrifuge("ws://localhost:8080/join")
-
-      this.main = this.centrifuge.newSubscription('main')
-      this.main.subscribe()
-
-      this.main.on('join', () => {
-        this.count += 1
-      })
-
-      this.main.on('leave', () => {
-        this.count -= 1
-      })
-
-      this.centrifuge.connect()
-    },
-
-    disconnectCentrifuge(): void {},
-
-    onMakeRoomButtonClicked(): void {
-      this.centrifuge?.rpc("createRoom", {}).then(response => {
-        this.roomID = response.data
-        this.roomSubscription = this.centrifuge?.newSubscription("watch@" + this.roomID)
-        this.setPublicationCallback()
+    onCreateRoom(): void {
+      this.centrifuge?.rpc("createRoom", {hash: "minimal.webparty"}).then(response => {
+        const roomCode = response.data.code
+        this.roomSubscription = this.centrifuge?.newSubscription("watch@" + roomCode)
+        this.owner = true
+        this.setPublicationCallback(roomCode)
       })
     },
 
     onStartRoom(): void {
-        this.centrifuge?.rpc("startRoom", {}).then(response => {
+        this.centrifuge?.rpc("startRoom", null).then(response => {
           if (response.data == true) console.log("Room started")
         })
     },
 
-    onJoinRoomButtonClicked(): void {
-      this.roomSubscription = this.centrifuge?.newSubscription("play@" + this.roomIdInput)
-      this.roomID = this.roomIdInput
-      this.setPublicationCallback()
+    onJoinRoom(watchMode: boolean): void {
+      const mode = watchMode ? "watch@" : "play@"
+      this.roomSubscription = this.centrifuge?.newSubscription(mode + this.roomIdInput)
+      this.owner = false
+      this.setPublicationCallback(this.roomIdInput)
     },
 
-    setPublicationCallback() {
-      this.roomSubscription.subscribe()
-      this.roomSubscription.on('publication', (response: any) => {
+    onMessage(): void {
+        this.centrifuge?.on('message', (response: any) => {
+          console.log(response)
+        })
+    },
+
+    setPublicationCallback(roomCode: string) {
+      this.roomSubscription?.subscribe()
+
+      this.roomSubscription?.on('subscribed', () => {
+        this.roomCode = roomCode
+      })
+
+      this.roomSubscription?.on('unsubscribed', () => {
+        this.centrifuge?.removeSubscription(this.roomSubscription as Subscription)
+      })
+
+      this.roomSubscription?.on('publication', (response: any) => {
         console.log(response.data)
-        // this.title = response.data.title
-        // this.description = response.data.description
+
+        if (response.data != null) {
+          this.step = response.data["step"]
+          this.inputType = response.data["type"]
+        }
       })
     },
 
-    onSendMessageButtonClicked(input: String): void {
-      this.centrifuge?.send(input)
+    onSendMessageButtonClicked(): void {
+      if (!this.owner) {
+        this.centrifuge?.send({step: this.step, content: this.msgInput, type: this.inputType})
+      } else {
+        this.centrifuge?.send(null)
+      }
     }
-  },
-
-  mounted(): void {
-    this.initializeCentrifuge()
-  },
-
-  beforeUnmount(): void {
-    this.disconnectCentrifuge()
   },
 })
 </script>

@@ -19,5 +19,7 @@
   --on-surface-variant: #49454F;
   --surface-container: #ECE6F0;
   --on-primary-container: #4F378A;
+  
+  scrollbar-gutter: stable;
 }
 

@@ -12,12 +12,23 @@ export default defineComponent({
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:wght@100..900&display=swap');
+@font-face {
+    font-family: "Desyatiy";
+    font-weight: normal;
+    src: url("./font/Desyatiy\ Regular.ttf");
+}
 
-*{
-  font-family: 'Inter';
+@font-face {
+    font-family: "Desyatiy";
+    font-weight: bold;
+    src: url("./font/Desyatiy\ Bold.ttf");
+}
+
+* {
+  font-family: "Desyatiy";
   box-sizing: border-box;
 }
+
 body {
   margin: 0;
   padding: 0;
