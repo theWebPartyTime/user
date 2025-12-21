@@ -2,11 +2,11 @@
     <NavPanel>
         <span class="page-header">Угадай число</span>
     </NavPanel>
-    <section class="pq-display-section">
+    <section class="pq-multimedia-section">
         <h2 class="pq-section-title">{{ title }}</h2>
         <div class="section-main">
             <p class="pq-section-text">{{ description }}</p>
-            <img src="@/assets/game_img.svg" alt="" class="pq-display-game-image">
+            <img src="@/assets/game_img.svg" alt="" class="pq-multimedia-game-image">
         </div>
         
     </section>
@@ -16,7 +16,7 @@
 import { defineComponent } from 'vue';
 import NavPanel from '@/components/layout/NavPanel.vue';
 export default defineComponent({
-    name: 'PartyQueryDisplay',
+    name: 'PartyQueryMultimedia',
     data(){
         return{
             title: "Заголовок запроса",
@@ -30,24 +30,28 @@ export default defineComponent({
 </script>
 
 <style>
-.pq-display-section{
+.pq-multimedia-section{
     margin: 0px 42px;
+    height: 86vh;
+    padding-top: 80px;
+    display: flex;
+    flex-direction: column;
 }
 
-.pq-display-section .pq-section-title{
-    margin-top: 80px;
+.pq-multimedia-section .pq-section-title{
     margin-bottom: 40px;
     text-align: center;
 }
 
-.pq-display-section .section-main{
+.pq-multimedia-section .section-main{
     display: flex;
+    flex-direction: row;
     gap: 10%;
     margin: 0px 180px;
     align-items: center;
 }   
 
-.pq-display-section .pq-display-game-image{
+.pq-multimedia-section .pq-multimedia-game-image{
     border-radius: 28px;
 }
 </style>

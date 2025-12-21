@@ -2,8 +2,8 @@
     <NavPanel>
         <span class="page-header">Угадай число</span>
     </NavPanel>
-    <h2 class="pq-section-title" style="text-align: center; margin-top: 15px;">Текущие успехи</h2>
-    <section class="pq-all-section">
+    <h2 class="pq-section-title" style="text-align: center; margin-top: 15px;">Заголовок для голосования</h2>
+    <section class="pq-vote-section">
         <div class="user-card" v-for="participant in participants">
             <div class="user-info">
                 <img src="@/assets/avatar_nav.svg" alt="" class="user-avatar">
@@ -18,7 +18,7 @@
 import { defineComponent } from 'vue';
 import NavPanel from '@/components/layout/NavPanel.vue';
 export default defineComponent({
-    name: 'PartyQueryAll',
+    name: 'PartyQueryVote',
     data(){
         return{
             participants: [
@@ -84,7 +84,7 @@ export default defineComponent({
     font-weight: 800;
 }
 
-.pq-all-section {
+.pq-vote-section {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
@@ -94,7 +94,7 @@ export default defineComponent({
   align-items: center;
 }
 
-.pq-all-section .user-card{
+.pq-vote-section .user-card{
     margin: 0px 15px;
     border: 5px solid var(--primary);
     border-radius: 16px;
@@ -102,7 +102,7 @@ export default defineComponent({
     height: 90%;
 }
 
-.pq-all-section .user-card .user-info{
+.pq-vote-section .user-card .user-info{
     display: flex;
     justify-content: start;
     gap: 20px;
@@ -110,18 +110,18 @@ export default defineComponent({
     margin-bottom: 15px;
 }
 
-.pq-all-section .user-card .user-info .user-avatar{
+.pq-vote-section .user-card .user-info .user-avatar{
     width: 46px;
     aspect-ratio: 1;
 }
 
-.pq-all-section .user-card .user-info .user-name{
+.pq-vote-section .user-card .user-info .user-name{
     font-size: 20px;
     color: var(--primary);
     font-weight: 700;
 }
 
-.pq-all-section .user-card .user-content{
+.pq-vote-section .user-card .user-content{
     font-size: 20px;
     color: var(--primary);
     font-weight: 700;

@@ -57,11 +57,12 @@ export default defineComponent({
 
 <style>
 .onboarding{
-    margin: 120px 132px 0px 132px;
+    height: 100vh;
     display: flex;
     justify-content: center;
+    align-items: center;
     flex-direction: row;    
-    gap: 191px;
+    gap: 10%;
 }
 
 .logo-onboarding{
@@ -69,6 +70,7 @@ export default defineComponent({
     height: 540px;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     font-weight: 800;
     gap: 5px;
 }
