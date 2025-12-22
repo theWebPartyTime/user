@@ -36,6 +36,9 @@ export default defineComponent({
         connectedToRoom: {
             type: Boolean,
             default: true
+        },
+        timer: {
+            
         }
     },
     methods:{

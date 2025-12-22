@@ -3,67 +3,82 @@
     <section class="pq-all-section">
         <div class="user-card" v-for="participant in participants">
             <div class="user-info">
-                <img src="@/assets/avatar_nav.svg" alt="" class="user-avatar">
+                <img src="@/assets/avatar_nav.svg" alt="" class="user-avatar" v-if="!participant.username">
+                <Identicon :username="participant.username" class="user-avatar" v-else/>
                 <p class="user-name">{{ participant.username }}</p>
             </div>
-            <p class="user-content">{{ participant.userContent }}</p>
+            <p class="user-content">{{ participant.msg }}</p>
         </div>
     </section>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import NavPanel from '@/components/layout/NavPanel.vue';
+import { defineComponent} from 'vue';
+import type { PropType } from 'vue';
+import Identicon from '@/components/ui/Identicon.vue';
+
+interface Participant {
+    id: number;
+    username: string;
+    msg: string;
+}
+
 export default defineComponent({
     name: 'PartyQueryAll',
     data(){
         return{
-            participants: [
+        }
+    },
+    props:{
+        participants: {
+            type: Array as PropType<Participant[]>,
+            required: true,
+            default: () => [
                 {   
                     id: 0,
                     username: "Пользователь 5",
-                    userContent: "Это для вывода пользовательского контента"
+                    msg: "Это для вывода пользовательского контента"
                 },
                 {   
                     id: 1,
                     username: "Пользователь 5",
-                    userContent: "Это для вывода пользовательского контента"
+                    msg: "Это для вывода пользовательского контента"
                 },
                 {   
                     id: 2,
                     username: "Пользователь 5",
-                    userContent: "Это для вывода пользовательского контента"
+                    msg: "Это для вывода пользовательского контента"
                 },
                 {   
                     id: 3,
                     username: "Пользователь 5",
-                    userContent: "Это для вывода пользовательского контента"
+                    msg: "Это для вывода пользовательского контента"
                 },
                 {   
                     id: 4,
                     username: "Пользователь 5",
-                    userContent: "Это для вывода пользовательского контента"
+                    msg: "Это для вывода пользовательского контента"
                 },
                 {   
                     id: 5,
                     username: "Пользователь 5",
-                    userContent: "Это для вывода пользовательского контента"
+                    msg: "Это для вывода пользовательского контента"
                 },
                 {   
                     id: 6,
                     username: "Пользователь 5",
-                    userContent: "Это для вывода пользовательского контента"
+                    msg: "Это для вывода пользовательского контента"
                 }
                 ,{   
                     id: 7,
                     username: "Пользователь 5",
-                    userContent: "Это для вывода пользовательского контента"
+                    msg: "Это для вывода пользовательского контента"
                 }
             ]
         }
     },
     components: {
-        NavPanel
+        Identicon
     }
 })
 </script>
@@ -102,14 +117,17 @@ export default defineComponent({
 .pq-all-section .user-card .user-info{
     display: flex;
     justify-content: start;
+    align-items: center;
     gap: 20px;
     border-bottom: var(--border-variant);
     margin-bottom: 15px;
 }
 
 .pq-all-section .user-card .user-info .user-avatar{
+    background: var(--primary-container);
+    border-radius: 50%;
     width: 46px;
-    aspect-ratio: 1;
+    height: 46px;
 }
 
 .pq-all-section .user-card .user-info .user-name{

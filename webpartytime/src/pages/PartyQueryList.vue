@@ -9,13 +9,21 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import NavPanel from '@/components/layout/NavPanel.vue';
+import type { PropType } from 'vue';
 export default defineComponent({
     name: 'PartyQueryList',
     data(){
         return{
-            title: 'Заголовок запроса',
-            items: [
+        }
+    },
+    props: {
+        title: {
+            type: String as () => string,
+            default: 'Заголовок запроса'
+        },
+        items: {
+            type: Array as PropType<string[]>,
+            default: () => [
                 'Текст пункта',
                 'Текст пункта',
                 'Текст пункта',
@@ -24,20 +32,20 @@ export default defineComponent({
                 'Текст пункта',
             ]
         }
-    },
-    components: {
-        NavPanel
     }
 })
 </script>
 
 <style>
 .pq-list-section {
+    color: var(--primary);
     height: 86vh;
     padding-top: 75px;
 }
 
 .pq-list-section .pq-section-title{
+    font-size: 40px;
+    font-weight: 800;
     text-align: center;
 }
 

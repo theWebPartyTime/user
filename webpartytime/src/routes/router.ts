@@ -6,7 +6,6 @@ import Home from "@/pages/Home.vue"
 import AuthLayout from '@/pages/AuthLayout.vue'
 import Login from '@/pages/Login.vue'
 import Register from '@/pages/Register.vue'
-
 import Play from '@/pages/Play.vue'
 
 
@@ -37,7 +36,7 @@ const routes: Array<RouteRecordRaw> = [
       path: '/play',
       name: 'Play',
       component: Play
-    },
+    }
 ]
 
 const router = createRouter({

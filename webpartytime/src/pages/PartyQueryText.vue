@@ -1,8 +1,8 @@
 <template>
     <div class="pq-text">
         <div class="main-section">
-            <h1>Заголовок запроса</h1>
-            <h2>Это текст для более подробного описания запроса.</h2>
+            <h1>{{ title }}</h1>
+            <h2>{{ description }}</h2>
             <div class="input-form">
                 <input id="input-text" type="text" required>
                 <label for="input-text">Ответ</label>
@@ -15,7 +15,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import NavPanel from '@/components/layout/NavPanel.vue';
 import PrimaryButton from '@/components/ui/PrimaryButton.vue';
 export default defineComponent({
     name: 'PartyQueryTest',
@@ -25,8 +24,18 @@ export default defineComponent({
         }
     },
     components: {
-        NavPanel,
         PrimaryButton
+    },
+    props: {
+        title: {
+            type: String as () => string,
+            default: "Заголовок запроса"
+        },
+        description: {
+            type: String as () => string,
+            default: 'Это текст для более подробного описания запроса.'
+        },
+        
     }
 })
 </script>
