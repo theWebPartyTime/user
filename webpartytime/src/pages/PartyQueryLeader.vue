@@ -1,10 +1,11 @@
 <template>
-    <section class="pq-winner-section">
+    <section class="pq-leader-section">
         <p class="pq-section-text">{{ msg }}</p>
-        <div class="winner-info">
-            <img src="@/assets/avatar_nav.svg" alt="" class="winner-avatar" v-if="!username">
-            <Identicon :username="username" class="winner-avatar" v-else/>
+        <div class="leader-info">
+            <img src="@/assets/avatar_nav.svg" alt="" class="leader-avatar" v-if="!username">
+            <Identicon :username="username" class="leader-avatar" v-else/>
             <span class="pq-section-title">{{ username }}</span>
+            <span class="pq-section-title">Побед: {{wins}}</span>
         </div>
     </section>
 </template>
@@ -14,15 +15,13 @@ import { defineComponent } from 'vue';
 import Identicon from '@/components/ui/Identicon.vue';
 
 export default defineComponent({
-    name: 'PartyQueryWinner',
+    name: 'PartyQueryLeader',
     data(){
         return{
-
         }
     },
     components: {
         Identicon
-
     },
     props: {
         msg: {
@@ -32,33 +31,36 @@ export default defineComponent({
         username: {
             type: String as () => string,
             default: 'Пользователь 1'
+        },
+        wins: {
+            type: Number as () => number,
+            default: 0
         }
     }
 })
 </script>
 
 <style>
-.pq-winner-section{
+.pq-leader-section{
+    color: var(--primary);
     display: flex;
     height: 86vh;
     width: 100%;
     align-items: center;
     gap: 60px;
     padding: 0px 150px;
-    color: var(--primary);
 }
 
-.pq-winner-section .pq-section-text{
+.pq-leader-section .pq-section-text{
     font-size: 36px;
-    margin: 0;
     text-align: right;
 }
 
-.pq-winner-section .pq-section-title{
+.pq-leader-section .pq-section-title{
     font-size: 40px;
     text-align: center;
 }
-.pq-winner-section .winner-info{
+.pq-leader-section .leader-info{
     width: auto;
     display: flex;
     flex-direction: column;
@@ -66,10 +68,10 @@ export default defineComponent({
     padding: 0px 90px;
     text-align: center;
 }
-.pq-winner-section .winner-avatar{
-    height: 345px;
-    aspect-ratio: 1;
+.pq-leader-section .leader-avatar{
     background: var(--primary-container);
     border-radius: 50%;
+    height: 345px;
+    aspect-ratio: 1;
 }
 </style>

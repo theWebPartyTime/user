@@ -55,9 +55,10 @@ export default defineComponent({
 
 <style>
 .login{
-    margin: 120px 132px 0px 132px;
+    height: 100vh;
     display: flex;
     justify-content: center;
+    align-items: center;
     flex-direction: row;    
     gap: 191px;
 }

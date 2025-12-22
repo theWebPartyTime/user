@@ -1,7 +1,7 @@
 <template>
-    <h2 class="pq-section-title" style="text-align: center; margin-top: 15px;">Текущие успехи</h2>
-    <section class="pq-all-section">
-        <div class="user-card" v-for="participant in participants">
+    <h2 class="pq-section-title" style="text-align: center; margin: 15px 0px 0px;">{{ title }}</h2>
+    <section class="pq-vote-section">
+        <div class="user-card" v-for="participant in participants" :key="participant.id">
             <div class="user-info">
                 <img src="@/assets/avatar_nav.svg" alt="" class="user-avatar" v-if="!participant.username">
                 <Identicon :username="participant.username" class="user-avatar" v-else/>
@@ -13,9 +13,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent} from 'vue';
+import { defineComponent } from 'vue';
 import type { PropType } from 'vue';
-import Identicon from '@/components/ui/Identicon.vue';
+import Identicon from '../components/ui/Identicon.vue';
 
 interface Participant {
     id: number;
@@ -24,12 +24,19 @@ interface Participant {
 }
 
 export default defineComponent({
-    name: 'PartyQueryAll',
+    name: 'PartyQueryVote',
     data(){
         return{
         }
     },
+    components: {
+        Identicon
+    },
     props:{
+        title: {
+            type: String as () => string,
+            default: "Заголовок для голосования"
+        },
         participants: {
             type: Array as PropType<Participant[]>,
             required: true,
@@ -76,9 +83,6 @@ export default defineComponent({
                 }
             ]
         }
-    },
-    components: {
-        Identicon
     }
 })
 </script>
@@ -96,7 +100,7 @@ export default defineComponent({
     font-weight: 800;
 }
 
-.pq-all-section {
+.pq-vote-section {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
@@ -106,7 +110,7 @@ export default defineComponent({
   align-items: center;
 }
 
-.pq-all-section .user-card{
+.pq-vote-section .user-card{
     margin: 0px 15px;
     border: 5px solid var(--primary);
     border-radius: 16px;
@@ -114,7 +118,7 @@ export default defineComponent({
     height: 90%;
 }
 
-.pq-all-section .user-card .user-info{
+.pq-vote-section .user-card .user-info{
     display: flex;
     justify-content: start;
     align-items: center;
@@ -123,20 +127,20 @@ export default defineComponent({
     margin-bottom: 15px;
 }
 
-.pq-all-section .user-card .user-info .user-avatar{
+.pq-vote-section .user-card .user-info .user-avatar{
     background: var(--primary-container);
     border-radius: 50%;
     width: 46px;
     height: 46px;
 }
 
-.pq-all-section .user-card .user-info .user-name{
+.pq-vote-section .user-card .user-info .user-name{
     font-size: 20px;
     color: var(--primary);
     font-weight: 700;
 }
 
-.pq-all-section .user-card .user-content{
+.pq-vote-section .user-card .user-content{
     font-size: 20px;
     color: var(--primary);
     font-weight: 700;

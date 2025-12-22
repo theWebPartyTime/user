@@ -1,7 +1,8 @@
 <template>
     <nav class="nav-panel">
         <div class="logo-online">
-            <img src="@/assets/logo.svg" alt="logo" class="logo-nav">
+            <h2 v-if="typeof timer === 'number'" class="timer">{{ timer }}</h2>
+            <img src="@/assets/logo.svg" alt="logo" class="logo-nav" v-else>
             <slot></slot>
         </div>
         <div class="profile">
@@ -27,13 +28,17 @@ export default defineComponent({
     data(){
         return{
             openedModule: false as Boolean,
-            userInfo: '' as any
+            userInfo: '' as any,
+            timer: '28' as any
         }
     },
     props: {
         connectedToRoom: {
             type: Boolean,
             default: true
+        },
+        timer: {
+            
         }
     },
     methods:{
@@ -147,5 +152,10 @@ export default defineComponent({
     flex-direction: column;
     gap: 10px;
     justify-content: center;
+}
+
+.timer{
+    font-size: 50px;
+    font-weight: 700;
 }
 </style>

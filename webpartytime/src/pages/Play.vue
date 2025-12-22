@@ -1,4 +1,7 @@
 <template>
+  <NavPanel>
+      <span class="page-header">{{title}}</span>
+  </NavPanel>
   <div style="display: flex; flex-direction: column; width: 100%; gap: 10px; align-items: center; ">
     <p>Онлайн: {{ usersOnline }}</p>
 
@@ -24,6 +27,7 @@
 </template>
 
 <script lang="ts">
+import NavPanel from '../components/layout/NavPanel.vue';
 import { defineComponent, type Ref, ref } from 'vue'
 import { Subscription } from 'centrifuge';
 import useCentrifugeStore from '../stores/centrifugeStore';
@@ -56,9 +60,12 @@ export default defineComponent({
       inputType: "" as string,
       step: -1,
       roomSubscription: undefined as Subscription | undefined,
+      title: "Заголовок" as string
     }
   },
-
+  components: {
+    NavPanel
+  },
   methods: {
     onCreateRoom(): void {
       this.centrifuge?.rpc("createRoom", {hash: "minimal.webparty"}).then(response => {

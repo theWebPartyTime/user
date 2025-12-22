@@ -267,7 +267,7 @@
                             </PrimaryButton>
                             
                             <div class="game-settings-buttons" :class="{ 'visible': gameButtonsVisible }">
-                                <SecondaryButton class="close-room">Закрыть комнату</SecondaryButton>
+                                <SecondaryButton class="close-room" @click="connectedToRoom = false">Закрыть комнату</SecondaryButton>
                                 <SecondaryButton class="start-game">Запустить</SecondaryButton>
                             </div>
                         </div>
@@ -424,7 +424,7 @@ export default defineComponent({
             roomCode: 'QWERTYUIO' as string,
             gameButtonsVisible: false as boolean,
             selectedFieldIndex: 1 as number,
-            connectedToRoom: true as boolean,
+            connectedToRoom: false as boolean,
             userInfo: null as any,
             selectedInner: 'gameList' as HomeMainSectionInnerType,
             downloadedScript: true as boolean,
@@ -433,7 +433,7 @@ export default defineComponent({
             hiddenCode: hiddenCode as string,
             isOrganizer: false as boolean,
             title: 'Угадай число' as string,
-            isReady: true as boolean
+            isReady: false as boolean
         }
     },
     components: {
@@ -489,6 +489,8 @@ export default defineComponent({
         },
         connectToRoom() {
             this.connectedToRoom = true;
+            this.isOrganizer = true;
+            
         },
         toggleActivePrivate(){
             this.activePublic = false;
@@ -881,7 +883,7 @@ export default defineComponent({
     color: var(--on-surface);
 }
 
-.organizer-view.duration-of-game-bar{
+.organizer-view .duration-of-game-bar{
     display: flex;
     flex-direction: row;
     gap: 6px;
