@@ -1,25 +1,24 @@
 :root {
-  --primary: #6750A4;
-  --on-primary: #FFFFFF;
-  --light-primary:#D0BCFF;
-  --background: #FEF7FF;
-  --primary-container: #EADDFF;
-  --secondary-container: #E8DEF8;
-  --on-secondary-container: #4A4459;
-  --outline-variant: #CAC4D0;
-  --outline: #79747E;
-  --border: 1px solid #79747E;;
-  --border-variant: 1px solid #CAC4D0;
+  --primary: #6750a4;
+  --on-primary: #ffffff;
+  --light-primary: #d0bcff;
+  --background: #fef7ff;
+  --primary-container: #eaddff;
+  --secondary-container: #e8def8;
+  --on-secondary-container: #4a4459;
+  --outline-variant: #cac4d0;
+  --outline: #79747e;
+  --border: 1px solid #79747e;
+  --border-variant: 1px solid #cac4d0;
   --input-border-radius: 4px;
   --button-border-radius: 100px;
   --search-field-radius: 28px;
   --game-description: 12px;
-  --on-surface: #1D1B20;
-  --on-surface-inactive: #1D1B201A;
-  --on-surface-variant: #49454F;
-  --surface-container: #ECE6F0;
-  --on-primary-container: #4F378A;
-  
+  --on-surface: #1d1b20;
+  --on-surface-inactive: #1d1b201a;
+  --on-surface-variant: #49454f;
+  --surface-container: #ece6f0;
+  --on-primary-container: #4f378a;
+
   scrollbar-gutter: stable;
 }
-

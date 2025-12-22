@@ -1,19 +1,15 @@
 <template>
-    <router-view/>
+  <router-view />
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 export default defineComponent({
-    name: 'Login',
-    data(){
-        return{
-
-        }
-    }
-})
+  name: "Login",
+  data() {
+    return {};
+  },
+});
 </script>
 
-<style>
-
-</style>
+<style></style>

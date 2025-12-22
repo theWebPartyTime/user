@@ -3,31 +3,31 @@
 </template>
 
 <script lang="ts">
-import './style.css';
-import { defineComponent } from 'vue'
+import "./style.css";
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: 'App',
-})
+  name: "App",
+});
 </script>
 
 <style>
 @font-face {
-    font-family: "Desyatiy";
-    font-weight: lighter;
-    src: url("./font/Desyatiy\ Light.ttf");
+  font-family: "Desyatiy";
+  font-weight: lighter;
+  src: url("./font/Desyatiy\ Light.ttf");
 }
 
 @font-face {
-    font-family: "Desyatiy";
-    font-weight: normal;
-    src: url("/font/Desyatiy\ Regular.ttf");
+  font-family: "Desyatiy";
+  font-weight: normal;
+  src: url("/font/Desyatiy\ Regular.ttf");
 }
 
 @font-face {
-    font-family: "Desyatiy";
-    font-weight: bold;
-    src: url("/font/Desyatiy\ Bold.ttf");
+  font-family: "Desyatiy";
+  font-weight: bold;
+  src: url("/font/Desyatiy\ Bold.ttf");
 }
 
 * {
@@ -40,7 +40,5 @@ body {
   padding: 0;
   height: 100vh;
   overflow: hidden;
-
 }
-
 </style>

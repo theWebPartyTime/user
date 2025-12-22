@@ -1,223 +1,238 @@
 <template>
-    <div class="joining-party">
-        <h1>Код комнаты</h1>
-        <div class="code-container" @click="focusHiddenInput">
-            <div class="dashes-wrapper">
-                <div
-                    v-for="i in 9"
-                    :key="i"
-                    class="dash"
-                    :class="{
-                    'dash-filled': code[i-1],
-                    'dash-active': activeIndex === i-1
-                    }"
-                >
-                    <span class="dash-digit">{{ code[i-1] }}</span>
-                    <div v-if="activeIndex === i-1 && isFocused" class="dash-cursor"></div>
-                </div>
-            </div>
-    
-            <!-- Скрытый input для фактического ввода -->
-            <input
-                ref="hiddenInput"
-                v-model="internalValue"
-                @input="handleInput"
-                @keydown="handleKeydown"
-                @focus="handleFocus"
-                @blur="handleBlur"
-                @paste="handlePaste"
-                type="text"
-                inputmode="numeric"
-                maxlength="9"
-                class="hidden-input"
-            />
+  <div class="joining-party">
+    <h1>Код комнаты</h1>
+    <div class="code-container" @click="focusHiddenInput">
+      <div class="dashes-wrapper">
+        <div
+          v-for="i in 9"
+          :key="i"
+          class="dash"
+          :class="{
+            'dash-filled': code[i - 1],
+            'dash-active': activeIndex === i - 1,
+          }"
+        >
+          <span class="dash-digit">{{ code[i - 1] }}</span>
+          <div
+            v-if="activeIndex === i - 1 && isFocused"
+            class="dash-cursor"
+          ></div>
         </div>
-        <div class="connect-buttons">
-          <PrimaryButton  @click="connectToRoom('create')" :class="{ 'disabled-link': code.length != 9} ">Подключиться</PrimaryButton>
-          <VariantButton @click="connectToRoom('create')" :class="{ 'disabled-link': code.length != 9} ">Подключиться как зритель</VariantButton>
-        </div>
-        
+      </div>
+
+      <!-- Скрытый input для фактического ввода -->
+      <input
+        ref="hiddenInput"
+        v-model="internalValue"
+        @input="handleInput"
+        @keydown="handleKeydown"
+        @focus="handleFocus"
+        @blur="handleBlur"
+        @paste="handlePaste"
+        type="text"
+        inputmode="numeric"
+        maxlength="9"
+        class="hidden-input"
+      />
     </div>
+    <div class="connect-buttons">
+      <PrimaryButton
+        @click="connectToRoom('create')"
+        :class="{ 'disabled-link': code.length != 9 }"
+        >Подключиться</PrimaryButton
+      >
+      <VariantButton
+        @click="connectToRoom('create')"
+        :class="{ 'disabled-link': code.length != 9 }"
+        >Подключиться как зритель</VariantButton
+      >
+    </div>
+  </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
-import PrimaryButton from '@/components/ui/PrimaryButton.vue';
-import VariantButton from '@/components/ui/VariantButton.vue';
+import { defineComponent } from "vue";
+import PrimaryButton from "@/components/ui/PrimaryButton.vue";
+import VariantButton from "@/components/ui/VariantButton.vue";
+import useCentrifugeStore from "../stores/centrifugeStore";
+import { mapState } from "pinia";
+import type { Subscription } from "centrifuge";
+
+import { mapActions } from "pinia";
 
 export default defineComponent({
-  name: 'CodeInput',
-  components:{
+  name: "CodeInput",
+  components: {
     PrimaryButton,
-    VariantButton
+    VariantButton,
   },
   props: {
     modelValue: {
       type: String,
-      default: ''
+      default: "",
     },
     length: {
       type: Number,
       default: 9,
-      validator: (value: number) => value > 0 && value <= 12
+      validator: (value: number) => value > 0 && value <= 12,
     },
     isOrganizer: Boolean,
     selectedTab: String,
-    connectedToRoom: Boolean
+    connectedToRoom: Boolean,
   },
-  
+
   emits: {
-    'update:modelValue': (value: string) => typeof value === 'string',
-    'complete': (code: string) => typeof code === 'string',
-    'update-organizer': (value: boolean) => typeof value === 'boolean', 
-    'update-tab': (tab: string) => typeof tab === 'string',
-    'update-connection': (value: boolean) => typeof value === 'boolean'
+    "update:modelValue": (value: string) => typeof value === "string",
+    complete: (code: string) => typeof code === "string",
+    "update-organizer": (value: boolean) => typeof value === "boolean",
+    "update-tab": (tab: string) => typeof tab === "string",
+    "update-connection": (value: boolean) => typeof value === "boolean",
   },
-  
+
   data() {
     return {
       code: [] as string[],
-      internalValue: '',
+      internalValue: "",
       activeIndex: -1,
       isFocused: false,
-      isInvalidCode: false
-    }
+      isInvalidCode: false,
+    };
   },
-  
+
   computed: {
+    ...mapState(useCentrifugeStore, ["roomSub", "centrifuge"]),
+
     fullCode(): string {
-      return this.code.join('')
+      return this.code.join("");
     },
-    
+
     isComplete(): boolean {
-      return this.code.length === this.length
+      return this.code.length === this.length;
     },
-    
   },
-  
+
   watch: {
     modelValue: {
       immediate: true,
       handler(newValue: string) {
-        this.internalValue = newValue
-        this.updateCodeFromValue(newValue)
-      }
+        this.internalValue = newValue;
+        this.updateCodeFromValue(newValue);
+      },
     },
-    
+
     internalValue(newValue: string) {
-      this.updateCodeFromValue(newValue)
-      this.$emit('update:modelValue', newValue)
-      
+      this.updateCodeFromValue(newValue);
+      this.$emit("update:modelValue", newValue);
+
       if (this.isComplete) {
-        this.$emit('complete', newValue)
+        this.$emit("complete", newValue);
       }
     },
-    
-    'code.length'(newLength: number) {
-      this.activeIndex = Math.min(newLength, this.length - 1)
-    }
+
+    "code.length"(newLength: number) {
+      this.activeIndex = Math.min(newLength, this.length - 1);
+    },
   },
-  
+
   mounted() {
-    this.updateCodeFromValue(this.modelValue)
-    this.focusHiddenInput()
+    this.updateCodeFromValue(this.modelValue);
+    this.focusHiddenInput();
   },
   methods: {
     updateCodeFromValue(value: string) {
-      const filtered = value.replace(/[^A-Za-z]/g, '').toUpperCase()
-      const slicedValue = filtered.slice(0, this.length)
-      this.code = slicedValue.split('')
+      const filtered = value.replace(/[^A-Za-z]/g, "").toUpperCase();
+      const slicedValue = filtered.slice(0, this.length);
+      this.code = slicedValue.split("");
     },
-    
+
     connectToRoom(tab: string) {
-      this.$emit('update-organizer', false);
-      this.$emit('update-tab', tab);
-      this.$emit('update-connection', true)
+      this.join(this.fullCode);
+      this.$emit("update-organizer", false);
+      this.$emit("update-tab", tab);
+      this.$emit("update-connection", true);
     },
 
     focusHiddenInput() {
-      const input = this.$refs.hiddenInput as HTMLInputElement
+      const input = this.$refs.hiddenInput as HTMLInputElement;
       if (input) {
-        input.focus()
-        input.setSelectionRange(input.value.length, input.value.length)
+        input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
       }
     },
-    
+
     handleInput(event: Event) {
-      const input = event.target as HTMLInputElement
-      this.internalValue = input.value.replace(/[^A-Za-z]/g, '').toUpperCase()
-      
-      this.activeIndex = Math.min(this.code.length, this.length - 1)
+      const input = event.target as HTMLInputElement;
+      this.internalValue = input.value.replace(/[^A-Za-z]/g, "").toUpperCase();
+
+      this.activeIndex = Math.min(this.code.length, this.length - 1);
     },
-    
+
     handleKeydown(event: KeyboardEvent) {
-      const input = event.target as HTMLInputElement
-      
-      if (event.key === 'ArrowLeft') {
-        event.preventDefault()
-        this.activeIndex = Math.max(0, this.activeIndex - 1)
+      const input = event.target as HTMLInputElement;
+
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        this.activeIndex = Math.max(0, this.activeIndex - 1);
         setTimeout(() => {
-          input.setSelectionRange(this.activeIndex, this.activeIndex)
-        })
-      }
-      
-      else if (event.key === 'ArrowRight') {
-        event.preventDefault()
-        this.activeIndex = Math.min(this.code.length, this.length - 1)
+          input.setSelectionRange(this.activeIndex, this.activeIndex);
+        });
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        this.activeIndex = Math.min(this.code.length, this.length - 1);
         setTimeout(() => {
-          input.setSelectionRange(this.activeIndex, this.activeIndex)
-        })
-      }
-      
-      else if (event.key === 'Backspace' || event.key === 'Delete') {
+          input.setSelectionRange(this.activeIndex, this.activeIndex);
+        });
+      } else if (event.key === "Backspace" || event.key === "Delete") {
         if (this.code.length > 0) {
-          this.activeIndex = Math.max(0, this.code.length - 1)
+          this.activeIndex = Math.max(0, this.code.length - 1);
         }
       }
     },
-    
+
     handleFocus() {
-      this.isFocused = true
-      this.activeIndex = Math.min(this.code.length, this.length - 1)
+      this.isFocused = true;
+      this.activeIndex = Math.min(this.code.length, this.length - 1);
     },
-    
+
     handleBlur() {
-      this.isFocused = false
-      this.activeIndex = -1
+      this.isFocused = false;
+      this.activeIndex = -1;
     },
 
     handlePaste(event: ClipboardEvent) {
-      event.preventDefault()
-      const pastedText = event.clipboardData?.getData('text') || ''
-      const filtered = pastedText.replace(/[^A-Za-z]/g, '').toUpperCase()
-      const slicedValue = filtered.slice(0, this.length)
-      
+      event.preventDefault();
+      const pastedText = event.clipboardData?.getData("text") || "";
+      const filtered = pastedText.replace(/[^A-Za-z]/g, "").toUpperCase();
+      const slicedValue = filtered.slice(0, this.length);
+
       if (slicedValue) {
-        this.internalValue = slicedValue
-        this.activeIndex = Math.min(slicedValue.length, this.length - 1)
+        this.internalValue = slicedValue;
+        this.activeIndex = Math.min(slicedValue.length, this.length - 1);
       }
     },
 
     clear() {
-      this.internalValue = ''
-      this.code = []
-      this.activeIndex = -1
-      this.focusHiddenInput()
+      this.internalValue = "";
+      this.code = [];
+      this.activeIndex = -1;
+      this.focusHiddenInput();
     },
-    
+
     getCode(): string {
-      return this.fullCode
+      return this.fullCode;
     },
-    
+
     setCode(code: string) {
-      const filtered = code.replace(/[^A-Za-z]/g, '').toUpperCase()
-      this.internalValue = filtered.slice(0, this.length)
-    }
-  }
-})
+      const filtered = code.replace(/[^A-Za-z]/g, "").toUpperCase();
+      this.internalValue = filtered.slice(0, this.length);
+    },
+
+    ...mapActions(useCentrifugeStore, ["join"]),
+  },
+});
 </script>
 
 <style scoped>
-.joining-party{
+.joining-party {
   height: 80vh;
   width: 100%;
   display: flex;
@@ -228,7 +243,7 @@ export default defineComponent({
   padding: 0px 40px;
 }
 
-.joining-party h1{
+.joining-party h1 {
   margin: 0;
   font-weight: 700;
   font-size: 42px;
@@ -236,12 +251,12 @@ export default defineComponent({
   line-height: 100%;
 }
 
-.connect-buttons{
+.connect-buttons {
   display: flex;
   gap: 80px;
 }
 
-.connect-buttons a{
+.connect-buttons a {
   width: 256px;
   text-align: center;
   padding: 16px 0px;
@@ -250,8 +265,8 @@ export default defineComponent({
 .disabled-link {
   pointer-events: none;
   cursor: default;
-  color: #1D1B2066;
-  background: #1D1B201A;
+  color: #1d1b2066;
+  background: #1d1b201a;
   text-decoration: none;
   border: 0;
 }
@@ -311,10 +326,12 @@ export default defineComponent({
 }
 
 @keyframes blink {
-  0%, 50% {
+  0%,
+  50% {
     opacity: 1;
   }
-  51%, 100% {
+  51%,
+  100% {
     opacity: 0;
   }
 }
@@ -330,4 +347,3 @@ export default defineComponent({
   z-index: -1;
 }
 </style>
-  

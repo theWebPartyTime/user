@@ -1,28 +1,9 @@
 <template>
-  <NavPanel>
+  <NavPanel :timer="10">
       <span class="page-header">{{title}}</span>
   </NavPanel>
-  <div style="display: flex; flex-direction: column; width: 100%; gap: 10px; align-items: center; ">
-    <p>Онлайн: {{ usersOnline }}</p>
-
-    <!-- <component :is="currentComponent" @input-sent="onSendMessageButtonClicked" v-bind="passProps"></component> -->
-
-    <br/>
-
-    <label>Код комнаты: {{ roomCode }}</label>
-    <input type="button" @click="onCreateRoom" value="Создать комнату" />
-    <input type="button" @click="onStartRoom" value="Начать игру" />
-
-    <br/>
-
-    <input type="text" v-model="roomIdInput"></input>
-    <input type="button" @click="onJoinRoom(false)" value="Присоединиться к комнате" />
-    <input type="button" @click="onJoinRoom(true) " value="Присоединиться к комнате (как зритель)" />
-
-    <br/>
-
-    <input type="text" v-model="msgInput"></input>
-    <input type="button" @click="onSendMessageButtonClicked" value="Отправить сообщение" />
+  <div style="display: flex; flex-direction: column; width: 100%; height: 100%; gap: 10px; align-items: center; ">
+    <component :is="currentQuery" @input-sent="onSendMessageButtonClicked" v-bind="passProps"></component>
   </div>
 </template>
 
@@ -30,18 +11,22 @@
 import NavPanel from '../components/layout/NavPanel.vue';
 import { defineComponent, type Ref, ref } from 'vue'
 import { Subscription } from 'centrifuge';
+import { markRaw } from 'vue';
+import { mapState } from 'pinia';
 import useCentrifugeStore from '../stores/centrifugeStore';
 import useUserStore from '../stores/userStore';
-import { mapState } from 'pinia';
+
+import PartyQueryDefault from './PartyQueryDefault.vue';
+import PartyQueryAll from './PartyQueryAll.vue';
 
 export default defineComponent({
   name: 'Play',
 
   computed: {
-    ...mapState(useCentrifugeStore, ['usersOnline', 'centrifuge']),
+    ...mapState(useCentrifugeStore, ['usersOnline', 'centrifuge', 'owner', 'roomSub']),
     ...mapState(useUserStore, ['username']),
     passProps() {
-      // if (this.currentComponent === 'TextInput') {
+      // if (this.currentQuery === 'TextInput') {
       //   return {title: "123", description: "12345"}
       // }
 
@@ -55,78 +40,17 @@ export default defineComponent({
       userInput: ref('') as Ref<string>,
       roomCode: "" as string,
       roomIdInput: ref('') as Ref<string>,
-      owner: false,
       msgInput: ref('') as Ref<string>,
       inputType: "" as string,
       step: -1,
-      roomSubscription: undefined as Subscription | undefined,
-      title: "Заголовок" as string
+      currentQuery: markRaw(PartyQueryDefault),
+      title: "" as string
     }
   },
   components: {
     NavPanel
   },
   methods: {
-    onCreateRoom(): void {
-      this.centrifuge?.rpc("createRoom", {hash: "minimal.webparty"}).then(response => {
-        this.centrifuge?.removeSubscription(this.roomSubscription as Subscription)
-        const roomCode = response.data.code
-        this.roomSubscription = this.centrifuge?.newSubscription(
-          "watch@" + roomCode, {data: this.username})
-        this.owner = true
-        this.setPublicationCallback(roomCode)
-      })
-    },
-
-    onStartRoom(): void {
-        this.centrifuge?.rpc("startRoom", null).then(response => {
-          if (response.data == true) console.log("Room started")
-        })
-    },
-
-    onJoinRoom(watchMode: boolean): void {
-      this.centrifuge?.removeSubscription(this.roomSubscription as Subscription)
-      const mode = watchMode ? "watch@" : "play@"
-      this.roomSubscription = this.centrifuge?.newSubscription(
-        mode + this.roomIdInput,
-        {data: this.username}
-      )
-
-      this.owner = false
-      this.setPublicationCallback(this.roomIdInput)
-    },
-
-    onMessage(): void {
-      this.centrifuge?.on('message', (response: any) => {
-        console.log(response)
-      })
-    },
-    
-    setPublicationCallback(roomCode: string) {
-      this.roomSubscription?.subscribe()
-
-      this.roomSubscription?.on('subscribed', () => {
-        this.roomCode = roomCode
-        console.log("subscribed to: " + roomCode)
-      })
-
-      this.roomSubscription?.on('unsubscribed', () => {
-        
-        console.log("unsubscribed from: " + this.roomSubscription?.channel)
-      })
-
-      this.roomSubscription?.on('publication', (response: any) => {
-        console.log(response.data)
-        
-        if (response.data.type == "unsubscribe") {
-          this.roomSubscription?.unsubscribe()
-        } else if (response.data != null) {
-          this.step = response.data["step"]
-          this.inputType = response.data["type"]
-        }
-      })
-    },
-
     onSendMessageButtonClicked(): void {
       if (!this.owner) {
         this.centrifuge?.send({type: "input", 
@@ -139,7 +63,16 @@ export default defineComponent({
   },
 
   mounted() {
-    this.onMessage()
-  },
+    this.roomSub?.on('publication', (response: any) => {
+      console.log(response.data)
+      
+      if (response.data.type == "unsubscribe") {
+        this.roomSub?.unsubscribe()
+      } else if (response.data != null) {
+        this.step = response.data["step"]
+        this.inputType = response.data["type"]
+      }
+    })
+  }
 })
 </script>
