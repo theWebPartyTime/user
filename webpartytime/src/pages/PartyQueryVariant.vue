@@ -1,7 +1,4 @@
 <template>
-    <NavPanel>
-        <span class="page-header">Угадай число</span>
-    </NavPanel>
     <section class="pq-variant-section">
         <h2 class="pq-section-title">{{ title }}</h2>
         <p class="pq-section-text">{{ question }}</p>

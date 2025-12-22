@@ -1,7 +1,4 @@
 <template>
-    <NavPanel>
-        <span class="page-header">Угадай число</span>
-    </NavPanel>
     <div class="pq-text">
         <div class="main-section">
             <h1>Заголовок запроса</h1>

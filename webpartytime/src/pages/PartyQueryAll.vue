@@ -1,7 +1,4 @@
 <template>
-    <NavPanel>
-        <span class="page-header">Угадай число</span>
-    </NavPanel>
     <h2 class="pq-section-title" style="text-align: center; margin-top: 15px;">Текущие успехи</h2>
     <section class="pq-all-section">
         <div class="user-card" v-for="participant in participants">
