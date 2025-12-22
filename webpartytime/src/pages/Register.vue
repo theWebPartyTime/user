@@ -58,11 +58,12 @@ export default defineComponent({
 
 <style>
 .register{
-    margin: 120px 132px 0px 132px;
+    height: 100vh;
     display: flex;
     justify-content: center;
+    align-items: center;
     flex-direction: row;    
-    gap: 191px;
+    gap: 10%;
 }
 
 .register .hero-section{
@@ -77,12 +78,12 @@ export default defineComponent({
 .register .section-header{
     text-align: center;
     color: var(--primary);
-    font-weight: 800;
+    font-weight: 900;
 }
 
 .register .section-header h1{
     margin: 0;
-    font-weight: 800;
+    font-weight: 900;
     font-size: 33px;
 }
 

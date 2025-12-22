@@ -24,18 +24,14 @@ export default defineComponent({
 }
 
 .phone-container{
-    height: 86vh;
-    width: 412px;
+    height: 92vh;
+    width: 25%;
     display: flex;
     flex-direction: column;
-    border-top: 8px solid var(--primary);
-    border-left: 8px solid var(--primary);
-    border-right: 8px solid var(--primary);
+    border: 8px solid var(--primary);
+    border-radius: 18px;
     background: var(--background);
-    border-top-right-radius: 18px;
-    border-top-left-radius: 18px;
-    overflow: hidden;
-    position: relative;
+    gap: 15px;
 }
 
 .camera-imitation img{

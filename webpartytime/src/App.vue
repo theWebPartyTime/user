@@ -21,13 +21,13 @@ export default defineComponent({
 @font-face {
     font-family: "Desyatiy";
     font-weight: normal;
-    src: url("./font/Desyatiy\ Regular.ttf");
+    src: url("/font/Desyatiy\ Regular.ttf");
 }
 
 @font-face {
     font-family: "Desyatiy";
     font-weight: bold;
-    src: url("./font/Desyatiy\ Bold.ttf");
+    src: url("/font/Desyatiy\ Bold.ttf");
 }
 
 * {

@@ -7,6 +7,7 @@ import Register from '@/pages/Register.vue'
 import Play from '@/pages/Play.vue'
 import Home from "@/pages/Home.vue"
 
+
 const routes: Array<RouteRecordRaw> = [
     {
       path: '/',
