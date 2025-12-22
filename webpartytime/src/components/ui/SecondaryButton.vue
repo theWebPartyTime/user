@@ -31,6 +31,6 @@ export default defineComponent({
     font-size: 16px;
 }
 .secondary-button:hover {
-    transform: scale(101%, 101%);
+    transform: scale(1.01);
 }
 </style>

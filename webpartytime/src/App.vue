@@ -14,6 +14,12 @@ export default defineComponent({
 <style>
 @font-face {
     font-family: "Desyatiy";
+    font-weight: lighter;
+    src: url("./font/Desyatiy\ Light.ttf");
+}
+
+@font-face {
+    font-family: "Desyatiy";
     font-weight: normal;
     src: url("./font/Desyatiy\ Regular.ttf");
 }

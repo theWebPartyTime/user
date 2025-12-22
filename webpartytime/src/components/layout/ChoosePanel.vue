@@ -1,10 +1,10 @@
 <template>
     <nav class="choose-panel">
         <div class="create-party">
-            <button :class="{'active': createActive}" @click="handleButtonClick('create'), toggleActiveCreate()">Провести вечеринку</button>
+            <button :class="{'active': createActive}" @click="handleButtonClick('create'), toggleActiveCreate()">Провести презентацию</button>
         </div>
         <div class="connect-to-party">
-            <button  :class="{'active': connectActive}" @click="handleButtonClick('connect'), toggleActiveConnect()">Подключиться к вечеринке</button>
+            <button  :class="{'active': connectActive}" @click="handleButtonClick('connect'), toggleActiveConnect()">Подключиться к презентации</button>
         </div>
         
     </nav>
@@ -62,10 +62,11 @@ export default defineComponent({
     padding: 12px 0px;
     font-size: 14px;
     cursor: pointer;
+    transition: transform 0.3;
 }
 
 .choose-panel div button:hover {
-    transform: scale(101%, 101%);
+    transform: scale(1.5);
 }
 
 .active{

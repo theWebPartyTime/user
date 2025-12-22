@@ -31,6 +31,6 @@ export default defineComponent({
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .variant-button:hover {
-    transform: scale(101%, 101%);
+    transform: scale(1.01);
 }
 </style>

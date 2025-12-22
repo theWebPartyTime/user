@@ -1,7 +1,7 @@
 <template>
     <div class="authorized" v-if="isAuth">
         <NavPanel :connected-to-room>
-            <span class="page-header">WebPartyTime</span>
+            <motion.span :initial="{scale: 0}" :animate="{scale: 1}" class="page-header">WebPartyTime</motion.span>
             <div class="current-online">Сейчас онлайн: {{ usersOnline }}</div>
         </NavPanel>
         <ChoosePanel @action-selected="handleActionSelected"/>
@@ -515,9 +515,12 @@ export default defineComponent({
     },
     mounted(){
         this.roomCode = this.createCode()
-    }
-
+    },
 })
+</script>
+
+<script lang="ts" setup>
+    import { motion } from 'motion-v';
 </script>
 
 <style>

@@ -62,8 +62,10 @@ export default defineComponent({
   methods: {
     onCreateRoom(): void {
       this.centrifuge?.rpc("createRoom", {hash: "minimal.webparty"}).then(response => {
+        this.centrifuge?.removeSubscription(this.roomSubscription as Subscription)
         const roomCode = response.data.code
-        this.roomSubscription = this.centrifuge?.newSubscription("watch@" + roomCode)
+        this.roomSubscription = this.centrifuge?.newSubscription(
+          "watch@" + roomCode, {data: this.username})
         this.owner = true
         this.setPublicationCallback(roomCode)
       })
@@ -76,33 +78,42 @@ export default defineComponent({
     },
 
     onJoinRoom(watchMode: boolean): void {
+      this.centrifuge?.removeSubscription(this.roomSubscription as Subscription)
       const mode = watchMode ? "watch@" : "play@"
-      this.roomSubscription = this.centrifuge?.newSubscription(mode + this.roomIdInput)
+      this.roomSubscription = this.centrifuge?.newSubscription(
+        mode + this.roomIdInput,
+        {data: this.username}
+      )
+
       this.owner = false
       this.setPublicationCallback(this.roomIdInput)
     },
 
     onMessage(): void {
-        this.centrifuge?.on('message', (response: any) => {
-          console.log(response)
-        })
+      this.centrifuge?.on('message', (response: any) => {
+        console.log(response)
+      })
     },
-
+    
     setPublicationCallback(roomCode: string) {
       this.roomSubscription?.subscribe()
 
       this.roomSubscription?.on('subscribed', () => {
         this.roomCode = roomCode
+        console.log("subscribed to: " + roomCode)
       })
 
       this.roomSubscription?.on('unsubscribed', () => {
-        this.centrifuge?.removeSubscription(this.roomSubscription as Subscription)
+        
+        console.log("unsubscribed from: " + this.roomSubscription?.channel)
       })
 
       this.roomSubscription?.on('publication', (response: any) => {
         console.log(response.data)
-
-        if (response.data != null) {
+        
+        if (response.data.type == "unsubscribe") {
+          this.roomSubscription?.unsubscribe()
+        } else if (response.data != null) {
           this.step = response.data["step"]
           this.inputType = response.data["type"]
         }
@@ -111,11 +122,17 @@ export default defineComponent({
 
     onSendMessageButtonClicked(): void {
       if (!this.owner) {
-        this.centrifuge?.send({step: this.step, content: this.msgInput, type: this.inputType})
+        this.centrifuge?.send({type: "input", 
+          content: {type: this.inputType, step: this.step, message: this.msgInput}
+        })
       } else {
         this.centrifuge?.send(null)
       }
-    }
+    },
+  },
+
+  mounted() {
+    this.onMessage()
   },
 })
 </script>
