@@ -1,10 +1,14 @@
 <template>
     <div class="authorized" v-if="isAuth">
-        <NavPanel :connected-to-room>
+        <NavPanel :connected-to-room="connectedToRoom">
             <span class="page-header">WebPartyTime</span>
             <div class="current-online">Сейчас онлайн: {{ usersOnline }}</div>
         </NavPanel>
-        <ChoosePanel @action-selected="handleActionSelected"/>
+        <ChoosePanel 
+            v-if="!connectedToRoom"
+            :selectedTab="selectedTab" 
+            @action-selected="handleActionSelected" 
+        />
         <main v-if="selectedTab === 'create'">
             <div v-if="!connectedToRoom" class="creating-party-main">
                 <aside class="aside-navigation">
@@ -182,7 +186,7 @@
                             <button @click="createCode"><img src="@/assets/update_icon.svg" alt=""></button>
                             <div v-if="codeVisibility">{{ roomCode.toUpperCase() }}</div>
                             <div v-else>{{ '**********' }}</div>
-                            <button @click="changeCodeVisibility">
+                            <button @click="codeVisibility = !codeVisibility">
                                 <img :src="codeVisibility ? visibleCode : hiddenCode" alt="" style="width: 24px; height: 24px;">
                             </button>
                         </div>
@@ -402,7 +406,7 @@ import Onboarding from '@/pages/Onboarding.vue';
 import JoiningParty from '@/pages/JoiningParty.vue';
 import useUserStore from '../stores/userStore'
 import useCentrifugeStore from '../stores/centrifugeStore';
-import { mapState, mapActions } from 'pinia'
+import { mapState } from 'pinia'
 import Identicon from '../components/ui/Identicon.vue';
 import { generateUsername } from 'unique-username-generator'
 import visibleCode from '@/assets/show_code_icon.svg';
@@ -411,29 +415,55 @@ import hiddenCode from '@/assets/hide_code_icon.svg';
 type ActionType = 'create' | 'connect' | null;
 type HomeMainSectionInnerType = 'gameList' | 'addScript' | 'editScript' | null;
 
+interface HomeState {
+  isAuth: boolean;
+  selectedTab: ActionType;
+  connectedToRoom: boolean;
+  isOrganizer: boolean;
+  searchQuery: string;
+  activePublic: boolean;
+  activePrivate: boolean;
+  roomCode: string;
+  codeVisibility: boolean;
+  gameButtonsVisible: boolean;
+  selectedFieldIndex: number;
+  selectedInner: HomeMainSectionInnerType;
+  downloadedScript: boolean;
+  isReady: boolean;
+}
+
 export default defineComponent({
     name: 'Home',
     data(){
         return{
+            // Авторизация и состояние
             isAuth: true as boolean,
             selectedTab: 'create' as ActionType,
+            connectedToRoom: false as boolean,
+            isOrganizer: false as boolean,
+
+            // Поиск и фильтрация
             searchQuery: '' as string,
             activePublic: true as boolean,
             activePrivate: false as boolean,
-            accessType: 'По ссылке' as string,
+
+            // Комната
             roomCode: 'QWERTYUIO' as string,
-            gameButtonsVisible: false as boolean,
-            selectedFieldIndex: 1 as number,
-            connectedToRoom: false as boolean,
-            userInfo: null as any,
-            selectedInner: 'gameList' as HomeMainSectionInnerType,
-            downloadedScript: true as boolean,
             codeVisibility: true as boolean,
             visibleCode: visibleCode as string,
             hiddenCode: hiddenCode as string,
-            isOrganizer: false as boolean,
-            title: 'Угадай число' as string,
-            isReady: false as boolean
+            gameButtonsVisible: false as boolean,
+            isReady: false as boolean,
+
+            // Сценарии
+            selectedFieldIndex: 1 as number,
+            selectedInner: 'gameList' as HomeMainSectionInnerType,
+            downloadedScript: true as boolean,
+
+            // Пользователь
+            userInfo: {
+                username: '' as string
+            }   
         }
     },
     components: {
@@ -447,25 +477,68 @@ export default defineComponent({
         Identicon
     },
     methods: {
+        saveHomeState(): void {
+            const state: HomeState = {
+                isAuth: this.isAuth,
+                selectedTab: this.selectedTab,
+                connectedToRoom: this.connectedToRoom,
+                isOrganizer: this.isOrganizer,
+                searchQuery: this.searchQuery,
+                activePublic: this.activePublic,
+                activePrivate: this.activePrivate,
+                roomCode: this.roomCode,
+                codeVisibility: this.codeVisibility,
+                gameButtonsVisible: this.gameButtonsVisible,
+                selectedFieldIndex: this.selectedFieldIndex,
+                selectedInner: this.selectedInner,
+                downloadedScript: this.downloadedScript,
+                isReady: this.isReady
+            };
+            localStorage.setItem('homeState', JSON.stringify(state));
+        },
+        
+        loadHomeState(): void {
+            const saved = localStorage.getItem('homeState');
+            if (saved) {
+                try {
+                    const parsedState: HomeState = JSON.parse(saved);
+                    
+                    if (parsedState.isAuth !== undefined) this.isAuth = parsedState.isAuth;
+                    if (parsedState.selectedTab !== undefined) this.selectedTab = parsedState.selectedTab;
+                    if (parsedState.connectedToRoom !== undefined) this.connectedToRoom = parsedState.connectedToRoom;
+                    if (parsedState.isOrganizer !== undefined) this.isOrganizer = parsedState.isOrganizer;
+                    if (parsedState.searchQuery !== undefined) this.searchQuery = parsedState.searchQuery;
+                    if (parsedState.activePublic !== undefined) this.activePublic = parsedState.activePublic;
+                    if (parsedState.activePrivate !== undefined) this.activePrivate = parsedState.activePrivate;
+                    if (parsedState.roomCode !== undefined) this.roomCode = parsedState.roomCode;
+                    if (parsedState.codeVisibility !== undefined) this.codeVisibility = parsedState.codeVisibility;
+                    if (parsedState.gameButtonsVisible !== undefined) this.gameButtonsVisible = parsedState.gameButtonsVisible;
+                    if (parsedState.selectedFieldIndex !== undefined) this.selectedFieldIndex = parsedState.selectedFieldIndex;
+                    if (parsedState.selectedInner !== undefined) this.selectedInner = parsedState.selectedInner;
+                    if (parsedState.downloadedScript !== undefined) this.downloadedScript = parsedState.downloadedScript;
+                    if (parsedState.isReady !== undefined) this.isReady = parsedState.isReady;
+                    
+                } catch (error) {
+                    console.error('Ошибка при загрузке состояния Home:', error);
+                    this.clearHomeState();
+                }
+            }
+        },
+        
+        clearHomeState(): void {
+            localStorage.removeItem('homeState');
+        },
         updateConnection(newValue: boolean){
             this.connectedToRoom = newValue
-        }
-        ,
+        },
         updateOrganizer(newValue: boolean) {
             this.isOrganizer = newValue;
         },
         updateTab(newTab: ActionType) {
             this.selectedTab = newTab;
         },
-        changeCodeVisibility(){
-            this.codeVisibility = !this.codeVisibility
-            if (this.codeVisibility == false){
-                
-            }
-        },
         createCode(): string {
             const code = generateUsername("", 1, 10)
-            
             this.roomCode = code
             return code
         },
@@ -504,8 +577,7 @@ export default defineComponent({
         },
         selectField(index: number) {
             this.selectedFieldIndex = index;
-        },
-        ...mapActions(useUserStore, ['generateUsername', 'setUsername'])
+        }
     },
     computed: {
         ...mapState(useUserStore, ['username']),
@@ -513,10 +585,95 @@ export default defineComponent({
     },
     created() {
         const store = useUserStore()
-        this.userInfo = store
+
+        this.loadHomeState();
+
+        this.userInfo = {
+            username: store.username || ""
+        }
+
+        if (!this.roomCode || this.roomCode === 'QWERTYUIO') {
+            this.roomCode = this.createCode();
+        }
     },
     mounted(){
         this.roomCode = this.createCode()
+        this.saveHomeState();
+    },
+    beforeUnmount() {
+        this.saveHomeState();
+    },
+    watch: {
+        isAuth: {
+            handler(_newVal) {
+                this.saveHomeState();
+            }
+        },
+        selectedTab: {
+            handler(_newVal) {
+                this.saveHomeState();
+            }
+        },
+        connectedToRoom: {
+            handler(_newVal) {
+                this.saveHomeState();
+            }
+        },
+        isOrganizer: {
+            handler(_newVal) {
+                this.saveHomeState();
+            }
+        },
+        searchQuery: {
+            handler(_newVal) {
+                this.saveHomeState();
+            }
+        },
+        activePublic: {
+            handler(_newVal) {
+                this.saveHomeState();
+            }
+        },
+        activePrivate: {
+            handler(_newVal) {
+                this.saveHomeState();
+            }
+        },
+        roomCode: {
+            handler(_newVal) {
+                this.saveHomeState();
+            }
+        },
+        codeVisibility: {
+            handler(_newVal) {
+                this.saveHomeState();
+            }
+        },
+        gameButtonsVisible: {
+            handler(_newVal) {
+                this.saveHomeState();
+            }
+        },
+        selectedFieldIndex: {
+            handler(_newVal) {
+                this.saveHomeState();
+            }
+        },
+        selectedInner: {
+            handler(_newVal) {
+                this.saveHomeState();
+            }
+        },
+        downloadedScript: {
+            handler(_newVal) {
+                this.saveHomeState();
+            }
+        },
+        isReady: {
+            handler(_newVal) {
+                this.saveHomeState();
+            }
+        }
     }
 
 })

@@ -1,10 +1,20 @@
 <template>
     <nav class="choose-panel">
         <div class="create-party">
-            <button :class="{'active': createActive}" @click="handleButtonClick('create'), toggleActiveCreate()">Провести вечеринку</button>
+            <button 
+                :class="{'active': selectedTab === 'create'}" 
+                @click="handleButtonClick('create')"
+            >
+                Провести вечеринку
+            </button>
         </div>
         <div class="connect-to-party">
-            <button  :class="{'active': connectActive}" @click="handleButtonClick('connect'), toggleActiveConnect()">Подключиться к вечеринке</button>
+            <button 
+                :class="{'active': selectedTab === 'connect'}" 
+                @click="handleButtonClick('connect')"
+            >
+                Подключиться к вечеринке
+            </button>
         </div>
         
     </nav>
@@ -18,23 +28,15 @@ type ActionType = 'create' | 'connect';
 export default defineComponent({
     name: 'ChoosePanel',
     emits: ['action-selected'],
-    data(){
-        return{
-            createActive: true,
-            connectActive: false
+    props: {
+        selectedTab: {
+            type: String as () => ActionType,
+            default: 'create' as ActionType
         }
     },
     methods: {
         handleButtonClick(action: ActionType): void {
             this.$emit('action-selected', action);
-        },
-        toggleActiveCreate(){
-            this.createActive = true
-            this.connectActive = false
-        },
-        toggleActiveConnect(){
-            this.createActive = false
-            this.connectActive = true
         }
     }
 })

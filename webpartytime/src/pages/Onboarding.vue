@@ -22,10 +22,10 @@
                     </router-link>
                 </PrimaryButton>
                 <div class="section-footer">
-                    <router-link to="/guess-number">
+                    <router-link to="/auth/login">
                         <span>У меня уже есть аккаунт</span>
                     </router-link>
-                    <router-link to="/counter">
+                    <router-link to="/">
                         <span>Продолжить без регистрации</span>
                     </router-link>
                 </div>
