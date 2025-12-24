@@ -1,6 +1,6 @@
 // import { useUserStore } from '../stores/userStore'
 
-const API_URL = 'http://localhost:8080'
+const API_URL = 'http://89.111.175.253:8080'
 
 // async function fetchWithAuth(url: string, options: RequestInit = {}) {
 //   const userStore = useUserStore()
@@ -88,6 +88,7 @@ export const authApi = {
   async register(email: string, password: string) {
     const response = await fetch(`${API_URL}/auth/register`, {
       method: 'POST',
+      mode: 'no-cors',
       headers: {
         'Content-Type': 'application/json',
       },

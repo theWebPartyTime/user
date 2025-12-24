@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { generateUsername } from 'unique-username-generator'
+import { generateUsername as generateRandomUsername } from 'unique-username-generator'
 
 export const useUserStore = defineStore('user', {
     state: () => ({
@@ -19,10 +19,11 @@ export const useUserStore = defineStore('user', {
       access_token: string
       refresh_token: string
     }) {
+      const username = generateRandomUsername('', 1, 10)
       this.user = {
         id: authResponse.user.id,
         email: authResponse.user.email,
-        username: this.generateUsername()
+        username: username
       }
       this.accessToken = authResponse.access_token
       this.refreshToken = authResponse.refresh_token
@@ -69,6 +70,7 @@ export const useUserStore = defineStore('user', {
         accessToken: this.accessToken,
         refreshToken: this.refreshToken
       }
+      console.log(dataToSave)
       localStorage.setItem('auth', JSON.stringify(dataToSave))
     },
     
@@ -77,10 +79,11 @@ export const useUserStore = defineStore('user', {
     },
 
     generateUsername(): string {
-      const username = generateUsername('', 1, 10)
+      const username = generateRandomUsername('', 1, 10)
       if (this.user) {
         this.user.username = username
       }
+      console.log(username)
       this.saveToLocalStorage()
       return username
     }
