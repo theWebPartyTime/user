@@ -31,7 +31,7 @@ import NavPanel from '../components/layout/NavPanel.vue';
 import { defineComponent, type Ref, ref } from 'vue'
 import { Subscription } from 'centrifuge';
 import useCentrifugeStore from '../stores/centrifugeStore';
-import useUserStore from '../stores/userStore';
+import { useUserStore } from '../stores/userStore';
 import { mapState } from 'pinia';
 
 export default defineComponent({
@@ -39,7 +39,7 @@ export default defineComponent({
 
   computed: {
     ...mapState(useCentrifugeStore, ['usersOnline', 'centrifuge']),
-    ...mapState(useUserStore, ['username']),
+    ...mapState(useUserStore, ['user']),
     passProps() {
       // if (this.currentComponent === 'TextInput') {
       //   return {title: "123", description: "12345"}

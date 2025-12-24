@@ -16,22 +16,40 @@
                 <div class="section-header">
                     <h1>РЕГИСТРАЦИЯ </h1>
                 </div>
-                <form class="register-form">
+                <form class="register-form" @submit.prevent="handleSubmit">
                     <div class="user-email">
-                        <input type="email" id="user-email" placeholder="Электронная почта">
+                        <input 
+                            type="email" 
+                            id="user-email" 
+                            placeholder="Электронная почта"
+                            v-model="email"
+                        >
                     </div>
                     <div class="user-password">
-                        <input type="password" id="user-password" placeholder="Пароль">
+                        <input 
+                            type="password" 
+                            id="user-password" 
+                            placeholder="Пароль"
+                            v-model="password"
+                        >
                     </div>
                     <div class="user-repeat-password">
-                        <input type="password" id="user-repeat-password" placeholder="Повторите пароль">
+                        <input 
+                            type="password" 
+                            id="user-repeat-password" 
+                            placeholder="Повторите пароль"
+                            v-model="passwordRepeat"
+                        >
                     </div>
+                    <div v-if="error" class="error-message" style="color: red; margin-top: 10px;">
+                        {{ error }}
+                    </div>
+                    <button type="submit" style="border: 0; background: transparent; margin-top: 40px;">
+                        <PrimaryButton class="start-button">
+                            Начать
+                        </PrimaryButton>
+                    </button>
                 </form>
-                <PrimaryButton class="start-button">
-                    <router-link to="/">
-                        Начать
-                    </router-link>
-                </PrimaryButton>
             </section>
         </PhoneContainer>
 
@@ -41,17 +59,48 @@
 <script lang="ts">
 import PhoneContainer from '@/components/layout/PhoneContainer.vue';
 import PrimaryButton from '@/components/ui/PrimaryButton.vue';
+import { useUserStore } from '../stores/userStore'
 import { defineComponent } from 'vue';
+import { authApi } from '../services/auth'
 export default defineComponent({
     name: 'Register',
     data(){
-        return{
+        const userStore = useUserStore();
 
+        return{
+            email: '',
+            password: '',
+            passwordRepeat: '',
+            isLoading: false,
+            error: null as string | null,
+            userStore
         }
     },
     components: {
         PhoneContainer,
         PrimaryButton
+    },
+    methods: {
+        async handleSubmit() {
+            if (this.password !== this.passwordRepeat) {
+                this.error = 'Пароли не совпадают'
+                alert('Пароли не совпадают')
+                return
+            }
+
+            this.isLoading = true
+            this.error = null
+            
+            try {
+                const authResponse = await authApi.register(this.email, this.password)
+                this.userStore.setAuthData(authResponse)
+                this.$router.push('/')
+            } catch (err) {
+                this.error = err instanceof Error ? err.message : 'Ошибка авторизации'
+            } finally {
+                this.isLoading = false
+            }
+        }
     }
 })
 </script>
@@ -69,8 +118,10 @@ export default defineComponent({
 .register .hero-section{
     height: 70vh;
     padding: 50px 33px 35px 33px;
+    margin-top: 40px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 60px;
     flex-direction: column;
     align-items: center;
 }

@@ -19,7 +19,7 @@
 import { defineComponent } from 'vue';
 import VariantButton from '@/components/ui/VariantButton.vue';
 import SecondaryButton from '@/components/ui/SecondaryButton.vue';
-import useUserStore from '../../stores/userStore'
+import { useUserStore } from '../../stores/userStore'
 import { mapState, mapActions } from 'pinia'
 import Identicon from '@/components/ui/Identicon.vue';
 
@@ -45,7 +45,7 @@ export default defineComponent({
         openProfileModule(){
             this.openedModule = !this.openedModule
         },
-        ...mapActions(useUserStore, ['generateUsername', 'setUsername'])
+        ...mapActions(useUserStore, ['generateUsername', 'setAuthData'])
     },
     components: {
         VariantButton,
@@ -53,11 +53,11 @@ export default defineComponent({
         Identicon
     },
     computed: {
-        ...mapState(useUserStore, ['username']),
+        ...mapState(useUserStore, ['user']),
         
         usernameInput: {
-        get(): string {
-            return this.username || ''
+        get(): string | null {
+            return this.user?.username || localStorage.getItem('username')
         },
         set(value: string) {
             this.setUsername(value)

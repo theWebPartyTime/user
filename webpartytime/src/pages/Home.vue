@@ -404,7 +404,7 @@ import VariantButton from '@/components/ui/VariantButton.vue';
 import SecondaryButton from '@/components/ui/SecondaryButton.vue';
 import Onboarding from '@/pages/Onboarding.vue';
 import JoiningParty from '@/pages/JoiningParty.vue';
-import useUserStore from '../stores/userStore'
+import { useUserStore } from '../stores/userStore'
 import useCentrifugeStore from '../stores/centrifugeStore';
 import { mapState } from 'pinia'
 import Identicon from '../components/ui/Identicon.vue';
@@ -462,7 +462,7 @@ export default defineComponent({
 
             // Пользователь
             userInfo: {
-                username: '' as string
+                username: '' as any
             }   
         }
     },
@@ -580,7 +580,7 @@ export default defineComponent({
         }
     },
     computed: {
-        ...mapState(useUserStore, ['username']),
+        ...mapState(useUserStore, ['user']),
         ...mapState(useCentrifugeStore, ['usersOnline'])
     },
     created() {
@@ -589,7 +589,7 @@ export default defineComponent({
         this.loadHomeState();
 
         this.userInfo = {
-            username: store.username || ""
+            username: store.user?.username || localStorage.getItem('username')
         }
 
         if (!this.roomCode || this.roomCode === 'QWERTYUIO') {
