@@ -11,7 +11,7 @@
             <Identicon :username="usernameInput" @click="openProfileModule"/>
             
             <SecondaryButton class="profile-module" :class="{visible: openedModule}" @click="logout" v-if="isAuthenticated">Выйти</SecondaryButton>
-            <SecondaryButton class="profile-module" :class="{visible: openedModule}" @click="$router.push('/auth/login')" v-else>Войти</SecondaryButton>
+            <SecondaryButton class="profile-module" :class="{visible: openedModule}" @click="returnToOnboarding" v-else>Вернуться к онбоардингу</SecondaryButton>
         </div>
     </nav>
 </template>
@@ -43,6 +43,14 @@ export default defineComponent({
         }
     },
     methods:{
+        returnToOnboarding(){
+            localStorage.removeItem('username')
+            
+            window.dispatchEvent(new CustomEvent('username-updated', { 
+                detail: { username: '' } 
+            }));
+
+        },
         openProfileModule(){
             this.openedModule = !this.openedModule
         },

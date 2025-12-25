@@ -176,8 +176,8 @@
                                     <span class="field-subtitle">{{ script.description }}</span>
                                 </div>
                             </div>  
-                            <div class="game-list" v-else style="display: flex;align-items: center;flex-direction: row; padding-inline: 10px;">
-                                <h2>Пока ничего нет! Создайте первый сценарий</h2>
+                            <div v-else style="display: flex;align-items: center;flex-direction: row;padding-top: 40px;">
+                                <h2 style="margin: 0;">Пока ничего нет! Создайте первый сценарий</h2>
                             </div>     
                         </div>
                         <div class="game-list" v-if="activePrivate && !loading">
@@ -577,8 +577,10 @@ export default defineComponent({
         handleUsernameUpdated(event: Event) {
             const customEvent = event as CustomEvent<{ username: string }>;
             this.localUsername = customEvent.detail.username;
-
-            if (!this.isAuthenticated) {
+            
+            if (!customEvent.detail.username) {
+                localStorage.removeItem('username');
+            } else if (!this.isAuthenticated) {
                 localStorage.setItem('username', customEvent.detail.username);
             }
         },
@@ -617,10 +619,10 @@ export default defineComponent({
         },
 
         getImageUrl(coverHash: string | undefined | null): string{
-            if (coverHash) {
-                return `http://localhost:8080/uploads/images/${coverHash}`;
+            if (coverHash != '') {
+                return `https://api.webparty.fun/uploads/images/${coverHash}`;
             }
-            return '@/assets/game_img2.svg';
+            return defaultCover;
         },
 
         async loadPublicScripts() {

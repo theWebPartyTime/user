@@ -1,6 +1,5 @@
 import { useUserStore } from '../stores/userStore'
-
-const API_URL = 'http://89.111.175.253:8080'
+const API_URL = 'https://api.webparty.fun'
 
 async function fetchWithAuth(url: string, options: RequestInit = {}) {
   const userStore = useUserStore()

@@ -1,6 +1,6 @@
 // import { useUserStore } from '../stores/userStore'
 
-const API_URL = 'http://89.111.175.253:8080'
+const API_URL = 'https://api.webparty.fun'
 
 export const authApi = {
   async login(email: string, password: string) {
