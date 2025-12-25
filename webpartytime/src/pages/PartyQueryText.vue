@@ -2,35 +2,50 @@
   <div class="pq-text">
     <div class="main-section">
       <h1>{{ title }}</h1>
-      <h2>{{ description }}</h2>
+      <h2>{{ msg }}</h2>
       <div class="input-form">
-        <input id="input-text" type="text" required />
+        <input id="input-text" v-model="input" type="text" required />
         <label for="input-text">Ответ</label>
       </div>
     </div>
-    <PrimaryButton>Отправить</PrimaryButton>
+    <PrimaryButton @click="$emit('onsend', input)">Отправить</PrimaryButton>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import PrimaryButton from "@/components/ui/PrimaryButton.vue";
+
+import useCentrifugeStore from "../stores/centrifugeStore";
+import { mapState } from "pinia";
+
 export default defineComponent({
-  name: "PartyQueryTest",
+  name: "PartyQueryText",
   data() {
-    return {};
+    return {
+      input: "" as string
+    };
   },
+
+  emits: ['onsend'],
+
+  computed: {
+    ...mapState(useCentrifugeStore, ['centrifuge', 'owner'])
+  },
+
   components: {
     PrimaryButton,
   },
+
   props: {
     title: {
       type: String as () => string,
-      default: "Заголовок запроса",
+      default: "",
     },
-    description: {
+
+    msg: {
       type: String as () => string,
-      default: "Это текст для более подробного описания запроса.",
+      default: "",
     },
   },
 });

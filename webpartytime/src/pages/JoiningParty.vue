@@ -37,12 +37,12 @@
     </div>
     <div class="connect-buttons">
       <PrimaryButton
-        @click="connectToRoom('create')"
+        @click="connectToRoom('create', false)"
         :class="{ 'disabled-link': code.length != 9 }"
         >Подключиться</PrimaryButton
       >
       <VariantButton
-        @click="connectToRoom('create')"
+        @click="connectToRoom('create', true)"
         :class="{ 'disabled-link': code.length != 9 }"
         >Подключиться как зритель</VariantButton
       >
@@ -55,9 +55,9 @@ import PrimaryButton from "@/components/ui/PrimaryButton.vue";
 import VariantButton from "@/components/ui/VariantButton.vue";
 import useCentrifugeStore from "../stores/centrifugeStore";
 import { mapState } from "pinia";
-import type { Subscription } from "centrifuge";
-
+import router from "../routes/router";
 import { mapActions } from "pinia";
+import useUserStore from "../stores/userStore";
 
 export default defineComponent({
   name: "CodeInput",
@@ -100,6 +100,7 @@ export default defineComponent({
 
   computed: {
     ...mapState(useCentrifugeStore, ["roomSub", "centrifuge"]),
+    ...mapState(useUserStore, ['username']),
 
     fullCode(): string {
       return this.code.join("");
@@ -144,11 +145,16 @@ export default defineComponent({
       this.code = slicedValue.split("");
     },
 
-    connectToRoom(tab: string) {
-      this.join(this.fullCode);
-      this.$emit("update-organizer", false);
-      this.$emit("update-tab", tab);
-      this.$emit("update-connection", true);
+    connectToRoom(tab: string, spectatorMode: boolean) {
+      this.join(this.username as string, this.fullCode, spectatorMode, 
+      () => {router.push("/play")}, () => {if (!spectatorMode) router.push("/")}
+    ).then((success) => {
+        if (success) {
+          this.$emit("update-organizer", false);
+          this.$emit("update-tab", tab);
+          this.$emit("update-connection", true);
+        }
+      })
     },
 
     focusHiddenInput() {

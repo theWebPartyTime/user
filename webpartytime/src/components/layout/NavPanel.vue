@@ -1,8 +1,8 @@
 <template>
   <nav class="nav-panel">
     <div class="logo-online">
-      <h2 v-if="timer > 0" class="timer">{{ timerValue }}</h2>
-      <img src="@/assets/logo.svg" alt="logo" class="logo-nav" v-else />
+      <h2 v-show="timerValue > -1" class="timer">{{ timerValue }}</h2>
+      <img src="@/assets/logo.svg" alt="logo" class="logo-nav" v-show="timerValue == -1" />
       <slot></slot>
     </div>
     <div class="profile">
@@ -44,7 +44,7 @@ export default defineComponent({
       openedModule: false as Boolean,
       userInfo: "" as any,
       timerCounter: undefined as Number | undefined,
-      timerValue: this.timer
+      timerValue: this.timer,
     };
   },
   props: {
@@ -53,14 +53,20 @@ export default defineComponent({
       default: true,
     },
 
-    timer: {type: Number, default: 0},
+    timer: {type: Number, default: -1},
+  },
+  watch: {
+    timer(newValue) {
+      this.timerValue = newValue 
+    },
   },
   methods: {
     openProfileModule() {
       this.openedModule = !this.openedModule;
     },
+    
     countdown() {
-      if (this.timerValue > 0) {
+      if (this.timerValue > -1) {
         this.timerValue -= 1
       }
     },
@@ -184,5 +190,6 @@ export default defineComponent({
 .timer {
   font-size: 50px;
   font-weight: 700;
+    color: var(--primary);
 }
 </style>

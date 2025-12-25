@@ -3,8 +3,8 @@
     <h2 class="pq-section-title">{{ title }}</h2>
     <div class="section-main">
       <p class="pq-section-text">{{ msg }}</p>
-      <img
-        src="@/assets/game_img.svg"
+      <img v-if="image"
+        :src=image
         alt=""
         class="pq-multimedia-game-image"
       />
@@ -22,12 +22,19 @@ export default defineComponent({
   props: {
     title: {
       type: String as () => string,
-      default: "Заголовок запроса",
+      default: "",
     },
+
     msg: {
       type: String as () => string,
       default:
-        "Это текст для более подробного описания запроса. Это текст для более подробного описания запроса. Это текст для более подробного описания запроса.",
+        "",
+    },
+
+    image: {
+      type: String,
+      default:
+        "",
     },
   },
 });
@@ -67,5 +74,6 @@ export default defineComponent({
 
 .pq-multimedia-section .pq-multimedia-game-image {
   border-radius: 28px;
+  height: 100%;
 }
 </style>

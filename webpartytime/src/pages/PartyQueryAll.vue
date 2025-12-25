@@ -1,22 +1,17 @@
 <template>
   <h2 class="pq-section-title" style="text-align: center; margin-top: 15px">
-    Текущие успехи
+    <span v-if="participants.length > 0">Текущие успехи</span>
+    <span v-else>Пока что правильных ответов не было</span>
   </h2>
   <section class="pq-all-section">
-    <div class="user-card" v-for="participant in participants">
+    <div class="user-card" v-for="participant in participants" :key="participant.id" @click="$emit('onsend', participant.id)">
       <div class="user-info">
-        <img
-          src="@/assets/avatar_nav.svg"
-          alt=""
-          class="user-avatar"
-          v-if="!participant.username"
-        />
         <Identicon
           :username="participant.username"
           class="user-avatar"
-          v-else
         />
         <p class="user-name">{{ participant.username }}</p>
+        <p class="user-name" v-if="participant.winCount != -1">{{ participant.winCount }}</p>
       </div>
       <p class="user-content">{{ participant.msg }}</p>
     </div>
@@ -29,8 +24,9 @@ import type { PropType } from "vue";
 import Identicon from "@/components/ui/Identicon.vue";
 
 export interface Participant {
-  id: number;
+  id: string;
   username: string;
+  winCount: number;
   msg: string;
 }
 
@@ -39,54 +35,16 @@ export default defineComponent({
   data() {
     return {};
   },
+
+  emits: ['onsend'],
+
   props: {
     participants: {
       type: Array as PropType<Participant[]>,
       required: true,
-      default: () => [
-        {
-          id: 0,
-          username: "Пользователь 5",
-          msg: "Это для вывода пользовательского контента",
-        },
-        {
-          id: 1,
-          username: "Пользователь 5",
-          msg: "Это для вывода пользовательского контента",
-        },
-        {
-          id: 2,
-          username: "Пользователь 5",
-          msg: "Это для вывода пользовательского контента",
-        },
-        {
-          id: 3,
-          username: "Пользователь 5",
-          msg: "Это для вывода пользовательского контента",
-        },
-        {
-          id: 4,
-          username: "Пользователь 5",
-          msg: "Это для вывода пользовательского контента",
-        },
-        {
-          id: 5,
-          username: "Пользователь 5",
-          msg: "Это для вывода пользовательского контента",
-        },
-        {
-          id: 6,
-          username: "Пользователь 5",
-          msg: "Это для вывода пользовательского контента",
-        },
-        {
-          id: 7,
-          username: "Пользователь 5",
-          msg: "Это для вывода пользовательского контента",
-        },
-      ],
     },
   },
+  
   components: {
     Identicon,
   },

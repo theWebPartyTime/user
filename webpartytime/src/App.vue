@@ -15,19 +15,19 @@ export default defineComponent({
 @font-face {
   font-family: "Desyatiy";
   font-weight: lighter;
-  src: url("./font/Desyatiy\ Light.ttf");
+  src: url("@/assets/font/Desyatiy\ Light.ttf");
 }
 
 @font-face {
   font-family: "Desyatiy";
   font-weight: normal;
-  src: url("/font/Desyatiy\ Regular.ttf");
+  src: url("@/assets/font/Desyatiy\ Regular.ttf");
 }
 
 @font-face {
   font-family: "Desyatiy";
   font-weight: bold;
-  src: url("/font/Desyatiy\ Bold.ttf");
+  src: url("@/assets/font/Desyatiy\ Bold.ttf");
 }
 
 * {
