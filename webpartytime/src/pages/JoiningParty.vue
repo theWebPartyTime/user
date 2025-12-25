@@ -138,6 +138,7 @@ export default defineComponent({
     this.updateCodeFromValue(this.modelValue);
     this.focusHiddenInput();
   },
+
   methods: {
     updateCodeFromValue(value: string) {
       const filtered = value.replace(/[^A-Za-z]/g, "").toUpperCase();

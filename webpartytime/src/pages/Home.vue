@@ -1,5 +1,5 @@
 <template>
-  <div class="authorized" v-if="isAuth">
+  <div class="authorized" v-if="true">
     <NavPanel :connected-to-room>
       <motion.span
         :initial="{ scale: 0 }"
@@ -346,7 +346,6 @@ interface HomeState {
   searchQuery: string;
   activePublic: boolean;
   activePrivate: boolean;
-  roomCode: string;
   codeVisibility: boolean;
   gameButtonsVisible: boolean;
   selectedFieldIndex: number;
@@ -375,7 +374,6 @@ export default defineComponent({
           activePrivate: false as boolean,
 
           // Комната
-          roomCode: 'QWERTYUIO' as string,
           codeVisibility: true as boolean,
           visibleCode: visibleCode as string,
           hiddenCode: hiddenCode as string,
@@ -416,7 +414,6 @@ export default defineComponent({
             searchQuery: this.searchQuery,
             activePublic: this.activePublic,
             activePrivate: this.activePrivate,
-            roomCode: this.roomCode,
             codeVisibility: this.codeVisibility,
             gameButtonsVisible: this.gameButtonsVisible,
             selectedFieldIndex: this.selectedFieldIndex,
@@ -440,7 +437,6 @@ export default defineComponent({
                 if (parsedState.searchQuery !== undefined) this.searchQuery = parsedState.searchQuery;
                 if (parsedState.activePublic !== undefined) this.activePublic = parsedState.activePublic;
                 if (parsedState.activePrivate !== undefined) this.activePrivate = parsedState.activePrivate;
-                if (parsedState.roomCode !== undefined) this.roomCode = parsedState.roomCode;
                 if (parsedState.codeVisibility !== undefined) this.codeVisibility = parsedState.codeVisibility;
                 if (parsedState.gameButtonsVisible !== undefined) this.gameButtonsVisible = parsedState.gameButtonsVisible;
                 if (parsedState.selectedFieldIndex !== undefined) this.selectedFieldIndex = parsedState.selectedFieldIndex;
