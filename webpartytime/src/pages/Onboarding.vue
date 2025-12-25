@@ -1,10 +1,35 @@
 <template>
   <div class="onboarding">
     <div class="logo-onboarding">
-      <span class="logo-web">WEB</span>
-      <span class="logo-party">PARTY</span>
-      <span class="logo-time">TIME</span>
+        <span class="logo-web">WEB</span>
+        <span class="logo-party">PARTY</span>
+        <span class="logo-time">TIME</span>
     </div>
+  
+    <PhoneContainer class="phone-section">
+        <div class="onboarding-progress-bar">
+            <div class="main-bar active-bar"></div>
+            <div class="secondary-bar"></div>
+        </div>
+        <section class="hero-section">
+            <div class="section-header">
+                <h1>Твои онлайн посиделки</h1>
+            </div>
+            <PrimaryButton class="continue-button">
+                <router-link to="/auth/register">
+                    <img src="@/assets/arrow.png" alt="arrow">
+                </router-link>
+            </PrimaryButton>
+            <div class="section-footer">
+                <router-link to="/auth/login">
+                    <span>У меня уже есть аккаунт</span>
+                </router-link>
+                <router-link to="/">
+                    <span>Продолжить без регистрации</span>
+                </router-link>
+            </div>
+        </section>
+    </PhoneContainer>
 
     <PhoneContainer class="phone-section">
       <div class="onboarding-progress-bar">

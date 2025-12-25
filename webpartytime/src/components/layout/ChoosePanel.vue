@@ -1,22 +1,23 @@
 <template>
-  <nav class="choose-panel">
-    <div class="create-party">
-      <button
-        :class="{ active: createActive }"
-        @click="(handleButtonClick('create'), toggleActiveCreate())"
-      >
-        Провести презентацию
-      </button>
-    </div>
-    <div class="connect-to-party">
-      <button
-        :class="{ active: connectActive }"
-        @click="(handleButtonClick('connect'), toggleActiveConnect())"
-      >
-        Подключиться к презентации
-      </button>
-    </div>
-  </nav>
+    <nav class="choose-panel">
+        <div class="create-party">
+            <button 
+                :class="{'active': selectedTab === 'create'}" 
+                @click="handleButtonClick('create')"
+            >
+                Провести вечеринку
+            </button>
+        </div>
+        <div class="connect-to-party">
+            <button 
+                :class="{'active': selectedTab === 'connect'}" 
+                @click="handleButtonClick('connect')"
+            >
+                Подключиться к вечеринке
+            </button>
+        </div>
+        
+    </nav>
 </template>
 
 <script lang="ts">
@@ -25,28 +26,20 @@ import { defineComponent } from "vue";
 type ActionType = "create" | "connect";
 
 export default defineComponent({
-  name: "ChoosePanel",
-  emits: ["action-selected"],
-  data() {
-    return {
-      createActive: true,
-      connectActive: false,
-    };
-  },
-  methods: {
-    handleButtonClick(action: ActionType): void {
-      this.$emit("action-selected", action);
+    name: 'ChoosePanel',
+    emits: ['action-selected'],
+    props: {
+        selectedTab: {
+            type: String as () => ActionType,
+            default: 'create' as ActionType
+        }
     },
-    toggleActiveCreate() {
-      this.createActive = true;
-      this.connectActive = false;
-    },
-    toggleActiveConnect() {
-      this.createActive = false;
-      this.connectActive = true;
-    },
-  },
-});
+    methods: {
+        handleButtonClick(action: ActionType): void {
+            this.$emit('action-selected', action);
+        }
+    }
+})
 </script>
 
 <style>

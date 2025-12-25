@@ -1,5 +1,5 @@
 <template>
-  <div class="authorized" v-if="true">
+  <div class="authorized" v-if="isAuth">
     <NavPanel :connected-to-room>
       <motion.span
         :initial="{ scale: 0 }"
@@ -333,58 +333,180 @@ import router from "../routes/router";
 import Participants from "@/components/ui/Participants.vue";
 import CreatedTimer from "@/components/ui/CreatedTimer.vue";
 import type { RoomConfig } from "../stores/centrifugeStore";
+import { generateUsername } from 'unique-username-generator'
 
 type ActionType = "create" | "connect" | null;
 type HomeMainSectionInnerType = "gameList" | "addScript" | "editScript" | null;
 
+interface HomeState {
+  isAuth: boolean;
+  selectedTab: ActionType;
+  connectedToRoom: boolean;
+  isOrganizer: boolean;
+  searchQuery: string;
+  activePublic: boolean;
+  activePrivate: boolean;
+  roomCode: string;
+  codeVisibility: boolean;
+  gameButtonsVisible: boolean;
+  selectedFieldIndex: number;
+  selectedInner: HomeMainSectionInnerType;
+  downloadedScript: boolean;
+  isReady: boolean;
+}
+
 export default defineComponent({
-  name: "Home",
-  data() {
-    return {
-      selectedTab: "create" as ActionType,
-      searchQuery: "" as string,
-      activePublic: true as boolean,
-      activePrivate: false as boolean,
-      accessType: "По ссылке" as string,
-      gameButtonsVisible: false as boolean,
-      selectedFieldIndex: 1 as number,
-      connectedToRoom: false as boolean,
-      userInfo: null as any,
-      roomConfig: {allowAnonymous: false, allowSpectators: false,
-        allowJoins: false, autoStart: false,
-      } as RoomConfig,
-      selectedInner: "gameList" as HomeMainSectionInnerType,
-      downloadedScript: true as boolean,
-      codeVisibility: false as boolean,
-      visibleCode: visibleCode as string,
-      hiddenCode: hiddenCode as string,
-      isOrganizer: false as boolean,
-      title: "Угадай число" as string,
-      isReady: false as boolean,
-    };
+  name: 'Home',
+  data(){
+      return{
+          roomConfig: {allowAnonymous: false, allowSpectators: false,
+            allowJoins: false, autoStart: false,
+          } as RoomConfig,
+
+          // Авторизация и состояние
+          isAuth: true as boolean,
+          selectedTab: 'create' as ActionType,
+          connectedToRoom: false as boolean,
+          isOrganizer: false as boolean,
+
+          // Поиск и фильтрация
+          searchQuery: '' as string,
+          activePublic: true as boolean,
+          activePrivate: false as boolean,
+
+          // Комната
+          roomCode: 'QWERTYUIO' as string,
+          codeVisibility: true as boolean,
+          visibleCode: visibleCode as string,
+          hiddenCode: hiddenCode as string,
+          gameButtonsVisible: false as boolean,
+          isReady: false as boolean,
+
+          // Сценарии
+          selectedFieldIndex: 1 as number,
+          selectedInner: 'gameList' as HomeMainSectionInnerType,
+          downloadedScript: true as boolean,
+
+          // Пользователь
+          userInfo: {
+              username: '' as string
+          }   
+      }
   },
+  
   components: {
-    NavPanel,
-    ChoosePanel,
-    PrimaryButton,
-    VariantButton,
-    SecondaryButton,
-    Onboarding,
-    JoiningParty,
-    CreatedTimer,
-    Identicon,
+      NavPanel,
+      ChoosePanel,
+      PrimaryButton,
+      VariantButton,
+      SecondaryButton,
+      Onboarding,
+      JoiningParty,
+      CreatedTimer,
+      Identicon
   },
+
   methods: {
-    updateConnection(newValue: boolean) {
-      this.connectedToRoom = newValue;
+    saveHomeState(): void {
+        const state: HomeState = {
+            isAuth: this.isAuth,
+            selectedTab: this.selectedTab,
+            connectedToRoom: this.connectedToRoom,
+            isOrganizer: this.isOrganizer,
+            searchQuery: this.searchQuery,
+            activePublic: this.activePublic,
+            activePrivate: this.activePrivate,
+            roomCode: this.roomCode,
+            codeVisibility: this.codeVisibility,
+            gameButtonsVisible: this.gameButtonsVisible,
+            selectedFieldIndex: this.selectedFieldIndex,
+            selectedInner: this.selectedInner,
+            downloadedScript: this.downloadedScript,
+            isReady: this.isReady
+        };
+        localStorage.setItem('homeState', JSON.stringify(state));
     },
-
+    
+    loadHomeState(): void {
+        const saved = localStorage.getItem('homeState');
+        if (saved) {
+            try {
+                const parsedState: HomeState = JSON.parse(saved);
+                
+                if (parsedState.isAuth !== undefined) this.isAuth = parsedState.isAuth;
+                if (parsedState.selectedTab !== undefined) this.selectedTab = parsedState.selectedTab;
+                if (parsedState.connectedToRoom !== undefined) this.connectedToRoom = parsedState.connectedToRoom;
+                if (parsedState.isOrganizer !== undefined) this.isOrganizer = parsedState.isOrganizer;
+                if (parsedState.searchQuery !== undefined) this.searchQuery = parsedState.searchQuery;
+                if (parsedState.activePublic !== undefined) this.activePublic = parsedState.activePublic;
+                if (parsedState.activePrivate !== undefined) this.activePrivate = parsedState.activePrivate;
+                if (parsedState.roomCode !== undefined) this.roomCode = parsedState.roomCode;
+                if (parsedState.codeVisibility !== undefined) this.codeVisibility = parsedState.codeVisibility;
+                if (parsedState.gameButtonsVisible !== undefined) this.gameButtonsVisible = parsedState.gameButtonsVisible;
+                if (parsedState.selectedFieldIndex !== undefined) this.selectedFieldIndex = parsedState.selectedFieldIndex;
+                if (parsedState.selectedInner !== undefined) this.selectedInner = parsedState.selectedInner;
+                if (parsedState.downloadedScript !== undefined) this.downloadedScript = parsedState.downloadedScript;
+                if (parsedState.isReady !== undefined) this.isReady = parsedState.isReady;
+                
+            } catch (error) {
+                console.error('Ошибка при загрузке состояния Home:', error);
+                this.clearHomeState();
+            }
+        }
+    },
+    
+    clearHomeState(): void {
+        localStorage.removeItem('homeState');
+    },
+    updateConnection(newValue: boolean){
+        this.connectedToRoom = newValue
+    },
     updateOrganizer(newValue: boolean) {
-      this.isOrganizer = newValue;
+        this.isOrganizer = newValue;
     },
-
     updateTab(newTab: ActionType) {
-      this.selectedTab = newTab;
+        this.selectedTab = newTab;
+    },
+    createCode(): string {
+        const code = generateUsername("", 1, 10)
+        this.roomCode = code
+        return code
+    },
+    confirmCreatingScript(){
+        this.selectedInner = 'gameList';
+    },
+    createScript(){
+        this.selectedInner = 'addScript';
+    },
+    changeScript(){
+        this.selectedInner = 'editScript';
+    },
+    handleActionSelected(action: ActionType): void {
+        this.selectedTab = action;
+
+        console.log('Выбрана вкладка:', action);
+    },
+    toggleActivePublic(){
+        this.activePublic = true;
+        this.activePrivate = false;
+    },
+    connectToRoom() {
+        this.connectedToRoom = true;
+        this.isOrganizer = true;
+        
+    },
+    toggleActivePrivate(){
+        this.activePublic = false;
+        this.activePrivate = true;
+    },
+    deleteParticipant(){
+        console.log('Deleted')
+    },
+    openGameButtons(){
+        this.gameButtonsVisible = !this.gameButtonsVisible;
+    },
+    selectField(index: number) {
+        this.selectedFieldIndex = index;
     },
 
     toggleReady() {
@@ -398,30 +520,9 @@ export default defineComponent({
       }
     },
 
-    confirmCreatingScript() {
-      this.selectedInner = "gameList";
-    },
-
-    createScript() {
-      this.selectedInner = "addScript";
-    },
-
-    changeScript() {
-      this.selectedInner = "editScript";
-    },
-
-    handleActionSelected(action: ActionType): void {
-      this.selectedTab = action;
-    },
-
     startRoom(): void {
       this.start()
       router.push("/play")
-    },
-
-    toggleActivePublic() {
-      this.activePublic = true;
-      this.activePrivate = false;
     },
 
     createRoom() {
@@ -431,31 +532,38 @@ export default defineComponent({
       () => {router.push("/play")}, () => {router.push("/")});
     },
 
-    toggleActivePrivate() {
-      this.activePublic = false;
-      this.activePrivate = true;
-    },
-
-    openGameButtons() {
-      this.gameButtonsVisible = !this.gameButtonsVisible;
-    },
-    
-    selectField(index: number) {
-      this.selectedFieldIndex = index;
-    },
-
     ...mapActions(useUserStore, ["generateUsername", "setUsername"]),
     ...mapActions(useCentrifugeStore, ["create", "start", "updateRoomConfig", "sendInput"]),
   },
+
   computed: {
     ...mapState(useUserStore, ["username", "authorized"]),
     ...mapState(useCentrifugeStore, ["usersOnline", "centrifuge", "roomCode"]),
     roomCodeHidden() { return this.roomCode.replace(/./g, "*") }
 
   },
+
   created() {
-    const store = useUserStore();
-    this.userInfo = store;
+      const store = useUserStore()
+
+      this.loadHomeState();
+
+      this.userInfo = {
+          username: store.username || ""
+      }
+
+      if (!this.roomCode || this.roomCode === 'QWERTYUIO') {
+          this.roomCode = this.createCode();
+      }
+  },
+
+  mounted(){
+      this.roomCode = this.createCode()
+      this.saveHomeState();
+  },
+
+  beforeUnmount() {
+      this.saveHomeState();
   },
 
   watch: {
@@ -464,6 +572,77 @@ export default defineComponent({
         this.updateRoomConfig(newValue)
       },
       deep: true
+    },
+
+    isAuth: {
+        handler(_newVal) {
+            this.saveHomeState();
+        }
+    },
+    selectedTab: {
+        handler(_newVal) {
+            this.saveHomeState();
+        }
+    },
+    connectedToRoom: {
+        handler(_newVal) {
+            this.saveHomeState();
+        }
+    },
+    isOrganizer: {
+        handler(_newVal) {
+            this.saveHomeState();
+        }
+    },
+    searchQuery: {
+        handler(_newVal) {
+            this.saveHomeState();
+        }
+    },
+    activePublic: {
+        handler(_newVal) {
+            this.saveHomeState();
+        }
+    },
+    activePrivate: {
+        handler(_newVal) {
+            this.saveHomeState();
+        }
+    },
+    roomCode: {
+        handler(_newVal) {
+            this.saveHomeState();
+        }
+    },
+    codeVisibility: {
+        handler(_newVal) {
+            this.saveHomeState();
+        }
+    },
+    gameButtonsVisible: {
+        handler(_newVal) {
+            this.saveHomeState();
+        }
+    },
+    selectedFieldIndex: {
+        handler(_newVal) {
+            this.saveHomeState();
+        }
+    },
+    selectedInner: {
+        handler(_newVal) {
+            this.saveHomeState();
+        }
+    },
+    downloadedScript: {
+        handler(_newVal) {
+            this.saveHomeState();
+        }
+    },
+    isReady: {
+        handler(_newVal) {
+            this.saveHomeState();
+        }
     }
   }
 });
