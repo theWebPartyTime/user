@@ -6,11 +6,12 @@
             <slot></slot>
         </div>
         <div class="profile">
-            <img src="@/assets/update_icon.svg" alt="" @click="userInfo.generateUsername()" v-if="!connectedToRoom">
+            <img src="@/assets/update_icon.svg" alt="" @click="updateUsername" v-if="!connectedToRoom">
             <input type="text" v-model="usernameInput" maxlength="10" id="organizer_name" name="organizer_name" :disabled="connectedToRoom"/>
             <Identicon :username="usernameInput" @click="openProfileModule"/>
             
-            <SecondaryButton class="profile-module" :class="{visible: openedModule}">Выйти</SecondaryButton>
+            <SecondaryButton class="profile-module" :class="{visible: openedModule}" @click="logout" v-if="isAuthenticated">Выйти</SecondaryButton>
+            <SecondaryButton class="profile-module" :class="{visible: openedModule}" @click="$router.push('/auth/login')" v-else>Войти</SecondaryButton>
         </div>
     </nav>
 </template>
@@ -22,14 +23,14 @@ import SecondaryButton from '@/components/ui/SecondaryButton.vue';
 import { useUserStore } from '../../stores/userStore'
 import { mapState, mapActions } from 'pinia'
 import Identicon from '@/components/ui/Identicon.vue';
+import { generateUsername as generateRandomUsername } from 'unique-username-generator'
 
 export default defineComponent({
     name: 'NavPanel',
     data(){
         return{
-            openedModule: false as Boolean,
-            userInfo: '' as any,
-            timer: '28' as any
+            openedModule: false as boolean,
+            localStorageWatcher: 0 as number
         }
     },
     props: {
@@ -45,7 +46,35 @@ export default defineComponent({
         openProfileModule(){
             this.openedModule = !this.openedModule
         },
-        ...mapActions(useUserStore, ['generateUsername', 'setAuthData', 'setUsername'])
+        updateUsername() {
+            const newUsername = generateRandomUsername('', 1, 10);
+            
+            if (this.isAuthenticated) {
+                this.setUsername(newUsername);
+            } else {
+                localStorage.setItem('username', newUsername);
+                
+                this.$nextTick(() => {
+                    this.usernameInput = newUsername;
+                });
+                
+                window.dispatchEvent(new CustomEvent('username-updated', { 
+                    detail: { username: newUsername } 
+                }));
+            }
+        },
+        handleUsernameUpdated(event: Event) {
+            const customEvent = event as CustomEvent<{ username: string }>;
+            console.log(customEvent)
+            this.localStorageWatcher++;
+        },
+        
+        handleStorageChange(event: StorageEvent) {
+            if (event.key === 'username') {
+                this.localStorageWatcher++;
+            }
+        },
+        ...mapActions(useUserStore, ['generateUsername', 'setAuthData', 'setUsername', 'logout'])
     },
     components: {
         VariantButton,
@@ -53,20 +82,31 @@ export default defineComponent({
         Identicon
     },
     computed: {
-        ...mapState(useUserStore, ['user']),
+        ...mapState(useUserStore, ['user', 'isAuthenticated']),
         
         usernameInput: {
-        get(): string | null {
-            return this.user?.username || localStorage.getItem('username')
-        },
-        set(value: string) {
-            this.setUsername(value)
-        }
+            get(): string {
+                this.localStorageWatcher;
+                
+                if (!this.isAuthenticated) {
+                    return localStorage.getItem('username') || 'Гость';
+                }
+                return this.user?.username || 'Пользователь';
+            },
+            set(value: string) {
+                if(this.user?.username){
+                    this.setUsername(value);
+                }
+            }
         }
     },
     mounted() {
-        const store = useUserStore()
-        this.userInfo = store
+        window.addEventListener('storage', this.handleStorageChange);
+        window.addEventListener('username-updated', this.handleUsernameUpdated);
+    },
+    beforeUnmount() {
+        window.removeEventListener('storage', this.handleStorageChange);
+        window.removeEventListener('username-updated', this.handleUsernameUpdated);
     }
 })
 </script>

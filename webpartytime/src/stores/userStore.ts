@@ -38,6 +38,7 @@ export const useUserStore = defineStore('user', {
       this.refreshToken = null
       this.isAuthenticated = false
       this.clearLocalStorage()
+
     },
     
     loadFromLocalStorage() {
@@ -68,14 +69,17 @@ export const useUserStore = defineStore('user', {
       const dataToSave = {
         user: this.user,
         accessToken: this.accessToken,
-        refreshToken: this.refreshToken
+        refreshToken: this.refreshToken,
+        isAuthenticated: this.isAuthenticated
       }
       console.log(dataToSave)
       localStorage.setItem('auth', JSON.stringify(dataToSave))
     },
     
     clearLocalStorage() {
-      localStorage.removeItem('auth')
+      localStorage.removeItem('auth');
+      localStorage.removeItem('homeState');
+      localStorage.removeItem('username');
     },
 
     generateUsername(): string {

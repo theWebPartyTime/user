@@ -82,6 +82,7 @@ export default defineComponent({
             
             try {
                 const authResponse = await authApi.login(this.email, this.password)
+                console.log(authResponse)
                 this.userStore.setAuthData(authResponse)
                 this.$router.push('/')
             } catch (err) {

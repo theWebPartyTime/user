@@ -25,7 +25,7 @@
                     <router-link to="/auth/login">
                         <span>У меня уже есть аккаунт</span>
                     </router-link>
-                    <router-link to="/">
+                    <router-link to="/" @click="continueWithoutAuth">
                         <span>Продолжить без регистрации</span>
                     </router-link>
                 </div>
@@ -39,7 +39,7 @@
 import { defineComponent } from 'vue'
 import PrimaryButton from '@/components/ui/PrimaryButton.vue';
 import PhoneContainer from '@/components/layout/PhoneContainer.vue';
-
+import { generateUsername as generateRandomUsername } from 'unique-username-generator'
 export default defineComponent({
     name: 'Onboarding',
     data(){
@@ -50,6 +50,16 @@ export default defineComponent({
     components: {
         PrimaryButton,
         PhoneContainer
+    },
+    methods: {
+        continueWithoutAuth(){
+            let username = generateRandomUsername('',1, 10)
+            localStorage.setItem('username', username)
+            
+            window.dispatchEvent(new CustomEvent('username-updated', { 
+                detail: { username } 
+            }))
+        }
     }
 
 })

@@ -1,5 +1,5 @@
 <template>
-    <div class="authorized" v-if="isAuth">
+    <div class="authorized" v-if="isAuthenticated">
         <NavPanel :connected-to-room="connectedToRoom">
             <span class="page-header">WebPartyTime</span>
             <div class="current-online">Сейчас онлайн: {{ usersOnline }}</div>
@@ -62,7 +62,7 @@
                             </div>
                         </section>
                         <footer class="section-footer">
-                            <label class="download-file-button" @click="($refs.scriptFileInput as HTMLInputElement).click()">
+                            <div class="download-file-button" @click="($refs.scriptFileInput as HTMLInputElement).click()">
                                 <PrimaryButton>
                                     <div class="button-inner">
                                         <img src="@/assets/download_script_icon.svg" alt="">
@@ -78,8 +78,8 @@
                                         >
                                     </div>
                                 </PrimaryButton>
-                            </label>
-                            <label class="script-cover-action">
+                            </div>
+                            <div class="script-cover-action" @click="($refs.coverFileInput as HTMLInputElement).click()">
                                 <VariantButton>
                                     <div class="button-inner">
                                         <img src="@/assets/download_cover_icon.svg" alt="">
@@ -95,14 +95,14 @@
                                     </div>
                                     
                                 </VariantButton>
-                            </label>
+                            </div>
                         </footer>                        
                     </div>
                     <div v-if="selectedInner == 'editScript'" class="section-script changes-in-script">
                         <header class="section-header">
                             <p>Изменить сценарий</p>
                             <div class="header-buttons">
-                                <button @click="updateScript" :disabled="loading || !formData.title.trim() || !formData.description.trim()">
+                                <button @click="updateScript">
                                     <img src="@/assets/confirm_icon.svg" alt="">
                                 </button>
                                 <button @click="selectedInner = 'gameList'">
@@ -125,7 +125,7 @@
                             </div>
                         </section>
                         <footer class="section-footer">
-                            <label class="download-file-button">
+                            <div class="download-file-button" @click="($refs.scriptFileInputEdit as HTMLInputElement).click()">
                                 <VariantButton>
                                     <div class="button-inner">
                                         <img src="@/assets/change_script_icon.svg" alt="">
@@ -139,8 +139,8 @@
                                         >
                                     </div>
                                 </VariantButton>
-                            </label>
-                            <label class="script-cover-action">
+                            </div>
+                            <div class="script-cover-action" @click="($refs.coverFileInputEdit as HTMLInputElement).click()">
                                 <VariantButton>
                                     <div class="button-inner">
                                         <img src="@/assets/download_cover_icon.svg" alt="">
@@ -155,12 +155,13 @@
                                     </div>
                                     
                                 </VariantButton>
-                            </label>
+                            </div>
                         </footer> 
                     </div>
                     <div v-else-if="selectedInner == 'gameList'" class="section-script">
                         <div class="game-list" v-if="activePublic && !loading">
                             <div 
+                                v-if="allScripts.length > 0" 
                                 v-for="script in allScripts"
                                 :key="script.id"
                                 class="game-field"
@@ -172,12 +173,16 @@
                             >
                                 <div class="game-field-info">
                                     <span class="field-title">{{ script.title }}</span>
-                                    <span class="field-subtitle">   {{ script.description }}</span>
+                                    <span class="field-subtitle">{{ script.description }}</span>
                                 </div>
+                            </div>  
+                            <div class="game-list" v-else style="display: flex;align-items: center;flex-direction: row; padding-inline: 10px;">
+                                <h2>Пока ничего нет! Создайте первый сценарий</h2>
                             </div>     
                         </div>
                         <div class="game-list" v-if="activePrivate && !loading">
-                            <div 
+                            <div
+                                v-if="userScripts.length > 0" 
                                 v-for="script in userScripts"
                                 :key="script.id"
                                 class="game-field"
@@ -191,13 +196,21 @@
                                     <span class="field-title">{{ script.title }}</span>
                                     <span class="field-subtitle">{{ script.description }}</span>
                                 </div>
-                            </div>     
+                            </div>  
+                            <div class="game-list" v-else style="display: flex;align-items: center;flex-direction: row;">
+                                <h2>Пока ничего нет! Создайте первый сценарий</h2>
+                            </div>   
                         </div>
                     </div>
-                        
-
                 </section>
-                <div class="game-card" v-if="selectedScript">
+                
+                <div class="game-card" v-if="selectedInner === 'addScript' || selectedInner === 'editScript'">
+                    <h3>{{ formData.title || 'Новый сценарий' }}</h3>
+                    <img :src="getFilePreview(formData.coverFile)" alt="Превью обложки">
+                    <p>{{ formData.description || 'Описание сценария' }}</p>
+                    
+                </div>
+                <div class="game-card" v-else-if="selectedScript">
                     <h3>{{ selectedScript.title }}</h3>
                     <img :src="getImageUrl(selectedScript.cover_hash)" alt="">
                     <p>{{ selectedScript.description }}</p>
@@ -206,16 +219,13 @@
                         <PrimaryButton @click="connectToRoom">Создать</PrimaryButton>
                     </div>
                 </div>
-                <div class="game-card" v-else-if="selectedInner === 'addScript' || selectedInner === 'editScript'">
-                    <h3>{{ formData.title || 'Новый сценарий' }}</h3>
-                    <img :src="getFilePreview(formData.coverFile)" alt="Превью обложки">
-                    <p>{{ formData.description }}</p>
-                    
-                </div>
-                <div class="game-card" v-else>
+                <div class="game-card" v-else-if="allScripts.length != 0">
                     <h3>{{ allScripts[selectedFieldIndex]?.title }}</h3>
                     <img :src="`${getImageUrl(allScripts[selectedFieldIndex]?.cover_hash)}`" alt="">
                     <p>{{ allScripts[selectedFieldIndex]?.description }}</p>
+                </div>
+                <div class="game-card" v-else style="display: flex;align-items: center;flex-direction: row; padding-inline: 10px;">
+                    <h2>Пока ничего нет! Создайте первый сценарий</h2>
                 </div>
             </div>
             <div v-else class="connect-to-party-main">
@@ -452,6 +462,13 @@
             />
         </main>
     </div>
+    <div v-else-if="username">
+        <NavPanel :connected-to-room="connectedToRoom">
+            <span class="page-header">WebPartyTime</span>
+            <div class="current-online">Сейчас онлайн: {{ usersOnline }}</div>
+        </NavPanel>
+        <JoiningParty/>
+    </div>
     <div class="unauthorized" v-else>
         <Onboarding/>
     </div>
@@ -478,6 +495,7 @@ import { scriptsApi } from '../services/scripts'
 import type { Script } from '../types/script'
 import defaultCover from '@/assets/game_img.svg'
 
+
 type ActionType = 'create' | 'connect' | null;
 type HomeMainSectionInnerType = 'gameList' | 'addScript' | 'editScript' | null;
 
@@ -502,6 +520,9 @@ export default defineComponent({
     name: 'Home',
     data(){
         return{
+            // Никнейм для неавторизованных
+            localUsername: localStorage.getItem('username') || '' as string,
+            
             // Авторизация и состояние
             isAuth: false as boolean,
             selectedTab: 'create' as ActionType,
@@ -531,11 +552,6 @@ export default defineComponent({
             downloadedScript: true as boolean,
             allScripts: [] as Script[],
             userScripts: [] as Script[],
-
-            // Пользователь
-            userInfo: {
-                username: '' as any
-            },
             
             // Форма создания/редактирования
             formData: {
@@ -558,16 +574,24 @@ export default defineComponent({
         Identicon
     },
     methods: {
-        handleAuthenticated() {
-            const userStore = useUserStore();
-            
-            this.isAuth = true;
-            
-            this.loadHomeState();
-            
-            this.userInfo = {
-                username: userStore.user?.username || localStorage.getItem('username') || 'Пользователь'
+        handleUsernameUpdated(event: Event) {
+            const customEvent = event as CustomEvent<{ username: string }>;
+            this.localUsername = customEvent.detail.username;
+
+            if (!this.isAuthenticated) {
+                localStorage.setItem('username', customEvent.detail.username);
             }
+        },
+
+        handleStorageChange(event: StorageEvent) {
+            if (event.key === 'username') {
+                this.localUsername = event.newValue || '';
+            }
+        },
+
+        handleAuthenticated() {
+            this.isAuth = true;
+            this.loadHomeState();
             
             if (this.activePrivate) {
                 this.loadUserScripts();
@@ -579,6 +603,7 @@ export default defineComponent({
                 this.roomCode = this.createCode();
             }
         },
+
         getFilePreview(file: File | null): string | undefined {
             if (!file || !(file instanceof File)) {
                 return defaultCover;
@@ -590,6 +615,7 @@ export default defineComponent({
                 return undefined;
             }
         },
+
         getImageUrl(coverHash: string | undefined | null): string{
             if (coverHash) {
                 return `http://localhost:8080/uploads/images/${coverHash}`;
@@ -802,7 +828,7 @@ export default defineComponent({
 
             const scriptsArray = this.activePrivate ? this.userScripts : this.allScripts;
             const script = scriptsArray.find(s => s.id === this.selectedFieldIndex);
-            
+            console.log(scriptsArray)
             if (script) {
                 this.formData = {
                     title: script.title,
@@ -817,16 +843,8 @@ export default defineComponent({
             }
         },
         async updateScript() {
-            if (!this.formData.scriptFile) {
-                this.error = 'Выберите файл сценария';
-                return;
-            }
-
-            if (!this.formData.coverFile) {
-                this.error = 'Выберите обложку сценария';
-                return;
-            }
-
+            if (this.selectedFieldIndex < 0) return;
+            
             if (!this.formData.title.trim()) {
                 this.error = 'Введите название';
                 return;
@@ -837,11 +855,14 @@ export default defineComponent({
                 return;
             }
 
-            if (this.selectedFieldIndex < 0) return;
+            if (this.selectedFieldIndex < 0) {
+                this.error = 'Сценарий не выбран';
+                return;
+            }
             
-            const script = this.activePrivate ? 
-                this.userScripts[this.selectedFieldIndex] : 
-                this.allScripts[this.selectedFieldIndex];
+            // Находим скрипт по ID, а не по индексу массива
+            const scriptsArray = this.activePrivate ? this.userScripts : this.allScripts;
+            const script = scriptsArray.find(s => s.id === this.selectedFieldIndex);
             
             if (!script) {
                 this.error = 'Сценарий не найден';
@@ -920,9 +941,22 @@ export default defineComponent({
         selectedScript() {
             if (this.selectedFieldIndex < 0) return null;
             
-            return this.activePrivate ? 
-                this.userScripts[this.selectedFieldIndex] : 
-                this.allScripts[this.selectedFieldIndex];
+            const scriptsArray = this.activePrivate ? this.userScripts : this.allScripts;
+            return scriptsArray.find(script => script.id === this.selectedFieldIndex) || null;
+        },
+        username(){
+            return this.localUsername || localStorage.getItem('username') || '';
+        },
+        userInfo() {
+            if (this.isAuthenticated && this.user) {
+                return {
+                    username: this.user.username || 'Пользователь'
+                };
+            } else {
+                return {
+                    username: this.localUsername || localStorage.getItem('username') || 'Гость'
+                };
+            }
         }
     },
     created() {
@@ -932,10 +966,6 @@ export default defineComponent({
             this.isAuth = true;
             
             this.loadHomeState();
-
-            this.userInfo = {
-                username: userStore.user?.username || localStorage.getItem('username') || 'Пользователь'
-            }
 
             if (!this.roomCode || this.roomCode === 'QWERTYUIO') {
                 this.roomCode = this.createCode();
@@ -954,9 +984,15 @@ export default defineComponent({
     mounted(){
         this.roomCode = this.createCode()
         this.saveHomeState();
+
+        window.addEventListener('username-updated', this.handleUsernameUpdated);
+        window.addEventListener('storage', this.handleStorageChange);
     },
     beforeUnmount() {
         this.saveHomeState();
+
+        window.removeEventListener('username-updated', this.handleUsernameUpdated);
+        window.removeEventListener('storage', this.handleStorageChange);
     },
     watch: {
         isAuth: { handler() { this.saveHomeState(); } },
@@ -1935,14 +1971,14 @@ export default defineComponent({
     height: 48px;
 }
 
-.section-footer label{
+.section-footer div{
     position: relative;
     background: 0;
     border: 0;
     padding: 0;
 }
 
-.section-footer label a{
+.section-footer div a{
     display: flex;
     align-items: center;
     height: 100%;
