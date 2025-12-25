@@ -1,339 +1,353 @@
 <template>
-  <div class="authorized" v-if="true">
-    <NavPanel :connected-to-room>
-      <motion.span
-        :initial="{ scale: 0 }"
-        :animate="{ scale: 1 }"
-        class="page-header"
-        >WebPartyTime</motion.span
-      >
-      <div class="current-online">Сейчас онлайн: {{ usersOnline }}</div>
-    </NavPanel>
-    <ChoosePanel v-if="!connectedToRoom" @action-selected="handleActionSelected" />
-    <main v-if="selectedTab === 'create'">
-      <div v-if="!connectedToRoom" class="creating-party-main">
-        <aside class="aside-navigation">
-          <button
-            class="aside-button-public"
-            :class="{ 'active-aside-button': activePublic }"
-            @click="toggleActivePublic()"
-          >
-            Публичные сценарии
-          </button>
-          <button
-            class="aside-button-private"
-            :class="{ 'active-aside-button': activePrivate }"
-            @click="toggleActivePrivate()"
-          >
-            Мои сценарии
-          </button>
-        </aside>
-        <section class="creating-party-main-section">
-          <div class="search-field">
-            <div class="search-bar">
-              <button class="burger-button">
-                <img src="@/assets/burger_button.svg" alt="" />
-              </button>
-              <input
-                v-model="searchQuery"
-                class="search-input"
-                type="text"
-                placeholder="Поиск по сценариям"
-              />
-              <button class="search-button">
-                <img src="@/assets/search_icon.svg" alt="" />
-              </button>
-            </div>
-            <PrimaryButton @click="createScript"
-              ><img src="@/assets/plus_icon.svg" alt=""
-            /></PrimaryButton>
-          </div>
+    <div class="authorized" v-if="isAuthenticated">
+        <NavPanel :connected-to-room="connectedToRoom">
+            <motion.span
+              :initial="{ scale: 0 }"
+              :animate="{ scale: 1 }"
+              class="page-header"
+              >WebPartyTime</motion.span
+            >
+            <div class="current-online">Сейчас онлайн: {{ usersOnline }}</div>
+        </NavPanel>
+        <ChoosePanel 
+            v-if="!connectedToRoom"
+            :selectedTab="selectedTab" 
+            @action-selected="handleActionSelected" 
+        />
+        <main v-if="selectedTab === 'create'">
+            <div v-if="!connectedToRoom" class="creating-party-main">
+                <aside class="aside-navigation">
+                    <button class="aside-button-public" :class="{'active-aside-button': activePublic}" @click="toggleActivePublic()">Публичные сценарии</button>
+                    <button class="aside-button-private" :class="{'active-aside-button': activePrivate}" @click="toggleActivePrivate()">Мои сценарии</button>
+                </aside>    
+                <section class="creating-party-main-section">
 
-          <div
-            v-if="selectedInner == 'addScript'"
-            class="section-script changes-in-script"
-          >
-            <header class="section-header">
-              <p>Новый сценарий</p>
-              <div class="header-buttons">
-                <button @click="confirmCreatingScript">
-                  <img src="@/assets/confirm_icon.svg" alt="" />
-                </button>
-                <button @click="selectedInner = 'gameList'">
-                  <img src="@/assets/decline_icon.svg" alt="" />
-                </button>
-              </div>
-            </header>
-            <section class="section-main">
-              <fieldset class="input-fieldset">
-                <legend class="fieldset-legend">Название</legend>
-                <input type="text" class="fieldset-input" />
-              </fieldset>
-              <fieldset class="input-fieldset">
-                <legend class="fieldset-legend">Описание</legend>
-                <input type="text" class="fieldset-input" />
-              </fieldset>
-              <div class="autostart-bar">
-                <input type="checkbox" id="autostart" />
-                <label for="autostart">Публичный</label>
-              </div>
-            </section>
-            <footer class="section-footer">
-              <button class="download-file-button">
-                <PrimaryButton>
-                  <div class="button-inner">
-                    <img src="@/assets/download_script_icon.svg" alt="" />
-                    <p>Загрузить файл сценария</p>
-                    <img
-                      src="@/assets/confirm_icon.svg"
-                      alt=""
-                      v-if="downloadedScript"
-                    />
-                  </div>
-                </PrimaryButton>
-              </button>
-              <button class="script-cover-action">
-                <VariantButton>
-                  <div class="button-inner">
-                    <img src="@/assets/download_cover_icon.svg" alt="" />
-                    <p>Загрузить обложку</p>
-                  </div>
-                </VariantButton>
-              </button>
-            </footer>
-          </div>
-          <div
-            v-if="selectedInner == 'editScript'"
-            class="section-script changes-in-script"
-          >
-            <header class="section-header">
-              <p>Изменить сценарий</p>
-              <div class="header-buttons">
-                <button @click="confirmCreatingScript">
-                  <img src="@/assets/confirm_icon.svg" alt="" />
-                </button>
-                <button @click="selectedInner = 'gameList'">
-                  <img src="@/assets/decline_icon.svg" alt="" />
-                </button>
-                <button @click="selectedInner = 'gameList'">
-                  <img src="@/assets/delete_script_icon.svg" alt="" />
-                </button>
-              </div>
-            </header>
-            <section class="section-main">
-              <fieldset class="input-fieldset">
-                <legend class="fieldset-legend">Название</legend>
-                <input type="text" class="fieldset-input" />
-              </fieldset>
-              <fieldset class="input-fieldset">
-                <legend class="fieldset-legend">Описание</legend>
-                <input type="text" class="fieldset-input" />
-              </fieldset>
-              <div class="autostart-bar">
-                <input type="checkbox" id="autostart" />
-                <label for="autostart">Публичный</label>
-              </div>
-            </section>
-            <footer class="section-footer">
-              <button class="download-file-button">
-                <VariantButton>
-                  <div class="button-inner">
-                    <img src="@/assets/change_script_icon.svg" alt="" />
-                    <p>Изменить файл сценария</p>
-                  </div>
-                </VariantButton>
-              </button>
-              <button class="script-cover-action">
-                <VariantButton>
-                  <div class="button-inner">
-                    <img src="@/assets/download_cover_icon.svg" alt="" />
-                    <p>Загрузить обложку</p>
-                  </div>
-                </VariantButton>
-              </button>
-            </footer>
-          </div>
-          <div v-else-if="selectedInner == 'gameList'" class="section-script">
-            <div class="game-list">
-              <div
-                v-for="fields in 5"
-                class="game-field"
-                :class="{ 'selected-field': selectedFieldIndex === fields }"
-                @click="selectField(fields)"
-              >
-                <div class="game-field-info">
-                  <span class="field-title">Викторина “Устройство Linux”</span>
-                  <span class="field-subtitle"
-                    >Тестовые вопросы по устройству операционной
-                    системы...</span
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        <div
-          class="game-card"
-          v-if="selectedInner == 'editScript' || selectedInner == 'addScript'"
-        >
-          <h3>Угадай число</h3>
-          <img src="@/assets/game_img.svg" alt="" />
-          <p>Простейшая игра на угадывание случайного числа</p>
-        </div>
-        <div class="game-card" v-else>
-          <h3>Угадай число</h3>
-          <img src="@/assets/game_img.svg" alt="" />
-          <p>Простейшая игра на угадывание случайного числа</p>
-          <div class="game-buttons">
-            <VariantButton @click="changeScript">Изменить</VariantButton>
-            <PrimaryButton @click="createRoom">Создать</PrimaryButton>
-          </div>
-        </div>
-      </div>
-      <div v-else class="connect-to-party-main">
-        <div class="organizer-view" v-if="isOrganizer">
-          <aside class="room-settings">
-            <div class="duration-of-game-bar">
-              <img src="@/assets/alarm.svg" alt="" />
-              <div class="access-main">
-                <span class="access-main-setting-name"
-                  >Время работы комнаты</span
-                >
-                <p class="access-main-setting-value"><CreatedTimer /></p>
-              </div>
-            </div>
-            <div class="autostart-bar">
-              <input v-model="roomConfig.autoStart" type="checkbox" id="autostart" />
-              <label for="autostart">Начинать автоматичеcки</label>
-            </div>
-            <div class="new-users-access-bar">
-              <input v-model="roomConfig.allowJoins" type="checkbox" id="new-users-access-checkbox" />
-              <label for="new-users-access-checkbox"
-                >Принимать новые подключения</label
-              >
-            </div>
-            <div class="viewer-access-bar">
-              <input v-model="roomConfig.allowSpectators" type="checkbox" id="viewer-access-checkbox" />
-              <label for="viewer-access-checkbox">Разрешить зрителей</label>
-            </div>
-            <!-- <div class="unauthorized-access-bar">
-              <input v-model="roomConfig.allowAnonymous" type="checkbox" id="unauthorized-access-checkbox" />
-              <label for="unauthorized-access-checkbox"
-                >Разрешить неавторизованных пользователей</label
-              >
-            </div> -->
-          </aside>
-          <div class="selected-game-info">
-            <div class="room-code">
-              <div v-if="codeVisibility">{{ roomCode.toUpperCase() }}</div>
-              <div v-else>{{ roomCodeHidden }}</div>
-              <button @click="changeCodeVisibility">
-                <img
-                  :src="codeVisibility ? visibleCode : hiddenCode"
-                  alt=""
-                  style="width: 24px; height: 24px"
-                />
-              </button>
-            </div>
-            <div class="selected-game-card">
-              <h3>Угадай число</h3>
-              <img src="@/assets/game_preview_image.png" alt="" />
-              <div class="game-description">
-                Простейшая игра на угадывание случайного числаПростейшая игра на
-                угадывание случайного числаПростейшая игра на угадывание
-                случайного числаПростейшая игра на угадывание случайного
-                числаПростейшая игра на угадывание случайного числаПростейшая
-                игра на угадывание случайного числа
-              </div>
-            </div>
-          </div>
-          <Participants />
-          <div class="settings-container">
-              <PrimaryButton
-                class="burger-game-button"
-                @click="openGameButtons"
-              >
-                <img src="@/assets/burger_icon.svg" alt="Настройки" />
-              </PrimaryButton>
+                    <div class="search-field">
+                        <div class="search-bar">
+                            <button class="burger-button">
+                                <img src="@/assets/burger_button.svg" alt="">
+                            </button>
+                            <input
+                                v-model="searchQuery"
+                                class="search-input"
+                                type="text"
+                                placeholder="Поиск по сценариям"
+                            />
+                            <button class="search-button">
+                                <img src="@/assets/search_icon.svg" alt="">
+                            </button>
+                        </div>
+                        <PrimaryButton @click="createScript"><img src="@/assets/plus_icon.svg" alt=""></PrimaryButton>
+                    </div>
 
-              <div
-                class="game-settings-buttons"
-                :class="{ visible: gameButtonsVisible }"
-              >
-                <SecondaryButton
-                  class="close-room"
-                  @click="connectedToRoom = false"
-                  >Закрыть комнату</SecondaryButton
-                >
-                <SecondaryButton class="start-game" @click="startRoom"
-                  >Запустить</SecondaryButton
-                >
+                    <div v-if="selectedInner == 'addScript'" class="section-script changes-in-script">
+                        <header class="section-header">
+                            <p>Новый сценарий</p>
+                            <div class="header-buttons">
+                                <button @click="confirmCreatingScript" :disabled="loading || !formData.scriptFile || !formData.coverFile || !formData.title.trim() || !formData.description.trim()">
+                                    <img src="@/assets/confirm_icon.svg" alt="">
+                                </button>
+                                <button @click="selectedInner = 'gameList'">
+                                    <img src="@/assets/decline_icon.svg" alt="">
+                                </button>
+                            </div>
+                        </header>
+                        <section class="section-main">
+                            <fieldset class="input-fieldset">
+                                <legend class="fieldset-legend">Название</legend>
+                                <input v-model="formData.title" type="text" class="fieldset-input">
+                            </fieldset>
+                            <fieldset class="input-fieldset">
+                                <legend class="fieldset-legend">Описание</legend>
+                                <input v-model="formData.description" type="text" class="fieldset-input">
+                            </fieldset>
+                            <div class="autostart-bar">
+                                <input v-model="formData.public" type="checkbox" id="autostart">
+                                <label for="autostart">Публичный</label>  
+                            </div>
+                        </section>
+                        <footer class="section-footer">
+                            <div class="download-file-button" @click="($refs.scriptFileInput as HTMLInputElement).click()">
+                                <PrimaryButton>
+                                    <div class="button-inner">
+                                        <img src="@/assets/download_script_icon.svg" alt="">
+                                        <p>Загрузить файл сценария</p>
+                                        <img src="@/assets/confirm_icon.svg" alt="" v-if="formData.scriptFile">
+                                        <input 
+                                            type="file" 
+                                            @change="handleScriptFile"
+                                            accept=".toml"
+                                            style="display: none"
+                                            ref="scriptFileInput"
+                                            required
+                                        >
+                                    </div>
+                                </PrimaryButton>
+                            </div>
+                            <div class="script-cover-action" @click="($refs.coverFileInput as HTMLInputElement).click()">
+                                <VariantButton>
+                                    <div class="button-inner">
+                                        <img src="@/assets/download_cover_icon.svg" alt="">
+                                        <p>Загрузить обложку</p>
+                                        <input 
+                                            type="file" 
+                                            @change="handleCoverFile"
+                                            accept=".jpg"
+                                            style="display: none"
+                                            ref="coverFileInput"
+                                            required
+                                        >
+                                    </div>
+                                    
+                                </VariantButton>
+                            </div>
+                        </footer>                        
+                    </div>
+                    <div v-if="selectedInner == 'editScript'" class="section-script changes-in-script">
+                        <header class="section-header">
+                            <p>Изменить сценарий</p>
+                            <div class="header-buttons">
+                                <button @click="updateScript">
+                                    <img src="@/assets/confirm_icon.svg" alt="">
+                                </button>
+                                <button @click="selectedInner = 'gameList'">
+                                    <img src="@/assets/decline_icon.svg" alt="">
+                                </button>
+                            </div>
+                        </header>
+                        <section class="section-main">
+                            <fieldset class="input-fieldset">
+                                <legend class="fieldset-legend">Название</legend>
+                                <input v-model="formData.title" type="text" class="fieldset-input">
+                            </fieldset>
+                            <fieldset class="input-fieldset">
+                                <legend class="fieldset-legend">Описание</legend>
+                                <input v-model="formData.description" type="text" class="fieldset-input">
+                            </fieldset>
+                            <div class="autostart-bar">
+                                <input v-model="formData.public" type="checkbox" id="autostart">
+                                <label for="autostart">Публичный</label>  
+                            </div>
+                        </section>
+                        <footer class="section-footer">
+                            <div class="download-file-button" @click="($refs.scriptFileInputEdit as HTMLInputElement).click()">
+                                <VariantButton>
+                                    <div class="button-inner">
+                                        <img src="@/assets/change_script_icon.svg" alt="">
+                                        <p>Изменить файл сценария</p>
+                                        <input 
+                                            type="file" 
+                                            @change="handleScriptFile"
+                                            accept=".toml"
+                                            style="display: none"
+                                            ref="scriptFileInputEdit"
+                                        >
+                                    </div>
+                                </VariantButton>
+                            </div>
+                        </footer>
+                    </div>
+                    <div v-else-if="selectedInner == 'gameList'" class="section-script">
+                        <div class="game-list" v-if="activePublic && !loading">
+                            <div 
+                                v-if="allScripts.length > 0" 
+                                v-for="script in allScripts"
+                                :key="script.id"
+                                class="game-field"
+                                :class="{ 'selected-field': selectedFieldIndex === script.id }"
+                                :style="{
+                                    '--selected-image': `url('${getImageUrl(script.cover_hash)}')`
+                                }"
+                                @click="selectField(script.id)"
+                            >
+                                <div class="game-field-info">
+                                    <span class="field-title">{{ script.title }}</span>
+                                    <span class="field-subtitle">{{ script.description }}</span>
+                                </div>
+                            </div>  
+                            <div class="game-list" v-else style="display: flex;align-items: center;flex-direction: row; padding-inline: 10px;">
+                                <h2>Пока ничего нет! Создайте первый сценарий</h2>
+                            </div>     
+                        </div>
+                        <div class="game-list" v-if="activePrivate && !loading">
+                            <div
+                                v-if="userScripts.length > 0" 
+                                v-for="script in userScripts"
+                                :key="script.id"
+                                class="game-field"
+                                :class="{ 'selected-field': selectedFieldIndex === script.id }"
+                                :style="{
+                                    '--selected-image': `url('${getImageUrl(script.cover_hash)}')`
+                                }"
+                                @click="selectField(script.id)"
+                            >
+                                <div class="game-field-info">
+                                    <span class="field-title">{{ script.title }}</span>
+                                    <span class="field-subtitle">{{ script.description }}</span>
+                                </div>
+                            </div>  
+                            <div class="game-list" v-else style="display: flex;align-items: center;flex-direction: row;">
+                                <h2>Пока ничего нет! Создайте первый сценарий</h2>
+                            </div>   
+                        </div>
+                    </div>
+                </section>
+                
+                <div class="game-card" v-if="selectedInner === 'addScript' || selectedInner === 'editScript'">
+                    <h3>{{ formData.title || 'Новый сценарий' }}</h3>
+                    <img :src="getFilePreview(formData.coverFile)" alt="Превью обложки">
+                    <p>{{ formData.description || 'Описание сценария' }}</p>
+                    
+                </div>
+                <div class="game-card" v-else-if="selectedScript">
+                    <h3>{{ selectedScript.title }}</h3>
+                    <img :src="getImageUrl(selectedScript.cover_hash)" alt="">
+                    <p>{{ selectedScript.description }}</p>
+                    <div class="game-buttons">
+                        <VariantButton v-if="activePrivate" @click="changeScript" :disabled="selectedFieldIndex < 0 || (activePrivate ? userScripts.length === 0 : allScripts.length === 0)">Изменить</VariantButton>
+                        <PrimaryButton @click="createRoom">Создать</PrimaryButton>
+                    </div>
+                </div>
+                <div class="game-card" v-else-if="allScripts.length != 0">
+                    <h3>{{ allScripts[selectedFieldIndex]?.title }}</h3>
+                    <img :src="`${getImageUrl(allScripts[selectedFieldIndex]?.cover_hash)}`" alt="">
+                    <p>{{ allScripts[selectedFieldIndex]?.description }}</p>
+                </div>
+                <div class="game-card" v-else style="display: flex;align-items: center;flex-direction: row; padding-inline: 10px;">
+                    <h2>Пока ничего нет! Создайте первый сценарий</h2>
+                </div>
+            </div>
+            <div v-else class="connect-to-party-main">
+                <div class="organizer-view" v-if="isOrganizer">
+                    <aside class="room-settings">
+                        <div class="duration-of-game-bar">
+                            <img src="@/assets/alarm.svg" alt="">
+                            <div class="access-main">
+                                <span class="access-main-setting-name">Время работы комнаты</span>
+                                <span class="access-main-setting-value"><CreatedTimer /></span>
+                            </div>
+                        </div>
+                        <div class="autostart-bar">
+                            <input v-bind="roomConfig.autoStart" type="checkbox" id="autostart">
+                            <label for="autostart">Начинать автоматичеcки</label>  
+                        </div>
+                        <div class="new-users-access-bar">
+                            <input v-bind="roomConfig.allowJoins" type="checkbox" id="new-users-access-checkbox">
+                            <label for="new-users-access-checkbox">Принимать новые подключения</label>
+                        </div>
+                        <div class="viewer-access-bar">
+                            <input v-bind="roomConfig.allowSpectators" type="checkbox" id="viewer-access-checkbox">
+                            <label for="viewer-access-checkbox">Разрешить зрителей</label>
+                        </div>
+                        <!-- <div class="unauthorized-access-bar">
+                            <input v-bind="roomConfig.allowAnonymous" type="checkbox" id="unauthorized-access-checkbox">
+                            <label for="unauthorized-access-checkbox">Разрешить неавторизованных пользователей</label>
+                        </div>     -->
+                    </aside>
+                    <div class="selected-game-info">
+                        <div class="room-code">
+                            <div v-if="codeVisibility">{{ roomCode.toUpperCase() }}</div>
+                            <div v-else>{{ roomCodeHidden }}</div>
+                            <button @click="codeVisibility = !codeVisibility">
+                                <img :src="codeVisibility ? visibleCode : hiddenCode" alt="" style="width: 24px; height: 24px;">
+                            </button>
+                        </div>
+                        <div class="selected-game-card">
+                            <h3>Угадай число</h3>
+                            <img src="@/assets/game_preview_image.png" alt="">
+                            <div class="game-description">Простейшая игра на угадывание случайного числаПростейшая игра на угадывание случайного числаПростейшая игра на угадывание случайного числаПростейшая игра на угадывание случайного числаПростейшая игра на угадывание случайного числаПростейшая игра на угадывание случайного числа</div>
+                        </div>
+                    </div>
+                    <Participants />
+                    <div class="settings-container">
+                        <PrimaryButton class="burger-game-button" @click="openGameButtons">
+                            <img src="@/assets/burger_icon.svg" alt="Настройки">
+                        </PrimaryButton>
+                        
+                        <div class="game-settings-buttons" :class="{ 'visible': gameButtonsVisible }">
+                            <SecondaryButton class="close-room" @click="connectedToRoom = false">Закрыть комнату</SecondaryButton>
+                            <SecondaryButton class="start-game" @click="startRoom">Запустить</SecondaryButton>
+                        </div>
+                    </div>
+                </div>
+                <div class="participant-view" v-else>             
+                    <div class="selected-game-card">
+                        <h3>Угадай число</h3>
+                        <img src="@/assets/game_preview_image.png" alt="">
+                        <div class="game-description">Простейшая игра на угадывание случайного числа</div>
+                        <div class="room-buttons">
+                            <VariantButton @click="connectedToRoom = false">Выйти</VariantButton>
+                            <PrimaryButton @click="toggleReady" v-if="isReady">
+                                <div class="room-button-inner">
+                                    <p>Не готов</p>
+                                    <img src="@/assets/confirm_icon.svg" alt="">
+                                </div>
+                            </PrimaryButton>
+                            <PrimaryButton @click="toggleReady" v-else>
+                                <div class="room-button-inner">
+                                    <p>Готов</p>
+                                    <img src="@/assets/confirm_icon.svg" alt="">
+                                </div>
+                            </PrimaryButton>
+                        </div>
+                        
+                    </div>   
+                    <Participants />
+                    <div class="room-settings-container">
+                        <div class="duration-of-game-bar">
+                            <img src="@/assets/alarm.svg" alt="">
+                            <div class="access-main">
+                                <span class="access-main-setting-name">Время работы комнаты</span>
+                                <span class="access-main-setting-value">0:10:00</span>
+                            </div>
+                        </div>
+                    </div>
               </div>
             </div>
-        </div>
-        <div class="participant-view" v-else>
-          <div class="selected-game-card">
-            <h3>Угадай число</h3>
-            <img src="@/assets/game_preview_image.png" alt="" />
-            <div class="game-description">
-              Простейшая игра на угадывание случайного числа
-            </div>
-            <div class="room-buttons">
-              <VariantButton @click="connectedToRoom = false"
-                >Выйти</VariantButton
-              >
-              <PrimaryButton @click="toggleReady" v-if="isReady">
-                <div class="room-button-inner">
-                  <p>Не готов</p>
-                  <img src="@/assets/confirm_icon.svg" alt="" />
-                </div>
-              </PrimaryButton>
-              <PrimaryButton @click="toggleReady" v-else>
-                <div class="room-button-inner">
-                  <p>Готов</p>
-                  <img src="@/assets/confirm_icon.svg" alt="" />
-                </div>
-              </PrimaryButton>
-            </div>
-          </div>
-
-          <Participants />
-        </div>
-      </div>
-    </main>
-    <main v-else>
-      <JoiningParty
-        @update-organizer="updateOrganizer"
-        @update-tab="updateTab"
-        @update-connection="updateConnection"
-      />
-    </main>
-  </div>
-  <div class="unauthorized" v-else>
-    <Onboarding />
-  </div>
+        </main>
+        <main v-else>
+            <JoiningParty
+                @update-organizer="updateOrganizer"
+                @update-tab="updateTab"
+                @update-connection="updateConnection"
+            />
+        </main>
+    </div>
+    <div v-else-if="username">
+        <NavPanel :connected-to-room="connectedToRoom">
+            <span class="page-header">WebPartyTime</span>
+            <div class="current-online">Сейчас онлайн: {{ usersOnline }}</div>
+        </NavPanel>
+        <JoiningParty/>
+    </div>
+    <div class="unauthorized" v-else>
+        <Onboarding/>
+    </div>
+    
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import NavPanel from "@/components/layout/NavPanel.vue";
-import ChoosePanel from "@/components/layout/ChoosePanel.vue";
-import PrimaryButton from "@/components/ui/PrimaryButton.vue";
-import VariantButton from "@/components/ui/VariantButton.vue";
-import SecondaryButton from "@/components/ui/SecondaryButton.vue";
-import Onboarding from "@/pages/Onboarding.vue";
-import JoiningParty from "@/pages/JoiningParty.vue";
-import useUserStore from "../stores/userStore";
-import useCentrifugeStore from "../stores/centrifugeStore";
+import { defineComponent } from 'vue'
+import NavPanel from '@/components/layout/NavPanel.vue';
+import ChoosePanel from '@/components/layout/ChoosePanel.vue';
+import PrimaryButton from '@/components/ui/PrimaryButton.vue';
+import VariantButton from '@/components/ui/VariantButton.vue';
+import SecondaryButton from '@/components/ui/SecondaryButton.vue';
+import Onboarding from '@/pages/Onboarding.vue';
+import JoiningParty from '@/pages/JoiningParty.vue';
+import { useUserStore } from '../stores/userStore'
+import useCentrifugeStore from '../stores/centrifugeStore';
+import Identicon from '../components/ui/Identicon.vue';
+import visibleCode from '@/assets/show_code_icon.svg';
+import hiddenCode from '@/assets/hide_code_icon.svg';
+import { scriptsApi } from '../services/scripts'
+import type { Script } from '../types/script'
+import defaultCover from '@/assets/game_img.svg'
 import { mapState, mapActions } from "pinia";
-import Identicon from "@/components/ui/Identicon.vue";
-import visibleCode from "@/assets/show_code_icon.svg";
-import hiddenCode from "@/assets/hide_code_icon.svg";
 import router from "../routes/router";
 import Participants from "@/components/ui/Participants.vue";
 import CreatedTimer from "@/components/ui/CreatedTimer.vue";
 import type { RoomConfig } from "../stores/centrifugeStore";
-import { generateUsername } from 'unique-username-generator'
 
 type ActionType = "create" | "connect" | null;
 type HomeMainSectionInnerType = "gameList" | "addScript" | "editScript" | null;
@@ -362,8 +376,11 @@ export default defineComponent({
             allowJoins: false, autoStart: false,
           } as RoomConfig,
 
+          // Никнейм для неавторизованных
+          localUsername: localStorage.getItem('username') || '' as string,
+          
           // Авторизация и состояние
-          isAuth: true as boolean,
+          isAuth: false as boolean,
           selectedTab: 'create' as ActionType,
           connectedToRoom: false as boolean,
           isOrganizer: false as boolean,
@@ -380,15 +397,25 @@ export default defineComponent({
           gameButtonsVisible: false as boolean,
           isReady: false as boolean,
 
+          // Загрузка данных
+          loading: false as boolean,
+          error: null as string | null,
+
           // Сценарии
           selectedFieldIndex: 1 as number,
           selectedInner: 'gameList' as HomeMainSectionInnerType,
           downloadedScript: true as boolean,
-
-          // Пользователь
-          userInfo: {
-              username: '' as string
-          }   
+          allScripts: [] as Script[],
+          userScripts: [] as Script[],
+          
+          // Форма создания/редактирования
+          formData: {
+              title: '' as string,
+              description: '' as string,
+              public: false as boolean,
+              scriptFile: null as File | null,
+              coverFile: null as File | null
+          },
       }
   },
   
@@ -405,6 +432,188 @@ export default defineComponent({
   },
 
   methods: {
+    startRoom(): void {
+      this.start()
+      router.push("/play")
+    },
+
+    toggleReady() {
+      this.isReady = !this.isReady
+      this.sendInput("", "", -1)
+    },
+
+    createRoom() {
+      this.connectedToRoom = true;
+      this.isOrganizer = true;
+      this.create(this.username as string, 
+      () => {router.push("/play")}, () => {router.push("/")});
+    },
+
+    handleUsernameUpdated(event: Event) {
+        const customEvent = event as CustomEvent<{ username: string }>;
+        this.localUsername = customEvent.detail.username;
+
+        if (!this.isAuthenticated) {
+            localStorage.setItem('username', customEvent.detail.username);
+        }
+    },
+
+    handleStorageChange(event: StorageEvent) {
+        if (event.key === 'username') {
+            this.localUsername = event.newValue || '';
+        }
+    },
+
+    handleAuthenticated() {
+        this.isAuth = true;
+        this.loadHomeState();
+        
+        if (this.activePrivate) {
+            this.loadUserScripts();
+        } else {
+            this.loadPublicScripts();
+        }
+    },
+
+    getFilePreview(file: File | null): string | undefined {
+        if (!file || !(file instanceof File)) {
+            return defaultCover;
+        }
+        try {
+            return URL.createObjectURL(file);
+        } catch (error) {
+            console.error('Ошибка создания preview файла:', error);
+            return undefined;
+        }
+    },
+
+    getImageUrl(coverHash: string | undefined | null): string{
+        if (coverHash) {
+            return `http://localhost:8080/uploads/images/${coverHash}`;
+        }
+        return '@/assets/game_img2.svg';
+    },
+
+    async loadPublicScripts() {
+        this.loading = true;
+        this.error = null;
+        try {
+            const response = await scriptsApi.getPublicScripts(20, 0, this.searchQuery);
+            this.allScripts = response.scripts;
+        } catch (err) {
+            this.error = err instanceof Error ? err.message : 'Не удалось загрузить публичные сценарии';
+            console.error('Ошибка загрузки публичных сценариев:', err);
+        } finally {
+            this.loading = false;
+        }
+    },
+
+    async loadUserScripts() {
+        this.loading = true;
+        this.error = null;
+        try {
+            const response = await scriptsApi.getUserScripts(6, 0, this.searchQuery);
+            this.userScripts = response.scripts;
+        } catch (err) {
+            this.error = err instanceof Error ? err.message : 'Не удалось загрузить ваши сценарии';
+            console.error('Ошибка загрузки сценариев пользователя:', err);
+        } finally {
+            this.loading = false;
+        }
+    },
+
+    async confirmCreatingScript() {
+        if (!this.formData.scriptFile) {
+            this.error = 'Выберите файл сценария';
+            return;
+        }
+
+        if (!this.formData.coverFile) {
+            this.error = 'Выберите обложку сценария';
+            return;
+        }
+
+        if (!this.formData.title.trim()) {
+            this.error = 'Введите название';
+            return;
+        }
+
+        if (!this.formData.description.trim()) {
+            this.error = 'Введите описание сценария';
+            return;
+        }
+
+        this.loading = true;
+        this.error = null;
+
+        try {
+            const formReq = new FormData();
+            formReq.append('title', this.formData.title);
+            formReq.append('description', this.formData.description);
+            formReq.append('public', this.formData.public.toString());
+            formReq.append('script', this.formData.scriptFile);
+            if (this.formData.coverFile) {
+                formReq.append('cover', this.formData.coverFile);
+            }
+            console.log('FormData создана. Поля:');
+            for (let [key, value] of formReq.entries()) {
+                console.log(key, ':', value);
+            }
+
+            await scriptsApi.uploadScript(formReq);
+            
+            this.resetForm();
+            
+            this.selectedInner = 'gameList';
+            this.downloadedScript = false;
+            
+            if (this.activePrivate) {
+                await this.loadUserScripts();
+            } else {
+                await this.loadPublicScripts();
+            }
+            
+        } catch (err) {
+            this.error = err instanceof Error ? err.message : 'Ошибка создания сценария';
+            console.error('Ошибка создания сценария:', err);
+        } finally {
+            this.loading = false;
+        }
+    },
+
+    handleScriptFile(event: Event) {
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files[0]) {
+            this.formData.scriptFile = input.files[0];
+            console.log('Файл скрипта выбран:', input.files[0].name);
+        }
+    },
+
+    handleCoverFile(event: Event) {
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files[0]) {
+            this.formData.coverFile = input.files[0];
+            console.log('Файл обложки выбран:', input.files[0].name);
+        }
+    },
+
+    resetForm() {
+        this.formData = {
+            title: '',
+            description: '',
+            public: false,
+            scriptFile: null,
+            coverFile: null
+        };
+        
+        if (this.$refs.scriptFileInput) {
+            (this.$refs.scriptFileInput as HTMLInputElement).value = '';
+        }
+        if (this.$refs.coverFileInput) {
+            (this.$refs.coverFileInput as HTMLInputElement).value = '';
+        }
+    },
+
     saveHomeState(): void {
         const state: HomeState = {
             isAuth: this.isAuth,
@@ -454,28 +663,111 @@ export default defineComponent({
     clearHomeState(): void {
         localStorage.removeItem('homeState');
     },
+
     updateConnection(newValue: boolean){
         this.connectedToRoom = newValue
     },
+
     updateOrganizer(newValue: boolean) {
         this.isOrganizer = newValue;
     },
+
     updateTab(newTab: ActionType) {
         this.selectedTab = newTab;
     },
-    createCode(): string {
-        const code = generateUsername("", 1, 10)
-        this.roomCode = code
-        return code
-    },
-    confirmCreatingScript(){
-        this.selectedInner = 'gameList';
-    },
+
     createScript(){
+        this.formData = {
+            title: '',
+            description: '',
+            public: false,
+            scriptFile: null,
+            coverFile: null
+        };
         this.selectedInner = 'addScript';
+        this.activePrivate = true;
+        this.activePublic = false;
     },
     changeScript(){
-        this.selectedInner = 'editScript';
+        if (this.selectedFieldIndex < 0) {
+            this.error = 'Выберите сценарий для редактирования';
+            return;
+        }
+
+        const scriptsArray = this.activePrivate ? this.userScripts : this.allScripts;
+        const script = scriptsArray.find(s => s.id === this.selectedFieldIndex);
+        console.log(scriptsArray)
+        if (script) {
+            this.formData = {
+                title: script.title,
+                description: script.description,
+                public: script.public,
+                scriptFile: null,
+                coverFile: null
+            };
+            this.selectedInner = 'editScript';
+        } else {
+            this.error = 'Сценарий не найден';
+        }
+    },
+    async updateScript() {
+        if (this.selectedFieldIndex < 0) return;
+        
+        if (!this.formData.title.trim()) {
+            this.error = 'Введите название';
+            return;
+        }
+
+        if (!this.formData.description.trim()) {
+            this.error = 'Введите описание сценария';
+            return;
+        }
+
+        if (this.selectedFieldIndex < 0) {
+            this.error = 'Сценарий не выбран';
+            return;
+        }
+        
+        // Находим скрипт по ID, а не по индексу массива
+        const scriptsArray = this.activePrivate ? this.userScripts : this.allScripts;
+        const script = scriptsArray.find(s => s.id === this.selectedFieldIndex);
+        
+        if (!script) {
+            this.error = 'Сценарий не найден';
+            return;
+        }
+
+        this.loading = true;
+        this.error = null;
+
+        try {
+            const formData = new FormData();
+            formData.append('title', this.formData.title);
+            formData.append('description', this.formData.description);
+            formData.append('public', this.formData.public.toString());
+            if (this.formData.scriptFile) {
+                formData.append('script', this.formData.scriptFile);
+            }
+            if (this.formData.coverFile) {
+                formData.append('cover', this.formData.coverFile);
+            }
+
+            await scriptsApi.updateScript(script.script_hash, formData);
+            
+            this.selectedInner = 'gameList';
+            
+            if (this.activePrivate) {
+                await this.loadUserScripts();
+            } else {
+                await this.loadPublicScripts();
+            }
+            
+        } catch (err) {
+            this.error = err instanceof Error ? err.message : 'Ошибка обновления сценария';
+            console.error('Ошибка обновления сценария:', err);
+        } finally {
+            this.loading = false;
+        }
     },
     handleActionSelected(action: ActionType): void {
         this.selectedTab = action;
@@ -483,8 +775,11 @@ export default defineComponent({
         console.log('Выбрана вкладка:', action);
     },
     toggleActivePublic(){
+        this.selectedFieldIndex = 0;
         this.activePublic = true;
         this.activePrivate = false;
+        this.selectedInner = 'gameList';
+        this.loadPublicScripts();
     },
     connectToRoom() {
         this.connectedToRoom = true;
@@ -492,8 +787,11 @@ export default defineComponent({
         
     },
     toggleActivePrivate(){
+        this.selectedFieldIndex = 0;
         this.activePublic = false;
         this.activePrivate = true;
+        this.selectedInner = 'gameList';
+        this.loadUserScripts();
     },
     deleteParticipant(){
         console.log('Deleted')
@@ -501,31 +799,8 @@ export default defineComponent({
     openGameButtons(){
         this.gameButtonsVisible = !this.gameButtonsVisible;
     },
-    selectField(index: number) {
-        this.selectedFieldIndex = index;
-    },
-
-    toggleReady() {
-      this.isReady = !this.isReady
-      this.sendInput("", "", -1)
-    },
-
-    changeCodeVisibility() {
-      this.codeVisibility = !this.codeVisibility;
-      if (this.codeVisibility == false) {
-      }
-    },
-
-    startRoom(): void {
-      this.start()
-      router.push("/play")
-    },
-
-    createRoom() {
-      this.connectedToRoom = true;
-      this.isOrganizer = true;
-      this.create(this.username as string, 
-      () => {router.push("/play")}, () => {router.push("/")});
+    selectField(scriptId: number) {
+        this.selectedFieldIndex = scriptId;
     },
 
     ...mapActions(useUserStore, ["generateUsername", "setUsername"]),
@@ -533,113 +808,81 @@ export default defineComponent({
   },
 
   computed: {
-    ...mapState(useUserStore, ["username", "authorized"]),
-    ...mapState(useCentrifugeStore, ["usersOnline", "centrifuge", "roomCode"]),
-    roomCodeHidden() { return this.roomCode.replace(/./g, "*") }
+      ...mapState(useUserStore, ['user', 'isAuthenticated']),
+      ...mapState(useCentrifugeStore, ["usersOnline", "centrifuge", "roomCode"]),
+      roomCodeHidden() { return this.roomCode.replace(/./g, "*") },
 
+      selectedScript() {
+          if (this.selectedFieldIndex < 0) return null;
+          
+          const scriptsArray = this.activePrivate ? this.userScripts : this.allScripts;
+          return scriptsArray.find(script => script.id === this.selectedFieldIndex) || null;
+      },
+      username(){
+          return this.localUsername || localStorage.getItem('username') || '';
+      },
+      userInfo() {
+          if (this.isAuthenticated && this.user) {
+              return {
+                  username: this.user.username || 'Пользователь'
+              };
+          } else {
+              return {
+                  username: this.localUsername || localStorage.getItem('username') || 'Гость'
+              };
+          }
+      }
   },
-
   created() {
-      const store = useUserStore()
+      const userStore  = useUserStore()
+      userStore.loadFromLocalStorage();
+      if (userStore.isAuthenticated && userStore.accessToken) {
+          this.isAuth = true;
+          
+          this.loadHomeState();
 
-      this.loadHomeState();
-
-      this.userInfo = {
-          username: store.username || ""
-      }
-
-      if (!this.roomCode || this.roomCode === 'QWERTYUIO') {
-          this.roomCode = this.createCode();
+          if (this.activePrivate) {
+              this.loadUserScripts();
+          } else {
+              this.loadPublicScripts();
+          }
+      } else {
+          this.isAuth = false;
+          this.clearHomeState();
       }
   },
-
   mounted(){
-      this.roomCode = this.createCode()
       this.saveHomeState();
-  },
 
+      window.addEventListener('username-updated', this.handleUsernameUpdated);
+      window.addEventListener('storage', this.handleStorageChange);
+  },
   beforeUnmount() {
       this.saveHomeState();
+
+      window.removeEventListener('username-updated', this.handleUsernameUpdated);
+      window.removeEventListener('storage', this.handleStorageChange);
   },
-
   watch: {
-    roomConfig: {
-      handler(newValue) {
-        this.updateRoomConfig(newValue)
+      isAuth: { handler() { this.saveHomeState(); } },
+      selectedTab: { handler() { this.saveHomeState(); } },
+      connectedToRoom: { handler() { this.saveHomeState(); } },
+      isOrganizer: { handler() { this.saveHomeState(); } },
+      searchQuery: { handler() { this.saveHomeState(); } },
+      activePublic: { handler() { this.saveHomeState(); } },
+      activePrivate: { handler() { this.saveHomeState(); } },
+      codeVisibility: { handler() { this.saveHomeState(); } },
+      gameButtonsVisible: { handler() { this.saveHomeState(); } },
+      selectedFieldIndex: { handler() { this.saveHomeState(); } },
+      selectedInner: { handler(_newVal) { this.saveHomeState(); } },
+      downloadedScript: { handler(_newVal) { this.saveHomeState(); } },
+      isReady: { handler(_newVal) { this.saveHomeState(); } },
+      roomConfig: {
+        handler(newValue) {
+          this.updateRoomConfig(newValue)
+        },
+        deep: true
       },
-      deep: true
-    },
-
-    isAuth: {
-        handler(_newVal) {
-            this.saveHomeState();
-        }
-    },
-    selectedTab: {
-        handler(_newVal) {
-            this.saveHomeState();
-        }
-    },
-    connectedToRoom: {
-        handler(_newVal) {
-            this.saveHomeState();
-        }
-    },
-    isOrganizer: {
-        handler(_newVal) {
-            this.saveHomeState();
-        }
-    },
-    searchQuery: {
-        handler(_newVal) {
-            this.saveHomeState();
-        }
-    },
-    activePublic: {
-        handler(_newVal) {
-            this.saveHomeState();
-        }
-    },
-    activePrivate: {
-        handler(_newVal) {
-            this.saveHomeState();
-        }
-    },
-    roomCode: {
-        handler(_newVal) {
-            this.saveHomeState();
-        }
-    },
-    codeVisibility: {
-        handler(_newVal) {
-            this.saveHomeState();
-        }
-    },
-    gameButtonsVisible: {
-        handler(_newVal) {
-            this.saveHomeState();
-        }
-    },
-    selectedFieldIndex: {
-        handler(_newVal) {
-            this.saveHomeState();
-        }
-    },
-    selectedInner: {
-        handler(_newVal) {
-            this.saveHomeState();
-        }
-    },
-    downloadedScript: {
-        handler(_newVal) {
-            this.saveHomeState();
-        }
-    },
-    isReady: {
-        handler(_newVal) {
-            this.saveHomeState();
-        }
-    }
   }
 });
 </script>
@@ -677,13 +920,12 @@ import { motion } from "motion-v";
   display: inline-block;
 }
 
-.creating-party-main {
-  height: 80vh;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 36px 44px;
+.creating-party-main{
+    height: 80vh;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 36px 44px;
 }
 
 .aside-navigation {
@@ -880,18 +1122,18 @@ import { motion } from "motion-v";
   position: relative;
 }
 
-.game-list .selected-field::after {
-  content: "";
-  position: absolute;
-  background-image: url("@/assets/game_img2.svg");
-  background-size: contain;
-  background-repeat: no-repeat;
-  aspect-ratio: 1;
-  height: 100%;
-  border-top-right-radius: 12px;
-  border-bottom-right-radius: 12px;
-  right: 0px;
-  z-index: 1;
+.game-list .selected-field::after{
+    content: '';
+    position: absolute;
+    background-image: var(--selected-image), red;
+    background-size: contain;
+    background-repeat: no-repeat;
+    aspect-ratio: 1;
+    height: 100%;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    right: 0px;
+    z-index: 1;
 }
 
 .game-card {
@@ -907,9 +1149,9 @@ import { motion } from "motion-v";
   text-align: center;
 }
 
-.game-card h3 {
-  margin: 22px auto;
-  font-size: 22px;
+.game-card h3{
+    margin: 22px 10px;
+    font-size: 22px;
 }
 
 .game-card p {
@@ -1201,20 +1443,13 @@ import { motion } from "motion-v";
   gap: 20px;
 }
 
-.room-code {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: center;
-}
-
-.room-code button {
-  height: 28px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+.room-code{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 40px;
+    align-items: center;
 }
 
 .room-code div {
@@ -1272,12 +1507,169 @@ import { motion } from "motion-v";
   cursor: pointer;
 }
 
-.burger-game-button {
-  position: relative;
-  transition: transform 0.3s ease;
-  padding: 20px 20px;
-  border-radius: 50%;
-  z-index: 10;
+.game-card img{
+    width: 100%;
+    max-height: 250px;
+}
+
+.organizer-view .participants{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: auto;
+    min-width: 20%;
+    max-width: 20%;
+    margin-top: 30px;
+}
+
+.participant-view .participants{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: auto;
+    min-width: 15%;
+    max-width: 17%;
+}
+
+.participants .organizer{
+    display: flex;
+    flex-direction: row;
+    justify-content: start; 
+    align-items: center;
+    padding: 8px 0px 8px 16px;
+    gap: 12px;
+}
+
+.participants .organizer .participant-avatar{
+    aspect-ratio: 1;
+    height: 45px;
+    display: block;
+    background: var(--primary-container);
+    border-radius: 50%;
+}
+
+
+.participants .organizer .participant-avatar svg{
+    height: 40px;
+    aspect-ratio: 1;
+    margin: 2.5px;
+}
+
+.participants .organizer .participant-info .organizer-name{
+    width: 80%;
+}
+
+.participants-list .participant:first-child{
+    border-top: var(--border-variant);
+}
+
+.participants .organizer .participant-info{
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.participants-list{
+    display: flex;
+    flex-direction: column;
+}
+
+.participant-view .participant {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; 
+    align-items: center;
+    padding: 8px;
+}
+
+.participant-view .participant .participant-info{
+    min-width: 90%;
+    width: auto;
+    display: flex;
+    flex-direction: row;
+    gap: 5%;
+    align-items: center;    
+}
+
+.participant-view .participants .participants-list .participant .participant-info{
+    min-width: 90%;
+}
+
+.participant-view .participant .participant-info .participant-info-main{
+    display: flex;
+    flex-direction: column;
+}
+
+.participants .participants-list .participant{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; 
+    align-items: center;
+    padding: 8px;
+}
+
+.participants .participants-list .participant:hover{
+    background: var(--background);
+}
+
+.participants .participants-list .participant .participant-info{
+    min-width: 80%;
+    width: auto;
+    display: flex;
+    flex-direction: row;
+    gap: 5%;
+    align-items: center;    
+}
+
+.participants .participants-list .participant .participant-info-main{
+    display: flex;
+    flex-direction: column;
+}
+
+.participants .participant-role{
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--on-surface-variant);
+    line-height: 1.3;
+    letter-spacing: 0.5px;
+}
+
+.participant-username{
+    font-size: 15px;
+    color: var(--on-surface);
+}
+
+.participant .participant-avatar{
+    aspect-ratio: 1;
+    height: 35px;
+    display: block;
+    background: var(--primary-container);
+    border-radius: 50%;
+}
+
+.participant .participant-avatar svg{
+    aspect-ratio: 1;
+    height: 30px;
+    margin: 2.5px;
+}
+
+.participant .delete-participant-img{
+    width: 18px;
+    aspect-ratio: 1;
+    cursor: pointer;
+}
+
+.update-username-img{
+    cursor: pointer;
+}
+
+.burger-game-button{
+    position: relative;
+    transition: transform 0.3s ease;
+    padding: 20px 23px;
+    border-radius: 50%;
+    z-index: 10;
 }
 
 .burger-game-button:hover {
@@ -1449,18 +1841,18 @@ import { motion } from "motion-v";
   height: 48px;
 }
 
-.section-footer button {
-  position: relative;
-  background: 0;
-  border: 0;
-  padding: 0;
+.section-footer div{
+    position: relative;
+    background: 0;
+    border: 0;
+    padding: 0;
 }
 
-.section-footer button a {
-  display: flex;
-  align-items: center;
-  height: 100%;
-  padding: 10px 16px;
+.section-footer div a{
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 10px 16px
 }
 
 .section-footer .button-inner {

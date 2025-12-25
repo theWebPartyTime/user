@@ -13,20 +13,20 @@ import { defineComponent, type Ref, ref } from 'vue'
 import { markRaw } from 'vue';
 import { mapState, mapActions } from 'pinia';
 import useCentrifugeStore from '../stores/centrifugeStore';
-import useUserStore from '../stores/userStore';
 import PartyQueryDefault from './PartyQueryDefault.vue';
 import PartyQueryMultimedia from './PartyQueryMultimedia.vue';
 import PartyQueryList from './PartyQueryList.vue';
 import PartyQueryText from './PartyQueryText.vue';
 import PartyQueryAll from './PartyQueryAll.vue';
 import type { Participant } from './PartyQueryAll.vue';
+import { useUserStore } from '../stores/userStore';
 
 export default defineComponent({
   name: 'Play',
 
   computed: {
     ...mapState(useCentrifugeStore, ['usersOnline', 'centrifuge', 'roomSub', 'owner', 'nicknameMappings']),
-    ...mapState(useUserStore, ['username']),
+    ...mapState(useUserStore, ['user']),
 
     getTimer() {
       return {timer: this.timer as number} 

@@ -54,10 +54,9 @@ import { defineComponent } from "vue";
 import PrimaryButton from "@/components/ui/PrimaryButton.vue";
 import VariantButton from "@/components/ui/VariantButton.vue";
 import useCentrifugeStore from "../stores/centrifugeStore";
-import { mapState } from "pinia";
+import { mapState, mapActions } from "pinia";
 import router from "../routes/router";
-import { mapActions } from "pinia";
-import useUserStore from "../stores/userStore";
+import { useUserStore } from "../stores/userStore";
 
 export default defineComponent({
   name: "CodeInput",
@@ -100,7 +99,7 @@ export default defineComponent({
 
   computed: {
     ...mapState(useCentrifugeStore, ["roomSub", "centrifuge"]),
-    ...mapState(useUserStore, ['username']),
+    ...mapState(useUserStore, ['user']),
 
     fullCode(): string {
       return this.code.join("");
@@ -147,7 +146,7 @@ export default defineComponent({
     },
 
     connectToRoom(tab: string, spectatorMode: boolean) {
-      this.join(this.username as string, this.fullCode, spectatorMode, 
+      this.join(this.user?.username as string, this.fullCode, spectatorMode, 
       () => {router.push("/play")}, () => {if (!spectatorMode) router.push("/")}
     ).then((success) => {
         if (success) {

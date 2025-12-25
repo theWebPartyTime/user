@@ -1,78 +1,68 @@
 <template>
-  <div class="onboarding">
-    <div class="logo-onboarding">
-        <span class="logo-web">WEB</span>
-        <span class="logo-party">PARTY</span>
-        <span class="logo-time">TIME</span>
-    </div>
-  
-    <PhoneContainer class="phone-section">
-        <div class="onboarding-progress-bar">
-            <div class="main-bar active-bar"></div>
-            <div class="secondary-bar"></div>
-        </div>
-        <section class="hero-section">
-            <div class="section-header">
-                <h1>Твои онлайн посиделки</h1>
-            </div>
-            <PrimaryButton class="continue-button">
-                <router-link to="/auth/register">
-                    <img src="@/assets/arrow.png" alt="arrow">
-                </router-link>
-            </PrimaryButton>
-            <div class="section-footer">
-                <router-link to="/auth/login">
-                    <span>У меня уже есть аккаунт</span>
-                </router-link>
-                <router-link to="/">
-                    <span>Продолжить без регистрации</span>
-                </router-link>
-            </div>
-        </section>
-    </PhoneContainer>
+    <div class="onboarding">
 
-    <PhoneContainer class="phone-section">
-      <div class="onboarding-progress-bar">
-        <div class="main-bar active-bar"></div>
-        <div class="secondary-bar"></div>
-      </div>
-      <section class="hero-section">
-        <div class="section-header">
-          <h1>Твои онлайн посиделки</h1>
+        <div class="logo-onboarding">
+            <span class="logo-web">WEB</span>
+            <span class="logo-party">PARTY</span>
+            <span class="logo-time">TIME</span>
         </div>
-        <PrimaryButton class="continue-button">
-          <router-link to="/auth/register">
-            <img src="@/assets/arrow.png" alt="arrow" />
-          </router-link>
-        </PrimaryButton>
-        <div class="section-footer">
-          <router-link to="/">
-            <span>У меня уже есть аккаунт</span>
-          </router-link>
-          <router-link to="/">
-            <span>Продолжить без регистрации</span>
-          </router-link>
-        </div>
-      </section>
-    </PhoneContainer>
-  </div>
+    
+        <PhoneContainer class="phone-section">
+            <div class="onboarding-progress-bar">
+                <div class="main-bar active-bar"></div>
+                <div class="secondary-bar"></div>
+            </div>
+            <section class="hero-section">
+                <div class="section-header">
+                    <h1>Твои онлайн посиделки</h1>
+                </div>
+                <PrimaryButton class="continue-button">
+                    <router-link to="/auth/register">
+                        <img src="@/assets/arrow.png" alt="arrow">
+                    </router-link>
+                </PrimaryButton>
+                <div class="section-footer">
+                    <router-link to="/auth/login">
+                        <span>У меня уже есть аккаунт</span>
+                    </router-link>
+                    <router-link to="/" @click="continueWithoutAuth">
+                        <span>Продолжить без регистрации</span>
+                    </router-link>
+                </div>
+            </section>
+        </PhoneContainer>
+
+    </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import PrimaryButton from "@/components/ui/PrimaryButton.vue";
-import PhoneContainer from "@/components/layout/PhoneContainer.vue";
-
+import { defineComponent } from 'vue'
+import PrimaryButton from '@/components/ui/PrimaryButton.vue';
+import PhoneContainer from '@/components/layout/PhoneContainer.vue';
+import { generateUsername as generateRandomUsername } from 'unique-username-generator'
 export default defineComponent({
-  name: "Onboarding",
-  data() {
-    return {};
-  },
-  components: {
-    PrimaryButton,
-    PhoneContainer,
-  },
-});
+    name: 'Onboarding',
+    data(){
+        return{
+
+        }
+    },
+    components: {
+        PrimaryButton,
+        PhoneContainer
+    },
+    methods: {
+        continueWithoutAuth(){
+            let username = generateRandomUsername('',1, 10)
+            localStorage.setItem('username', username)
+            
+            window.dispatchEvent(new CustomEvent('username-updated', { 
+                detail: { username } 
+            }))
+        }
+    }
+
+})
 </script>
 
 <style>
