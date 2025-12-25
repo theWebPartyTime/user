@@ -1275,17 +1275,32 @@ export default defineComponent({
     flex-direction: column;
     justify-content: start;
     text-align: center;
+    overflow: hidden;
 }
 
 .game-card h3{
     margin: 22px 10px;
     font-size: 22px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .game-card p{
-    margin: 16px 16px 32px;
+    padding: 10px;
+    width: 100%;
     color: var(--on-surface-variant);
     font-size: 14px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    line-height: 1.4;
+    margin: 0 auto;
+    max-width: calc(100% - 20px);
 }
 
 .game-buttons{
