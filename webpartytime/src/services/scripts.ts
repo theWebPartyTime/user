@@ -23,6 +23,10 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
     headers['Authorization'] = `Bearer ${userStore.accessToken}`
   }
   
+  if (options.body instanceof FormData) {
+    delete headers['Content-Type']
+  }
+
   let response = await fetch(`${API_URL}${url}`, {
     ...options,
     headers,

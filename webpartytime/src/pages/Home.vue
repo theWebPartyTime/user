@@ -62,7 +62,7 @@
                             </div>
                         </section>
                         <footer class="section-footer">
-                            <label class="download-file-button" @click="$refs.scriptFileInput?.click()">
+                            <label class="download-file-button" @click="($refs.scriptFileInput as HTMLInputElement).click()">
                                 <PrimaryButton>
                                     <div class="button-inner">
                                         <img src="@/assets/download_script_icon.svg" alt="">
@@ -79,7 +79,7 @@
                                     </div>
                                 </PrimaryButton>
                             </label>
-                            <label class="script-cover-action" @click="$refs.coverFileInput?.click()">
+                            <label class="script-cover-action">
                                 <VariantButton>
                                     <div class="button-inner">
                                         <img src="@/assets/download_cover_icon.svg" alt="">
@@ -125,7 +125,7 @@
                             </div>
                         </section>
                         <footer class="section-footer">
-                            <label class="download-file-button" @click="$refs.scriptFileInputEdit?.click()">
+                            <label class="download-file-button">
                                 <VariantButton>
                                     <div class="button-inner">
                                         <img src="@/assets/change_script_icon.svg" alt="">
@@ -140,7 +140,7 @@
                                     </div>
                                 </VariantButton>
                             </label>
-                            <label class="script-cover-action" @click="$refs.coverFileInputEdit?.click()">
+                            <label class="script-cover-action">
                                 <VariantButton>
                                     <div class="button-inner">
                                         <img src="@/assets/download_cover_icon.svg" alt="">
@@ -205,6 +205,12 @@
                         <VariantButton v-if="activePrivate" @click="changeScript" :disabled="selectedFieldIndex < 0 || (activePrivate ? userScripts.length === 0 : allScripts.length === 0)">Изменить</VariantButton>
                         <PrimaryButton @click="connectToRoom">Создать</PrimaryButton>
                     </div>
+                </div>
+                <div class="game-card" v-else-if="selectedInner === 'addScript' || selectedInner === 'editScript'">
+                    <h3>{{ formData.title || 'Новый сценарий' }}</h3>
+                    <img :src="getFilePreview(formData.coverFile)" alt="Превью обложки">
+                    <p>{{ formData.description }}</p>
+                    
                 </div>
                 <div class="game-card" v-else>
                     <h3>{{ allScripts[selectedFieldIndex]?.title }}</h3>
@@ -470,6 +476,7 @@ import visibleCode from '@/assets/show_code_icon.svg';
 import hiddenCode from '@/assets/hide_code_icon.svg';
 import { scriptsApi } from '../services/scripts'
 import type { Script } from '../types/script'
+import defaultCover from '@/assets/game_img.svg'
 
 type ActionType = 'create' | 'connect' | null;
 type HomeMainSectionInnerType = 'gameList' | 'addScript' | 'editScript' | null;
@@ -496,7 +503,7 @@ export default defineComponent({
     data(){
         return{
             // Авторизация и состояние
-            isAuth: true as boolean,
+            isAuth: false as boolean,
             selectedTab: 'create' as ActionType,
             connectedToRoom: false as boolean,
             isOrganizer: false as boolean,
@@ -551,6 +558,38 @@ export default defineComponent({
         Identicon
     },
     methods: {
+        handleAuthenticated() {
+            const userStore = useUserStore();
+            
+            this.isAuth = true;
+            
+            this.loadHomeState();
+            
+            this.userInfo = {
+                username: userStore.user?.username || localStorage.getItem('username') || 'Пользователь'
+            }
+            
+            if (this.activePrivate) {
+                this.loadUserScripts();
+            } else {
+                this.loadPublicScripts();
+            }
+            
+            if (!this.roomCode || this.roomCode === 'QWERTYUIO') {
+                this.roomCode = this.createCode();
+            }
+        },
+        getFilePreview(file: File | null): string | undefined {
+            if (!file || !(file instanceof File)) {
+                return defaultCover;
+            }
+            try {
+                return URL.createObjectURL(file);
+            } catch (error) {
+                console.error('Ошибка создания preview файла:', error);
+                return undefined;
+            }
+        },
         getImageUrl(coverHash: string | undefined | null): string{
             if (coverHash) {
                 return `http://localhost:8080/uploads/images/${coverHash}`;
@@ -611,16 +650,20 @@ export default defineComponent({
             this.error = null;
 
             try {
-                const formData = new FormData();
-                formData.append('title', this.formData.title);
-                formData.append('description', this.formData.description);
-                formData.append('public', this.formData.public.toString());
-                formData.append('script', this.formData.scriptFile);
+                const formReq = new FormData();
+                formReq.append('title', this.formData.title);
+                formReq.append('description', this.formData.description);
+                formReq.append('public', this.formData.public.toString());
+                formReq.append('script', this.formData.scriptFile);
                 if (this.formData.coverFile) {
-                    formData.append('cover', this.formData.coverFile);
+                    formReq.append('cover', this.formData.coverFile);
+                }
+                console.log('FormData создана. Поля:');
+                for (let [key, value] of formReq.entries()) {
+                    console.log(key, ':', value);
                 }
 
-                await scriptsApi.uploadScript(formData);
+                await scriptsApi.uploadScript(formReq);
                 
                 this.resetForm();
                 
@@ -645,6 +688,7 @@ export default defineComponent({
             const input = event.target as HTMLInputElement;
             if (input.files && input.files[0]) {
                 this.formData.scriptFile = input.files[0];
+                console.log('Файл скрипта выбран:', input.files[0].name);
             }
         },
 
@@ -652,6 +696,7 @@ export default defineComponent({
             const input = event.target as HTMLInputElement;
             if (input.files && input.files[0]) {
                 this.formData.coverFile = input.files[0];
+                console.log('Файл обложки выбран:', input.files[0].name);
             }
         },
 
@@ -746,6 +791,8 @@ export default defineComponent({
                 coverFile: null
             };
             this.selectedInner = 'addScript';
+            this.activePrivate = true;
+            this.activePublic = false;
         },
         changeScript(){
             if (this.selectedFieldIndex < 0) {
@@ -842,6 +889,7 @@ export default defineComponent({
             this.selectedFieldIndex = 0;
             this.activePublic = true;
             this.activePrivate = false;
+            this.selectedInner = 'gameList';
             this.loadPublicScripts();
         },
         connectToRoom() {
@@ -853,6 +901,7 @@ export default defineComponent({
             this.selectedFieldIndex = 0;
             this.activePublic = false;
             this.activePrivate = true;
+            this.selectedInner = 'gameList';
             this.loadUserScripts();
         },
         deleteParticipant(){
@@ -866,7 +915,7 @@ export default defineComponent({
         }
     },
     computed: {
-        ...mapState(useUserStore, ['user']),
+        ...mapState(useUserStore, ['user', 'isAuthenticated']),
         ...mapState(useCentrifugeStore, ['usersOnline']),
         selectedScript() {
             if (this.selectedFieldIndex < 0) return null;
@@ -877,20 +926,29 @@ export default defineComponent({
         }
     },
     created() {
-        const store = useUserStore()
+        const userStore  = useUserStore()
+        userStore.loadFromLocalStorage();
+        if (userStore.isAuthenticated && userStore.accessToken) {
+            this.isAuth = true;
+            
+            this.loadHomeState();
 
-        this.loadHomeState();
+            this.userInfo = {
+                username: userStore.user?.username || localStorage.getItem('username') || 'Пользователь'
+            }
 
-        this.userInfo = {
-            username: store.user?.username || localStorage.getItem('username')
-        }
+            if (!this.roomCode || this.roomCode === 'QWERTYUIO') {
+                this.roomCode = this.createCode();
+            };
 
-        if (!this.roomCode || this.roomCode === 'QWERTYUIO') {
-            this.roomCode = this.createCode();
-        };
-
-        if (this.isAuth) {
-            this.loadPublicScripts();
+            if (this.activePrivate) {
+                this.loadUserScripts();
+            } else {
+                this.loadPublicScripts();
+            }
+        } else {
+            this.isAuth = false;
+            this.clearHomeState();
         }
     },
     mounted(){
@@ -1543,6 +1601,11 @@ export default defineComponent({
 
 .selected-game-card img{
     width: 100%;
+}
+
+.game-card img{
+    width: 100%;
+    max-height: 250px;
 }
 
 .organizer-view .participants{

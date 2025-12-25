@@ -45,7 +45,7 @@ export default defineComponent({
         openProfileModule(){
             this.openedModule = !this.openedModule
         },
-        ...mapActions(useUserStore, ['generateUsername', 'setAuthData'])
+        ...mapActions(useUserStore, ['generateUsername', 'setAuthData', 'setUsername'])
     },
     components: {
         VariantButton,
